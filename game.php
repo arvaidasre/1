@@ -346,8 +346,8 @@ elseif ($i == "majin2") {
             } else {
 	              echo '<div class="main_c"><div class="true">Atlikta! Tapai <b>Majin kariu</b> būsi 24 val.</div></div>';
 	              $timxx = time()+60*60*24;
-	              mysql_query("UPDATE zaidejai SET majin='$timxx' WHERE nick='$nick' ");
- mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='20' && tipas='3' LIMIT 300");
+	              $pdo->exec("UPDATE zaidejai SET majin='$timxx' WHERE nick='$nick' ");
+ $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='20' && tipas='3' LIMIT 300");
 			  }
 }
  atgal('Į Pradžią-game.php?i=');
@@ -364,9 +364,9 @@ elseif($i == "dovana"){
             $d_png = rand(50000,200000);
 			$d_jega = rand(1000,20000);
 			$d_gynyba = rand(1000,20000);
-            mysql_query("UPDATE zaidejai SET kred=kred+'$d_krd', litai=litai+'$d_png', jega=jega+'$d_jega', gynyba=gynyba+'$d_gynyba', dovana='+' WHERE nick='$nick' ");
+            $pdo->exec("UPDATE zaidejai SET kred=kred+'$d_krd', litai=litai+'$d_png', jega=jega+'$d_jega', gynyba=gynyba+'$d_gynyba', dovana='+' WHERE nick='$nick' ");
             for($i = 0; $i<5; $i++){
-                mysql_query("INSERT INTO inventorius SET nick='$nick',daiktas='4',tipas='3'");
+                $pdo->exec("INSERT INTO inventorius SET nick='$nick',daiktas='4',tipas='3'");
             }
             echo '<div class="main_c"><div class="true"><b>Atlikta!</b> Gavai <b>'.sk($d_krd).'</b> kreditų, <b>'.sk($d_png).'</b> zen\'ų, <b>'.sk($d_jega).'</b> jėgos, <b>'.sk($d_gynyba).'</b> gynybos ir <b>5</b> stebuklingas pupas.</div></div>';
         } else {
@@ -408,8 +408,8 @@ elseif($i == "keisti"){
         echo '<div class="main_c"><div class="error">Topic\'ą keisti galėsi už '.laikas($topic['time2']-time(), 1).'</div></div>';
     }else{
         $tm = time()+60*5;
-         mysql_query("INSERT INTO topic SET message='{$zinute}', kas='{$nick}', time='".time()."', time2='{$tm}' ");
-         mysql_query("UPDATE zaidejai SET litai=litai-250000 WHERE nick='$nick'");
+         $pdo->exec("INSERT INTO topic SET message='{$zinute}', kas='{$nick}', time='".time()."', time2='{$tm}' ");
+         $pdo->exec("UPDATE zaidejai SET litai=litai-250000 WHERE nick='$nick'");
         echo '<div class="main_c"><div class="true">Topic\'as sėkmingai pakeistas.</div></div>';
     }
     }
@@ -487,10 +487,10 @@ if($apie['rulete']>time()){echo'<br/>
 			if($apie['idball'] < time()){
 				if (rand(1,2) == 2) {
 					echo '<div class="main">'.$ico.' <b>Sveikiname!</b> Radote vieną drakono rutulį!</div>';
-					mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='3', tipas='3'");
+					$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='3', tipas='3'");
 					if($pdo->query("SELECT * FROM drtop WHERE nick='$nick'")->rowCount() > 0)
-					mysql_query("UPDATE drtop SET rutuliai=rutuliai+1 WHERE nick='$nick'"); else
-					mysql_query("INSERT INTO drtop SET nick='$nick', rutuliai='1'");
+					$pdo->exec("UPDATE drtop SET rutuliai=rutuliai+1 WHERE nick='$nick'"); else
+					$pdo->exec("INSERT INTO drtop SET nick='$nick', rutuliai='1'");
 				} else {
 					echo '<div class="main">'.$ico.' Atsiprašome, tačiau nieko neradote!</div>';	
 				}
@@ -653,7 +653,7 @@ elseif($i == "kred"){
 		} else {
 			echo '<div class="main_c"><div class="true">Kovinės galio matuoklis nupirktas: <b>'.$trukme.'</b> val. laikotarpiui! Kol turėsite K.G. Matuokli, galesite matuoti žaidėjų kovinė galia!</div></div>';
 			$galiojimas = time()+60*60*$trukme;
-			mysql_query("UPDATE zaidejai SET kg_mat='$galiojimas', kred=kred-'$kaina' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET kg_mat='$galiojimas', kred=kred-'$kaina' WHERE nick='$nick'");
 		}
 		atgal('Atgal-?i=kred&Į Pradžią-game.php?i=');		
     }
@@ -712,7 +712,7 @@ elseif($i == "kred"){
 		} else {
 			echo '<div class="main_c"><div class="true">Neliečiamybė nupirkta: <b>'.$trukme.'</b> val. laikotarpiui! Kol turėsi neliečiamybę, niekas tavęs negalės pulti!</div></div>';
 			$galiojimas = time()+60*60*$trukme;
-			mysql_query("UPDATE zaidejai SET nelec='$galiojimas', kred=kred-'$kaina' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET nelec='$galiojimas', kred=kred-'$kaina' WHERE nick='$nick'");
 		}
 		atgal('Atgal-?i=kred&Į Pradžią-game.php?i=');
 	} elseif($ka == "jega"){
@@ -733,7 +733,7 @@ elseif($i == "kred"){
                 if($klaida != ""){
                     echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
                 } else {
-                    mysql_query("UPDATE zaidejai SET jega=jega+'$kkkiek', kred=kred-'$kkiek' WHERE nick='$nick' ");
+                    $pdo->exec("UPDATE zaidejai SET jega=jega+'$kkkiek', kred=kred-'$kkiek' WHERE nick='$nick' ");
                     echo '<div class="main_c"><div class="true">Atlikta! Gavote <b>'.sk($kkkiek).'</b> Jėgos. Išleidote <b>'.sk($kkiek).'</b> kreditų.</div></div>';
                 }
             }
@@ -762,7 +762,7 @@ elseif($i == "kred"){
                 if($klaida != ""){
                     echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
                 } else {
-                    mysql_query("UPDATE zaidejai SET gynyba=gynyba+'$kkkiek', kred=kred-'$kkiek' WHERE nick='$nick' ");
+                    $pdo->exec("UPDATE zaidejai SET gynyba=gynyba+'$kkkiek', kred=kred-'$kkiek' WHERE nick='$nick' ");
                     echo '<div class="main_c"><div class="true">Atlikta! Gavote <b>'.sk($kkkiek).'</b> Gynybos. Išleidote <b>'.sk($kkiek).'</b> kreditų.</div></div>';
                 }
             }
@@ -791,7 +791,7 @@ elseif($i == "kred"){
                 if($klaida != ""){
                     echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
                 } else {
-                    mysql_query("UPDATE zaidejai SET max_gyvybes=max_gyvybes+'$kkkiek', kred=kred-'$kkiek' WHERE nick='$nick' ");
+                    $pdo->exec("UPDATE zaidejai SET max_gyvybes=max_gyvybes+'$kkkiek', kred=kred-'$kkiek' WHERE nick='$nick' ");
                     echo '<div class="main_c"><div class="true">Atlikta! Gavote <b>'.sk($kkkiek).'</b> gyvybių. Išleidote <b>'.sk($kkiek).'</b> kreditų.</div></div>';
                 }
             }
@@ -881,8 +881,8 @@ elseif($i == "didinti_priza"){
         if($klaida != ""){
             echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
         } else {
-            mysql_query("UPDATE nustatymai SET dtop_priz=dtop_priz+'$kieks' ");
-            mysql_query("UPDATE zaidejai SET litai=litai-'$kieks' WHERE nick='$nick' ");
+            $pdo->exec("UPDATE nustatymai SET dtop_priz=dtop_priz+'$kieks' ");
+            $pdo->exec("UPDATE zaidejai SET litai=litai-'$kieks' WHERE nick='$nick' ");
             echo '<div class="main_c"><div class="true">D.TOP prizą padidinai <b>'.sk($kieks).'</b> zenų.</div></div>';
         }
     }
@@ -957,14 +957,14 @@ elseif($i == "pokalbiai"){
         elseif($_SESSION['time'] > time()){
             echo '<script>document.location="?i=pokalbiai"</script>';
         }else{
-            mysql_query("INSERT INTO pokalbiai SET nick='$nick', sms='$zin', data='".time()."'");
+            $pdo->exec("INSERT INTO pokalbiai SET nick='$nick', sms='$zin', data='".time()."'");
             $_SESSION['time'] = time()+5;
             $pdo->exec("UPDATE zaidejai SET chate=chate+1 WHERE nick='$nick'");
             echo '<script>document.location="?i=pokalbiai"</script>';
         }
     }
     elseif($ka == "delete"){
-        mysql_query("DELETE FROM pokalbiai WHERE id='$id'");
+        $pdo->exec("DELETE FROM pokalbiai WHERE id='$id'");
         echo '<script>document.location="?i=pokalbiai"</script>';
     }
     else{
@@ -1003,8 +1003,8 @@ elseif($i == "apie"){
     $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick = ?");
     $stmt->execute([$wh]);
     $inf = $stmt->fetch();
-		$infa = mysql_fetch_assoc(mysql_query("SELECT * FROM susijungimas WHERE nick='$wh'"));
-    $inff = mysql_fetch_assoc(mysql_query("SELECT * FROM dtop WHERE nick='$wh'"));
+		$infa = $pdo->query("SELECT * FROM susijungimas WHERE nick='$wh'")->fetch();
+    $inff = $pdo->query("SELECT * FROM dtop WHERE nick='$wh'")->fetch();
     if(empty($inf['topic'])) $topic = 'WAPDB.EU - Drakonų kovos | Dragon Ball!'; else $topic = $inf['topic'];
 	if($inf['statusas'] == "Admin" AND $wh == "wdxkioksas"){
 		$sst = 'Padėjėjas, Atnaujinimų darytojas.';
@@ -1158,17 +1158,17 @@ elseif($i == "rep"){
 		
 		       if($id == 1){
             $txt = 'Tau uždėjo + REP <a href="game.php?i=apie&wh='.$nick.'">'.$nick.'</a>.';
-            mysql_query("UPDATE zaidejai SET rep_teig=rep_teig+'1' WHERE nick='$wh'");
+            $pdo->exec("UPDATE zaidejai SET rep_teig=rep_teig+'1' WHERE nick='$wh'");
             $ka = '+';
         } else {
             $txt = 'Tau uždėjo - REP <a href="game.php?i=apie&wh='.$nick.'">'.$nick.'</a> .';
-            mysql_query("UPDATE zaidejai SET rep_neig=rep_neig+'1' WHERE nick='$wh'");
+            $pdo->exec("UPDATE zaidejai SET rep_neig=rep_neig+'1' WHERE nick='$wh'");
             $ka = '-';
         }
 		
         echo '<div class="main_c"><div class="true">Žaidėjui <b>'.statusas($wh).'</b> davėte <b>'.$ka.'</b> REP!</div></div>';
-        mysql_query("INSERT INTO pm SET what='Sistema', txt='$txt', time='".time()."', gavejas='$wh', nauj='NEW'");
-        mysql_query("INSERT INTO rep SET kas='$nick', kam='$wh', time='".time()."', ka='$ka'");
+        $pdo->exec("INSERT INTO pm SET what='Sistema', txt='$txt', time='".time()."', gavejas='$wh', nauj='NEW'");
+        $pdo->exec("INSERT INTO rep SET kas='$nick', kam='$wh', time='".time()."', ka='$ka'");
 	  }
    atgal('Į Pradžią-game.php');
 
@@ -1195,10 +1195,10 @@ if($lygis < 25){
             } 
             else {
                 echo '<div class="main_c"><div class="true">Žaidėjui '.statusas($wh).' pervedetė '.sk($kieks).' litų!</div></div>';
-                mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+'$kieks' WHERE nick='$wh' ");
-                mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'$kieks' WHERE nick='$nick' ");
-                mysql_query("INSERT INTO perved_log SET txt='$nick pervedė $wh ".sk($kieks)." litų.', time='".time()."'");
-                mysql_query("INSERT INTO pm SET what='Sistema', txt='$nick jums pervedė ".sk($kieks)." litų.', time='".time()."', gavejas='$wh', nauj='NEW'");
+                $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+'$kieks' WHERE nick='$wh' ");
+                $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'$kieks' WHERE nick='$nick' ");
+                $pdo->exec("INSERT INTO perved_log SET txt='$nick pervedė $wh ".sk($kieks)." litų.', time='".time()."'");
+                $pdo->exec("INSERT INTO pm SET what='Sistema', txt='$nick jums pervedė ".sk($kieks)." litų.', time='".time()."', gavejas='$wh', nauj='NEW'");
             }
             
         }
@@ -1225,10 +1225,10 @@ if($lygis < 25){
             } 
             else {
                 echo '<div class="main_c"><div class="true">Žaidėjui '.statusas($wh).' pervedetė '.sk($kieks).' zen\'ų!</div></div>';
-                mysql_query("UPDATE zaidejai SET litai=litai+'$kieks' WHERE nick='$wh' ");
-                mysql_query("UPDATE zaidejai SET litai=litai-'$kieks' WHERE nick='$nick' ");
-                mysql_query("INSERT INTO perved_log SET txt='$nick pervedė $wh ".sk($kieks)." zenų.', time='".time()."'");
-                mysql_query("INSERT INTO pm SET what='Sistema', txt='$nick jums pervedė ".sk($kieks)." zenų.', time='".time()."', gavejas='$wh', nauj='NEW'");
+                $pdo->exec("UPDATE zaidejai SET litai=litai+'$kieks' WHERE nick='$wh' ");
+                $pdo->exec("UPDATE zaidejai SET litai=litai-'$kieks' WHERE nick='$nick' ");
+                $pdo->exec("INSERT INTO perved_log SET txt='$nick pervedė $wh ".sk($kieks)." zenų.', time='".time()."'");
+                $pdo->exec("INSERT INTO pm SET what='Sistema', txt='$nick jums pervedė ".sk($kieks)." zenų.', time='".time()."', gavejas='$wh', nauj='NEW'");
             }
             
         }
@@ -1255,10 +1255,10 @@ if($lygis < 25){
             } 
             else {
                 echo '<div class="main_c"><div class="true">Žaidėjui '.statusas($wh).' pervedetė '.sk($kieks).' kreditų!</div></div>';
-                mysql_query("UPDATE zaidejai SET kred=kred+'$kieks' WHERE nick='$wh' ");
-                mysql_query("UPDATE zaidejai SET kred=kred-'$kieks' WHERE nick='$nick' ");
-                mysql_query("INSERT INTO perved_log SET txt='$nick pervedė $wh ".sk($kieks)." kreditų.', time='".time()."'");
-                mysql_query("INSERT INTO pm SET what='Sistema', txt='$nick jums pervedė ".sk($kieks)." kreditų.', time='".time()."', gavejas='$wh', nauj='NEW'");
+                $pdo->exec("UPDATE zaidejai SET kred=kred+'$kieks' WHERE nick='$wh' ");
+                $pdo->exec("UPDATE zaidejai SET kred=kred-'$kieks' WHERE nick='$nick' ");
+                $pdo->exec("INSERT INTO perved_log SET txt='$nick pervedė $wh ".sk($kieks)." kreditų.', time='".time()."'");
+                $pdo->exec("INSERT INTO pm SET what='Sistema', txt='$nick jums pervedė ".sk($kieks)." kreditų.', time='".time()."', gavejas='$wh', nauj='NEW'");
             }
             
         }
@@ -1307,7 +1307,9 @@ elseif($i == "online"){
             $query = $pdo->query("SELECT * FROM online ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
             $puslapiu=ceil($viso/$rezultatu_rodymas);
             while($row = $query->fetch()){
-                $asdf = mysql_fetch_assoc(mysql_query("SELECT * FROM zaidejai WHERE nick='$row[nick]' "));
+                $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+                $stmt->execute([$row['nick']]);
+                $asdf = $stmt->fetch();
                 if($asdf['statusas'] == 'Admin'){
                                    $kkuurr = $row['vieta'];
                 } else {
@@ -1364,7 +1366,7 @@ elseif($i == "moon"){
 elseif($i == "off"){
      top('Atsijungimas');
      echo '<div class="main_c">Sėkmingai atsijungėte, nepamirškite sugryžti! '.smile(';)').'</div>';
-     mysql_query("DELETE FROM online WHERE nick='$nick' ");
+     $pdo->exec("DELETE FROM online WHERE nick='$nick' ");
      setcookie('vardas', null, time()-3600*24*365);
      $_SESSION['login']=null;
      atgal('Į Pradžią-index.php?i=');
@@ -1519,7 +1521,7 @@ elseif($i == "taskai"){
         $tgyn  = round($taskai*70);
         $tgyv  = round($taskai*5);
         echo '<div class="main_c"><div class="true">Lygio taškai sėkmingai panaudoti!<br/>Įgavote <b>'.sk($tjeg).'</b> jėgos, <b>'.sk($tgyn).'</b> gynybos ir <b>'.sk($tgyv).'</b> gyvybių lygio.</div></div>';
-        mysql_query("UPDATE zaidejai SET jega=jega+'$tjeg', gynyba=gynyba+'$tgyn', max_gyvybes=max_gyvybes+'$tgyv', taskai='0' WHERE nick='$nick' ");
+        $pdo->exec("UPDATE zaidejai SET jega=jega+'$tjeg', gynyba=gynyba+'$tgyn', max_gyvybes=max_gyvybes+'$tgyv', taskai='0' WHERE nick='$nick' ");
     } else {
         echo '<div class="main_c"><div class="error">Neturite lygio taškų!</div></div>';
     }

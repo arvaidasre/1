@@ -51,7 +51,9 @@ elseif($i == "inv"){
         $query = $pdo->prepare("SELECT DISTINCT daiktas FROM inventorius WHERE nick=? AND tipas=?");
         $query->execute([$nick, $id]);
         while($invo = $query->fetch()){
-             $daigto_inf = mysql_fetch_assoc(mysql_query("SELECT * FROM items WHERE id='$invo[daiktas]' "));
+             $stmt_item = $pdo->prepare("SELECT * FROM items WHERE id=?");
+             $stmt_item->execute([$invo['daiktas']]);
+             $daigto_inf = $stmt_item->fetch();
              $stmt_count = $pdo->prepare("SELECT COUNT(*) FROM inventorius WHERE nick=? AND daiktas=? AND tipas=?");
              $stmt_count->execute([$nick, $invo['daiktas'], $id]);
              $kiek_vient = $stmt_count->fetchColumn();
@@ -220,8 +222,8 @@ elseif($i == "ismesti"){
         if($stmt_inv_check->fetchColumn() == 0){
         echo '<div class="main_c"><div class="error">Tokio daikto neturi.</div></div>';
     } else {
-    $inf = mysql_fetch_assoc(mysql_query("SELECT * FROM inventorius WHERE daiktas='$id' && nick='$nick'"));
-    $daigtas = mysql_fetch_assoc(mysql_query("SELECT * FROM items WHERE id='$inf[daiktas]' "));
+    $inf = $pdo->query("SELECT * FROM inventorius WHERE daiktas='$id' && nick='$nick'")->fetch();
+    $daigtas = $pdo->query("SELECT * FROM items WHERE id='$inf[daiktas]' ")->fetch();
     $stmt_count2 = $pdo->prepare("SELECT COUNT(*) FROM inventorius WHERE nick=? AND daiktas=? AND tipas=?");
     $stmt_count2->execute([$nick, $daigtas['id'], $daigtas['tipas']]);
     $kiek_vient = $stmt_count2->fetchColumn();
@@ -243,9 +245,9 @@ elseif($i == "ismesti"){
         if($klaida != ""){
             echo '<div class="error">'.$klaida.'</div>';
         } else {
-            mysql_query("INSERT INTO siukslynas SET nick='$nick', daiktas='$daigtas[id]', kiek='$kieks', tipas='$daigtas[tipas]' ");
+            $pdo->exec("INSERT INTO siukslynas SET nick='$nick', daiktas='$daigtas[id]', kiek='$kieks', tipas='$daigtas[tipas]' ");
             echo '<div class="true">Išmetei <b>'.sk($kieks).'</b> '.$daigtas['name'].'.</div>';
-            mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='$daigtas[id]' LIMIT $kieks");
+            $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='$daigtas[id]' LIMIT $kieks");
         }
     }
     echo '<div class="main_l">';

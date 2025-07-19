@@ -40,8 +40,8 @@ online('Komandos įkurimas');
 		if($stmt->rowCount() > 0){echo"Tokia komanda jau yra";}
 	else{
 		echo"Komanda įkurta";
-		mysql_query("INSERT INTO team SET team='$pavad', vadas='$nick', pinigai='0'");
-		mysql_query("UPDATE zaidejai SET team='$pavad', sms_litai=sms_litai-20 WHERE nick='$nick'");
+		$pdo->exec("INSERT INTO team SET team='$pavad', vadas='$nick', pinigai='0'");
+		$pdo->exec("UPDATE zaidejai SET team='$pavad', sms_litai=sms_litai-20 WHERE nick='$nick'");
 		}
 	   echo"</div>";
 	}

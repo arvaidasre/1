@@ -23,9 +23,9 @@ if($i == ""){
 elseif($i == "rinkimas"){
    online('Rinkimo misijos');
    
-   $rnk = mysql_fetch_assoc(mysql_query("SELECT * FROM rinkimas WHERE nick='$nick' "));
-   $dgt = mysql_fetch_assoc(mysql_query("SELECT * FROM items WHERE id='$rnk[daiktas]' && tipas='$rnk[tipas]' "));
-   $invo = mysql_fetch_assoc(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='$rnk[daiktas]' && tipas='$rnk[tipas]' "));
+   $rnk = $pdo->query("SELECT * FROM rinkimas WHERE nick='$nick' ")->fetch();
+   $dgt = $pdo->query("SELECT * FROM items WHERE id='$rnk[daiktas]' && tipas='$rnk[tipas]' ")->fetch();
+   $invo = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='$rnk[daiktas]' && tipas='$rnk[tipas]' ")->fetch();
    
    if($rnk['ka'] == "litai"){
    $ko = "Zen'ų";
@@ -557,7 +557,7 @@ elseif($ka == "fryzo2"){
 		$jegos = $jega+$jegu;
 		$gynyb = $gynyba*2/100;
 		$gynybos = $gynyba+$gynyb;
-      mysql_query("UPDATE zaidejai SET jega='$jegos', gynyba='$gynybos' WHERE nick='$nick' ");
+      $pdo->exec("UPDATE zaidejai SET jega='$jegos', gynyba='$gynybos' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 250 Magic Ball.</div></div>';
    }
@@ -582,10 +582,10 @@ elseif($ka == "fryzo2"){
    $stmt->execute([$nick]);
    if($stmt->rowCount() > 244){
 		echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai 6% jegos ir '.sk(20000000).' zenų.</div></div>';
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='23' && tipas='3' LIMIT 245");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='23' && tipas='3' LIMIT 245");
 		$jegu = $jega*1/100;
 		$jegos = $jega+$jegu;
-      mysql_query("UPDATE zaidejai SET jega='$jegos', litai=litai+'2000000' WHERE nick='$nick' ");
+      $pdo->exec("UPDATE zaidejai SET jega='$jegos', litai=litai+'2000000' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 145 Power Stone.</div></div>';
    }
@@ -609,10 +609,10 @@ elseif($ka == "fryzo2"){
    $stmt->execute([$nick]);
    if($stmt->rowCount() > 299){
 		echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai 9% gynybos ir 5 kreditus</div></div>';
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='21' && tipas='3' LIMIT 300");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='21' && tipas='3' LIMIT 300");
 		$gynyb = $gynyba*1/100;
 		$gynybos = $gynyba+$gynyb;
-      mysql_query("UPDATE zaidejai SET gynyba='$gynybos', kred=kred+'5' WHERE nick='$nick' ");
+      $pdo->exec("UPDATE zaidejai SET gynyba='$gynybos', kred=kred+'5' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 300 Gold Stone.</div></div>';
    }
@@ -637,7 +637,7 @@ elseif($ka == "fryzo2"){
    $stmt->execute([$nick, $apie['nelec']]);
    if($stmt->rowCount() == 1){
 		echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai '.sk(40000000).' zenų!</div></div>';
-      mysql_query("UPDATE zaidejai SET litai=litai+'40000000', nelec='0' WHERE nick='$nick' ");
+      $pdo->exec("UPDATE zaidejai SET litai=litai+'40000000', nelec='0' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi nusipirkęs neliečiamybės.</div></div>';
    }
@@ -661,8 +661,8 @@ elseif($ka == "fryzo2"){
    $stmt->execute([$nick]);
    if($stmt->rowCount() > 599){
 		echo '<div class="main_c"><div class="acept">Užduotis įvygdytą! Gavai '.sk(5000000000).' zenų ir 1 kreditą.</div></div>';
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='18' && tipas='3' LIMIT 600");
-      mysql_query("UPDATE zaidejai SET litai=litai+'5000000000', kred=kred+'1' WHERE nick='$nick' ");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='18' && tipas='3' LIMIT 600");
+      $pdo->exec("UPDATE zaidejai SET litai=litai+'5000000000', kred=kred+'1' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error"><b>Klaida!</b> Tu neturi 600 Energy Stone.</div></div>';
    }
@@ -686,9 +686,9 @@ elseif($ka == "fryzo2"){
    $stmt->execute([$nick]);
    if($stmt->rowCount() > 499){
 		echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai 50 Microshemų.</div></div>';
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='19' && tipas='3' LIMIT 500");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='19' && tipas='3' LIMIT 500");
 		for($i = 0; $i < 50; $i++){
-      	mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
+      	$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
 		}
    } else {
       echo '<div class="main_c"><div class="error"><b>Klaida!</b> Tu neturi 500 Pragaro vaisių.</div></div>';

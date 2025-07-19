@@ -67,14 +67,14 @@ $kiek_yra=$kiek_yra+1;
 		  if ($nust['day'] != 6) {
 $timt = time();
 if($apie[vip]>$timt){
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
     '3'
     )");
 
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
@@ -83,7 +83,7 @@ if($apie[vip]>$timt){
 
 }else{
 
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
@@ -95,25 +95,25 @@ if($apie[vip]>$timt){
 $timt = time();
 if($apie[vip]>$timt){
 
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
     '3'
     )");
-	          mysql_query("INSERT INTO inventorius VALUES(
+	          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
     '3'
     )");
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
     '3'
     )");
-	          mysql_query("INSERT INTO inventorius VALUES(
+	          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
@@ -121,7 +121,7 @@ if($apie[vip]>$timt){
     )");
 }else{
 
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',

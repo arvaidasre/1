@@ -58,8 +58,8 @@ elseif($i == "kurti"){
          echo '<div class="main_c"><div class="error">Nepakanka zen\'ų!</div></div>';
       } else {
          echo '<div class="main_c"><div class="true">Atlikta! Žaidimas sukurtas.</div></div>';
-         mysql_query("UPDATE zaidejai SET litai=litai-'$kiek' WHERE nick='$nick' ");
-         mysql_query("INSERT INTO vaskinimas SET kas='$nick', kiek='$kiek', zenklas='$zenklas' ");
+         $pdo->exec("UPDATE zaidejai SET litai=litai-'$kiek' WHERE nick='$nick' ");
+         $pdo->exec("INSERT INTO vaskinimas SET kas='$nick', kiek='$kiek', zenklas='$zenklas' ");
 
       }
       }

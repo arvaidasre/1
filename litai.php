@@ -261,7 +261,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  if($sms_litai < 45){echo '<div class="error">Tau nepakanka litų.</div>';} else 
  {echo '<div class="acept">Atlikta, nusipirkai Vegeta  gods.</div>';
  $jega1 = round($jega*8);$gynyba1 = round($gynyba*8);
- mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
+ $pdo->exec("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
  $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'45', veikejas='Vegeta gods', foto='Vegeta gods-0', trans='0' WHERE nick='$nick'");}
  atgal('Atgal-?i=vegeta&Į Pradžią-game.php?i=');
  }
@@ -277,7 +277,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  if($sms_litai < 65){echo '<div class="error">Tau nepakanka litų.</div>';} else 
  {echo '<div class="acept">Atlikta, nusipirkai Gold Oozaru.</div>';
  $jega1 = round($jega*12);$gynyba1 = round($gynyba*12);
- mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
+ $pdo->exec("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
  $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'65', veikejas='Gold Oozaru', foto='ozaru', trans='0' WHERE nick='$nick'");}
  atgal('Atgal-?i=ozaru&Į Pradžią-game.php?i=');
  }
@@ -293,7 +293,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  if($sms_litai < 20){echo '<div class="error">Tau nepakanka litų.</div>';} else 
  {echo '<div class="acept">Atlikta, nusipirkai Super Vegetto.</div>';
  $jega1 = round($jega*2);$gynyba1 = round($gynyba*2);
- mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
+ $pdo->exec("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
  $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'20', veikejas='Super Vegetto', foto='svegetto', trans='0' WHERE nick='$nick'");}
  atgal('Atgal-?i=svegetto&Į Pradžią-game.php?i=');
  }
@@ -309,7 +309,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  if($sms_litai < 30){echo '<div class="error">Tau nepakanka litų.</div>';} else 
  {echo '<div class="acept">Atlikta, nusipirkai Xicor.</div>';
  $jega1 = round($jega*4);$gynyba1 = round($gynyba*4);
- mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
+ $pdo->exec("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
  $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'30', veikejas='Xicor', foto='xicor', trans='0' WHERE nick='$nick'");}
  atgal('Atgal-?i=xicor&Į Pradžią-game.php?i=');
  }
@@ -342,7 +342,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  if($sms_litai < 55){echo '<div class="error">Tau nepakanka litų.</div>';} else 
  {echo '<div class="acept">Atlikta, nusipirkai Goku  gods.</div>';
  $jega1 = round($jega*10);$gynyba1 = round($gynyba*10);
- mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
+ $pdo->exec("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
  $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'55', veikejas='Goku gods', foto='Goku gods-0', trans='0' WHERE nick='$nick'");
  }
  
@@ -584,7 +584,7 @@ elseif($i == "mod2"){
         echo '<div class="main_c"><div class="error">Tau nepakanka litų!</div></div>';
     } else {
         echo '<div class="main_c"><div class="true">Atlikta, nusipirkai Moderatoriaus statusą.</div></div>';
-        mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'30', statusas='Mod' WHERE nick='$nick'");
+        $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'30', statusas='Mod' WHERE nick='$nick'");
     }
     atgal('Atgal-?i=mod&Į Pradžią-game.php?i=');
 }
@@ -637,7 +637,7 @@ elseif($i == "pad2"){
     } else {
         echo '<div class="main_c"><div class="true">Atlikta, padusimai sumažinti!</div></div>';
         $timex = time()+60*60*$timezz;
-        mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', pad_time='$timex' WHERE nick='$nick'");
+        $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', pad_time='$timex' WHERE nick='$nick'");
 	}
     atgal('Atgal-?i=pad&Į Pradžią-game.php?i=');
 }

@@ -1,10 +1,10 @@
 <?php
 session_start();
 $start = microtime(true);
-$nust = mysql_fetch_assoc(mysql_query("SELECT * FROM nustatymai"));
-$nust = mysql_fetch_assoc(mysql_query("SELECT * FROM nustatymai"));if ($nust['newl'] < date("Y-m-d")) {$nwq = date("Y-m-d"); 
+$nust = $pdo->query("SELECT * FROM nustatymai")->fetch();
+if ($nust['newl'] < date("Y-m-d")) {$nwq = date("Y-m-d"); 
 $randass = rand(1,3);
-  mysql_query("UPDATE nustatymai SET day='$randass', newl='$nwq'");}
+  $pdo->exec("UPDATE nustatymai SET day='$randass', newl='$nwq'");}
 
 
 function GenTime(){
@@ -359,7 +359,8 @@ function ifoot(){
 }
 
 function statistic() {
-	$statistic = mysql_fetch_assoc(mysql_query("SELECT * FROM nustatymai"));
+	global $pdo;
+	$statistic = $pdo->query("SELECT * FROM nustatymai")->fetch();
 	echo "".$statistic['count']."";	
 }
 

@@ -82,10 +82,10 @@ elseif($i == "rasyti"){
 	else {
         if(strtolower($ats) == strtolower($klsm['ats'])){
             
-        mysql_query("INSERT INTO vikte_chat SET nick='DBX', sms='Atsakymas: <b>".$klsm['ats']."</b>, <b>".$nick."</b> gauna <b>2,000</b> zenų.', time='".time()."'");
-        mysql_query("UPDATE zaidejai SET litai=litai+2000 WHERE nick='$nick'");
-        mysql_query("UPDATE vikte_cfg SET kiek_iki='$laiks', kls='$rand'");
-        mysql_query("UPDATE zaidejai SET vikte=vikte+1 WHERE nick='$nick'");
+        $pdo->exec("INSERT INTO vikte_chat SET nick='DBX', sms='Atsakymas: <b>".$klsm['ats']."</b>, <b>".$nick."</b> gauna <b>2,000</b> zenų.', time='".time()."'");
+        $pdo->exec("UPDATE zaidejai SET litai=litai+2000 WHERE nick='$nick'");
+        $pdo->exec("UPDATE vikte_cfg SET kiek_iki='$laiks', kls='$rand'");
+        $pdo->exec("UPDATE zaidejai SET vikte=vikte+1 WHERE nick='$nick'");
         }
         $stmt = $pdo->prepare("INSERT INTO vikte_chat SET nick = ?, sms = ?, time = ?");
         $stmt->execute([$nick, $ats, time()]);

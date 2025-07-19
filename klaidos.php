@@ -48,7 +48,7 @@ if($i == ""){
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
      $query = $pdo->query("SELECT * FROM zklaidos ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
      $puslapiu = ceil($viso/$rezultatu_rodymas);
-     while ($row = mysql_fetch_assoc($query)) {
+     while ($row = $query->fetch()) {
 	 //$teig = mysql_num_rows(mysql_query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='+'"));
      //$neig = mysql_num_rows(mysql_query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='-'"));
 		 echo '<div class="main">
@@ -224,7 +224,7 @@ elseif($i == "komentarai"){
      $stmt->execute([$id]);
      $puslapiu = ceil($viso/$rezultatu_rodymas);
      $nr = 1+$page_sql;
-     while ($row = mysql_fetch_assoc($query)) {
+     while ($row = $stmt->fetch()) {
          echo '<div class="main">
          <b>'.$nr.'.</b> <a href="game.php?i=apie&wh='.$row['kas'].'">'.statusas($row['nick']).'</a>: '.smile($row['komentaras']).'<br/>
          '.laikas($row['time']).'';

@@ -36,10 +36,10 @@ $id= abs(intval($_GET['id']));
 
    online('Vykdo sagas');
 
-$sag=mysql_fetch_array(mysql_query("SELECT * FROM sagos WHERE ID='$id'"));
-$saga = mysql_num_rows(mysql_query("SELECT * FROM sagos WHERE ID='$id' "));
-$sagas = mysql_num_rows(mysql_query("SELECT * FROM sagos_info WHERE saga='$apie[sagos]' "));
-$sage = mysql_num_rows(mysql_query("SELECT * FROM sagos_info WHERE saga='$id' "));
+$sag=$pdo->query("SELECT * FROM sagos WHERE ID='$id'")->fetch();
+$saga = $pdo->query("SELECT * FROM sagos WHERE ID='$id' ")->rowCount();
+$sagas = $pdo->query("SELECT * FROM sagos_info WHERE saga='$apie[sagos]' ")->rowCount();
+$sage = $pdo->query("SELECT * FROM sagos_info WHERE saga='$id' ")->rowCount();
 
 if($saga<1){
 echo '<div class="top">Klaida!</div>';
@@ -92,9 +92,9 @@ $id= abs(intval($_GET['id']));
 
    online('Vykdo sagas');
 
-$sag=mysql_fetch_array(mysql_query("SELECT * FROM sagos WHERE ID='$id'"));
-$saga = mysql_num_rows(mysql_query("SELECT * FROM sagos WHERE ID='$id' "));
-$sagas = mysql_num_rows(mysql_query("SELECT * FROM sagos_info WHERE saga='$id' "));
+$sag=$pdo->query("SELECT * FROM sagos WHERE ID='$id'")->fetch();
+$saga = $pdo->query("SELECT * FROM sagos WHERE ID='$id' ")->rowCount();
+$sagas = $pdo->query("SELECT * FROM sagos_info WHERE saga='$id' ")->rowCount();
 if($saga<1){
 echo '<div class="top">Klaida!</div>';
     echo '<div class="main">Tokio sagos nėra.';

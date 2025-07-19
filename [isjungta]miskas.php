@@ -73,7 +73,7 @@ else {
 
             $_SESSION['PAD'] = time()+3;
 		
-              mysql_query("INSERT INTO inventorius VALUES(
+              $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '24',
@@ -81,7 +81,7 @@ else {
     )");
         
 					  if ($nust['day'] = 4) {
-              mysql_query("INSERT INTO inventorius VALUES(
+              $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '24',
@@ -91,7 +91,7 @@ else {
 		
 	$timt = time();
 if($apie[vip]>$timt){	
-	             mysql_query("INSERT INTO inventorius VALUES(
+	             $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '24',

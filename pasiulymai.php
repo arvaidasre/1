@@ -49,8 +49,8 @@ $klaida = "Tu esi užtildytas!";
      $query = $pdo->query("SELECT * FROM pasiulymai ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
      $puslapiu = ceil($viso/$rezultatu_rodymas);
      while ($row = $query->fetch()) {
-	 $teig = mysql_num_rows(mysql_query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='+'"));
-         	 $neig = mysql_num_rows(mysql_query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='-'"));
+	 $teig = $pdo->query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='+'")->rowCount();
+         	 $neig = $pdo->query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='-'")->rowCount();
 		 echo '<div class="main">
          '.$ico.' <a href="game.php?i=apie&wh='.$row['kas'].'">'.statusas($row['kas']).'</a>: '.smile($row['pasiulymas']).'
 		 <br />
@@ -171,8 +171,8 @@ elseif($i == "delete"){
         echo '<div class="top">Klaida !</div>';
         echo '<div class="main_c"><div class="error">Tokio pasiūlymo nėra!</div></div>';
     } else {
-        mysql_query("DELETE FROM pasiulymai WHERE id='$id'");
-        mysql_query("DELETE FROM pas_kom WHERE p_id='$id'");
+        $pdo->exec("DELETE FROM pasiulymai WHERE id='$id'");
+        $pdo->exec("DELETE FROM pas_kom WHERE p_id='$id'");
         echo '<div class="top">Pasiūlymo trinimas</div>';
         echo '<div class="main_c"><div class="true">Pasiūlymas ištrintas!</div></div>';
     }

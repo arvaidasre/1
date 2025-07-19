@@ -87,8 +87,12 @@ $KD = $klase->sk($_GET['KD']);
    $stmt = $pdo->prepare("SELECT * FROM lokacijos WHERE id=?");
    $stmt->execute([$ID]);
    $lok = $stmt->fetch();
-   $mob = mysql_fetch_assoc(mysql_query("SELECT * FROM mobai WHERE id='$VS' "));
-   $m = mysql_fetch_array(mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'"));
+   $stmt = $pdo->prepare("SELECT * FROM mobai WHERE id=?");
+   $stmt->execute([$VS]);
+   $mob = $stmt->fetch();
+   $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+   $stmt->execute([$nick]);
+   $m = $stmt->fetch();
     $stmt = $pdo->prepare("SELECT * FROM lokacijos WHERE id=?");
     $stmt->execute([$ID]);
     if($stmt->rowCount() == 0){
@@ -112,8 +116,8 @@ $KD = $klase->sk($_GET['KD']);
     echo '<div class="top">Kovojimas</div>';
     if($gyvybes == 0 or $mob['kg'] > $kgi){
           echo '<div class="main_c"><div class="error">Jūs pralaimėjote kovą prieš <b>'.$mob['name'].'</b>!<br/>Praradai visas gyvybęs.</div></div>';
-          mysql_query("UPDATE zaidejai SET gyvybes='0' WHERE nick='$nick' ");
-          mysql_query("UPDATE zaidejai SET pveiksmai=pveiksmai+1, vveiksmai=vveiksmai+1 WHERE nick='$nick'");
+          $pdo->exec("UPDATE zaidejai SET gyvybes='0' WHERE nick='$nick' ");
+          $pdo->exec("UPDATE zaidejai SET pveiksmai=pveiksmai+1, vveiksmai=vveiksmai+1 WHERE nick='$nick'");
     } else {
     $KDS = rand(9999,99999999);
     $stmt = $pdo->prepare("UPDATE zaidejai SET kd=? WHERE nick=?");
@@ -207,12 +211,18 @@ $pin = $pin * 2;
     echo '<meta http-equiv="refresh" content="'.$autov.'; url=kovos.php?i=pulti&ID='.$ID.'&VS='.$VS.'&KD='.$KDS.'">';
     }
     
-    $fusn = mysql_fetch_array(mysql_query("SELECT * FROM susijungimas WHERE nick='$nick'"));
-    $fusn_k2 = mysql_fetch_array(mysql_query("SELECT * FROM susijungimas WHERE nick='$fusn[kitas_zaidejas]'"));
+    $stmt = $pdo->prepare("SELECT * FROM susijungimas WHERE nick=?");
+    $stmt->execute([$nick]);
+    $fusn = $stmt->fetch();
+    $stmt = $pdo->prepare("SELECT * FROM susijungimas WHERE nick=?");
+    $stmt->execute([$fusn['kitas_zaidejas']]);
+    $fusn_k2 = $stmt->fetch();
     if(!empty($fusn['kitas_zaidejas'])){ 
         $kiek_exp = $pin*2/100; //2 procentai EXP
-        mysql_query("UPDATE zaidejai SET exp=exp+'$kiek_exp' WHERE nick='$fusn[kitas_zaidejas]'");
-        mysql_query("UPDATE susijungimas SET uzdirbo_exp=uzdirbo_exp+'$kiek_exp' WHERE nick='$nick'");
+        $stmt = $pdo->prepare("UPDATE zaidejai SET exp=exp+? WHERE nick=?");
+        $stmt->execute([$kiek_exp, $fusn['kitas_zaidejas']]);
+        $stmt = $pdo->prepare("UPDATE susijungimas SET uzdirbo_exp=uzdirbo_exp+? WHERE nick=?");
+        $stmt->execute([$kiek_exp, $nick]);
     }
     }
     }

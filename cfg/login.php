@@ -58,8 +58,8 @@ if($stmt->rowCount() > 0){$gaves="+";}else{$gaves="-";}
 //$kg = $apie['jega'] + ($apie['gynyba']/2) + ($swordp + $armorp);
 
 $statusas = $apie['statusas'];
-$viso_pm = mysql_num_rows(mysql_query("SELECT * FROM pm WHERE gavejas='$nick'"));
-$new_pm = mysql_num_rows(mysql_query("SELECT * FROM pm WHERE gavejas='$nick' AND nauj='NEW' "));
+$viso_pm = $pdo->query("SELECT * FROM pm WHERE gavejas='$nick'")->rowCount();
+$new_pm = $pdo->query("SELECT * FROM pm WHERE gavejas='$nick' AND nauj='NEW' ")->rowCount();
 
 $stmt = $pdo->prepare("SELECT * FROM susijungimas WHERE nick = ?");
 $stmt->execute([$nick]);
@@ -128,9 +128,9 @@ foot();
 exit;
 }
 
-mysql_query("UPDATE zaidejai SET aktyvumas='".time()."' WHERE nick='$nick' ");
-mysql_query("DELETE FROM block WHERE time < '".time()."'");
-mysql_query("DELETE FROM block1 WHERE time < '".time()."'");
+$pdo->exec("UPDATE zaidejai SET aktyvumas='".time()."' WHERE nick='$nick' ");
+$pdo->exec("DELETE FROM block WHERE time < '".time()."'");
+$pdo->exec("DELETE FROM block1 WHERE time < '".time()."'");
 
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM block WHERE nick = ?");
 $stmt->execute([$nick]);
@@ -760,84 +760,84 @@ function dropas(){
 
     if($radaras > time() AND rand(1,1560) == 216){
         echo ''.$ico.' <b>Radai: 2 Žemės Drakono Rutulius!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='3', tipas='3'");
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='3', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='3', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='3', tipas='3'");
 		$stmt = $pdo->prepare("SELECT COUNT(*) FROM drtop WHERE nick = ?");
 		$stmt->execute([$nick]);
 		if($stmt->fetchColumn() > 0)
-		mysql_query("UPDATE drtop SET rutuliai=rutuliai+2 WHERE nick='$nick'"); else
-		mysql_query("INSERT INTO drtop SET nick='$nick', rutuliai='2'");
+		$pdo->exec("UPDATE drtop SET rutuliai=rutuliai+2 WHERE nick='$nick'"); else
+		$pdo->exec("INSERT INTO drtop SET nick='$nick', rutuliai='2'");
     }
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 2 Microshemą!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
-       mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
+       $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
     }
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: 2 Fusion Tail!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='6', tipas='3'");
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='6', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='6', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='6', tipas='3'");
     }
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 2 Sayian Tail!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='7', tipas='3'");
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='7', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='7', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='7', tipas='3'");
     }
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: 2 Stone!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='8', tipas='3'");
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='8', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='8', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='8', tipas='3'");
     }
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 2 Soul!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='13', tipas='3'");
-       mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='13', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='13', tipas='3'");
+       $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='13', tipas='3'");
     } //
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: 2 Energy  Stone!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='18', tipas='3'");
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='18', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='18', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='18', tipas='3'");
     } 
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 2 Pragaro vaisių!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='19', tipas='3'");
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='19', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='19', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='19', tipas='3'");
     } 
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: 2 Majin Sroll!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='20', tipas='3'");
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='20', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='20', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='20', tipas='3'");
     } 
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 2 Gold Stone!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='21', tipas='3'");
-       mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='21', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='21', tipas='3'");
+       $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='21', tipas='3'");
     } 
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: 2 Magic Ball!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='22', tipas='3'");
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='22', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='22', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='22', tipas='3'");
     } 
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 2 Power Stone!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='23', tipas='3'");
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='23', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='23', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='23', tipas='3'");
     } elseif (rand(1,270) == 152) {
 		echo "".$ico." <b>Radai 2: Mėlynas snaiges</b>";
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='14', tipas='3'");
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='14', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='14', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='14', tipas='3'");
 	} elseif (rand(1,260) == 167) {
 		echo "".$ico." <b>Radai 2: Geltonas snaiges!</b>";
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='15', tipas='3'");
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='15', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='15', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='15', tipas='3'");
 	} elseif (rand(1,265) == 198) {
 		echo "".$ico." <b>Radai 2: Baltas snaiges!</b>";
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='16', tipas='3'");
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='16', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='16', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='16', tipas='3'");
 	} elseif (rand(1,280) == 244) {
 		echo "".$ico." <b>Radai 2: Raudonas snaiges!</b>";
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='17', tipas='3'");
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='17', tipas='3'");		
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='17', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='17', tipas='3'");		
     } 
 }
 }else{
@@ -849,73 +849,73 @@ function dropas(){
 
     if($radaras > time() AND rand(1,1560) == 216){
         echo ''.$ico.' <b>Radai: 1 Žemės Drakono Rutulį!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='3', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='3', tipas='3'");
 		$stmt = $pdo->prepare("SELECT COUNT(*) FROM drtop WHERE nick = ?");
 		$stmt->execute([$nick]);
 		if($stmt->fetchColumn() > 0)
-		mysql_query("UPDATE drtop SET rutuliai=rutuliai+1 WHERE nick='$nick'"); else
-		mysql_query("INSERT INTO drtop SET nick='$nick', rutuliai='1'");
+		$pdo->exec("UPDATE drtop SET rutuliai=rutuliai+1 WHERE nick='$nick'"); else
+		$pdo->exec("INSERT INTO drtop SET nick='$nick', rutuliai='1'");
     }
 	elseif($mano_online['vieta'] == 'Kovoja M2 Planetoje' AND $radaras > time() AND rand(1,10000) == 216){
         echo ''.$ico.' <b>Radai: 1 Juodajį Drakono Rutulį!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='29', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='29', tipas='3'");
 }
 
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 1 Microshemą!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
     }
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: 1 Fusion Tail!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='6', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='6', tipas='3'");
     }
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 1 Sayian Tail!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='7', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='7', tipas='3'");
     }
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: 1 Stone!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='8', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='8', tipas='3'");
     }
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 1 Soul!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='13', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='13', tipas='3'");
     } //
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: 1 Energy  Stone!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='18', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='18', tipas='3'");
     } 
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: 1 Pragaro vaisių!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='19', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='19', tipas='3'");
     } 
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: 1 Majin Sroll!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='20', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='20', tipas='3'");
     } 
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: Gold Stone!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='21', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='21', tipas='3'");
     } 
     elseif(rand(1,150) == 50){
         echo ''.$ico.' <b>Radai: Magic Ball!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='22', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='22', tipas='3'");
     } 
     elseif(rand(1,150) == 25){
         echo ''.$ico.' <b>Radai: Power Stone!</b><br/>';
-        mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='23', tipas='3'");
+        $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='23', tipas='3'");
     } elseif (rand(1,270) == 152) {
 		echo "".$ico." <b>Radai: Mėlyną snaigę!</b>";
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='14', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='14', tipas='3'");
 	} elseif (rand(1,260) == 167) {
 		echo "".$ico." <b>Radai: Geltoną snaigę!</b>";
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='15', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='15', tipas='3'");
 	} elseif (rand(1,265) == 198) {
 		echo "".$ico." <b>Radai: Baltą snaigę!</b>";
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='16', tipas='3'");
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='16', tipas='3'");
 	} elseif (rand(1,280) == 244) {
 		echo "".$ico." <b>Radai: Raudoną snaigę!</b>";
-		mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='17', tipas='3'");		
+		$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='17', tipas='3'");		
     } 
     
 }
@@ -935,11 +935,11 @@ $selects = $pdo->query("SELECT * FROM aukcijonas ");
 while($deletess = $selects->fetch()){
    if($deletess['laikas']-time() < 1){
       $txt = 'Aukcijonę per 5val. niekas nenupirko jūsų prekės, todėl ji grąžinta jums atgal.';
-      mysql_query("INSERT INTO pm SET what='Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$deletess[kas]' ");
+      $pdo->exec("INSERT INTO pm SET what='Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$deletess[kas]' ");
       for($i = 0; $i<$deletess['kiek']; $i++){
-         mysql_query("INSERT INTO inventorius SET daiktas='$deletess[preke]',nick='$deletess[kas]',tipas='$daigtoo_inf[tipas]'");
+         $pdo->exec("INSERT INTO inventorius SET daiktas='$deletess[preke]',nick='$deletess[kas]',tipas='$daigtoo_inf[tipas]'");
       }
-      mysql_query("DELETE FROM aukcijonas WHERE id='$deletess[id]' ");
+      $pdo->exec("DELETE FROM aukcijonas WHERE id='$deletess[id]' ");
       }
 }
 
@@ -950,9 +950,9 @@ while($info = $upinfo->fetch()) {
 	if($info['valiuta'] == 2){ $valiuta = 'kreditai'; $vlt = 'kred'; }
 	if ($info['laikas']-time() < 1) {
 		$sms = 'Praėjo 2 dienų laikotarpis nuo prekių užsakymo, todėl likusieji <b>'.$valiuta.'</b> <i>('.sk($info[suma]).')</i> jums yra grąžinami į jūsų sąskaitą.';
-		mysql_query("INSERT INTO pm SET what='Sistema', txt='$sms', time='".time()."', nauj='NEW', gavejas='$info[nick]'");
-		mysql_query("UPDATE zaidejai SET $vlt=$apie[$vlt]+$info[suma] WHERE nick='$nick'");
-		mysql_query("DELETE FROM puzsakymai WHERE id='$info[id]' ");
+		$pdo->exec("INSERT INTO pm SET what='Sistema', txt='$sms', time='".time()."', nauj='NEW', gavejas='$info[nick]'");
+		$pdo->exec("UPDATE zaidejai SET $vlt=$apie[$vlt]+$info[suma] WHERE nick='$nick'");
+		$pdo->exec("DELETE FROM puzsakymai WHERE id='$info[id]' ");
 	}
 }
 
@@ -960,7 +960,7 @@ while($info = $upinfo->fetch()) {
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM pasiekimai WHERE nick = ?");
 $stmt->execute([$nick]);
 if($stmt->fetchColumn() < 1){
-    mysql_query("INSERT INTO pasiekimai SET nick='$nick'");
+    $pdo->exec("INSERT INTO pasiekimai SET nick='$nick'");
 }
 
 function pms($input, $length = 20, $tail = '...'){
@@ -987,7 +987,7 @@ function minus($t){
 //** TRINA ŽAIDĖJO DIENOS VEIKSMUS, KURIS LAIMĖJO VAKAR DIENOS PRIZĄ
 if ($nust['dtop_nick'] == $nick) {
 	//mysql_query("UPDATE dtop SET vksm='0' WHERE nick='$nust[dtop_nick]'");
-	mysql_query("DELETE FROM dtop WHERE nick='$nust[dtop_nick]'");
+	$pdo->exec("DELETE FROM dtop WHERE nick='$nust[dtop_nick]'");
 }
 
 //** PRALEISTAS LAIKAS ZAIDIME
@@ -997,7 +997,7 @@ if($stmt->fetchColumn() == 1){
     $mano_laikas_on = minus(time() - $mano_online['time_on']);
       
         $mano_laikas_on2 = $mano_laikas_on - $apie['online_time'];
-        mysql_query("UPDATE zaidejai SET online_time = online_time+'$mano_laikas_on2' WHERE nick='$nick'");
+        $pdo->exec("UPDATE zaidejai SET online_time = online_time+'$mano_laikas_on2' WHERE nick='$nick'");
 }
 
 
@@ -1009,28 +1009,28 @@ if($veikejas == 'Vedžitas'){
 }
 
 if(empty($apie['foto'])){
-    mysql_query("UPDATE zaidejai SET foto='".$img."-0' WHERE nick='{$nick}'");
+    $pdo->exec("UPDATE zaidejai SET foto='".$img."-0' WHERE nick='{$nick}'");
 }
 
 //** AUROS
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM auros WHERE nick = ?");
 $stmt->execute([$nick]);
 if(!$stmt->fetchColumn()){
-    mysql_query("INSERT INTO auros SET nick='$nick' ");
+    $pdo->exec("INSERT INTO auros SET nick='$nick' ");
 }
 
 //** SPECIALIOS TECHNIKOS
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM technikos WHERE nick = ?");
 $stmt->execute([$nick]);
 if(!$stmt->fetchColumn()){
-    mysql_query("INSERT INTO technikos SET nick='$nick' ");
+    $pdo->exec("INSERT INTO technikos SET nick='$nick' ");
 }
 
 //** RINKIMO MIS.
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM rinkimas WHERE nick = ?");
 $stmt->execute([$nick]);
 if(!$stmt->fetchColumn()){
-    mysql_query("INSERT INTO rinkimas SET nick='$nick', kiek='100', atlygis='1000000', ka='litai', daiktas='5', tipas='3' ");
+    $pdo->exec("INSERT INTO rinkimas SET nick='$nick', kiek='100', atlygis='1000000', ka='litai', daiktas='5', tipas='3' ");
 }
 
 // SUSIJUNGIMO ŠOKIS
@@ -1071,7 +1071,7 @@ while($row = $query->fetch()){
     if($io == 1){
         $pdo->exec("INSERT INTO pm SET what='Sistema', txt='Sveikinu laimėjus dienos tope <b>1</b>-ą vietą!! :) Laimėjai <b>".$prizas."</b> zenų ir <b>".$plitai."</b> litus (-ą)!', time='".time()."', gavejas='$row[nick]', nauj='NEW'");
         $pdo->exec("UPDATE zaidejai SET litai=litai+'$prizas', sms_litai=sms_litai+'$plitai' WHERE nick='$row[nick]'");
-		mysql_query("UPDATE nustatymai SET dtop_nick='$row[nick]'");
+		$pdo->exec("UPDATE nustatymai SET dtop_nick='$row[nick]'");
     }
     if($io == 2){
         $pdo->exec("INSERT INTO pm SET what='Sistema', txt='Sveikinu laimėjus dienos tope <b>2</b>-ą vietą!! :) Laimėjai <b>".$prizas2."</b> zenų.', time='".time()."', gavejas='$row[nick]', nauj='NEW'");
@@ -1085,8 +1085,8 @@ while($row = $query->fetch()){
 $new_plitai = mt_rand(1,4);
 $naujas_p = mt_rand(5000000,100000000);
 $laikas = date("Y-m-d");
-mysql_query("UPDATE nustatymai SET dtop_priz='$naujas_p', dtop_plitai='$new_plitai', dtop_date='$laikas'");
-mysql_query("TRUNCATE TABLE dtop");
+$pdo->exec("UPDATE nustatymai SET dtop_priz='$naujas_p', dtop_plitai='$new_plitai', dtop_date='$laikas'");
+$pdo->exec("TRUNCATE TABLE dtop");
 }
 }
 
@@ -1100,16 +1100,16 @@ if($nust['savaites_kovu_topas']-time() < 0){
 		$vt++;
 		
 		if($vt == 1){
-			mysql_query("INSERT INTO pm SET txt='Sveikinu savaitės kovų konkurse užėmus <b>1</b> VIETĄ! Laimėjai <b>".$nust['savaites_litai']."</b> litų ir <b>".$nust['savaites_kreditai']."</b> kreditų!', what='Sistema', time='".time()."', gavejas='$prizai[nick]', nauj='NEW'");
-			mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+".$nust['savaites_litai'].", kred=kred+".$nust['savaites_kreditai']."' WHERE nick='$prizai[nick]'");
+			$pdo->exec("INSERT INTO pm SET txt='Sveikinu savaitės kovų konkurse užėmus <b>1</b> VIETĄ! Laimėjai <b>".$nust['savaites_litai']."</b> litų ir <b>".$nust['savaites_kreditai']."</b> kreditų!', what='Sistema', time='".time()."', gavejas='$prizai[nick]', nauj='NEW'");
+			$pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+".$nust['savaites_litai'].", kred=kred+".$nust['savaites_kreditai']."' WHERE nick='$prizai[nick]'");
 		}
 		if($vt == 2){
-			mysql_query("INSERT INTO pm SET txt='Sveikinu savaitės kovų konkurse užėmus <b>2</b> VIETĄ! Laimėjai <b>".($nust['savaites_litai']/2)."</b> litų ir <b>".($nust['savaites_kreditai']/2)."</b> kreditų!', what='Sistema', time='".time()."', gavejas='$prizai[nick]', nauj='NEW'");
-			mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+".($nust['savaites_litai']/2).", kred=kred+".($nust['savaites_kreditai']/2)."' WHERE nick='$prizai[nick]'");
+			$pdo->exec("INSERT INTO pm SET txt='Sveikinu savaitės kovų konkurse užėmus <b>2</b> VIETĄ! Laimėjai <b>".($nust['savaites_litai']/2)."</b> litų ir <b>".($nust['savaites_kreditai']/2)."</b> kreditų!', what='Sistema', time='".time()."', gavejas='$prizai[nick]', nauj='NEW'");
+			$pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+".($nust['savaites_litai']/2).", kred=kred+".($nust['savaites_kreditai']/2)."' WHERE nick='$prizai[nick]'");
 		}
 		if($vt == 2){
-			mysql_query("INSERT INTO pm SET txt='Sveikinu savaitės kovų konkurse užėmus <b>3</b> VIETĄ! Laimėjai <b>".($nust['savaites_litai']/3)."</b> litų ir <b>".($nust['savaites_kreditai']/3)."</b> kreditų!', what='Sistema', time='".time()."', gavejas='$prizai[nick]', nauj='NEW'");
-			mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+".($nust['savaites_litai']/3).", kred=kred+".($nust['savaites_kreditai']/3)."' WHERE nick='$prizai[nick]'");
+			$pdo->exec("INSERT INTO pm SET txt='Sveikinu savaitės kovų konkurse užėmus <b>3</b> VIETĄ! Laimėjai <b>".($nust['savaites_litai']/3)."</b> litų ir <b>".($nust['savaites_kreditai']/3)."</b> kreditų!', what='Sistema', time='".time()."', gavejas='$prizai[nick]', nauj='NEW'");
+			$pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+".($nust['savaites_litai']/3).", kred=kred+".($nust['savaites_kreditai']/3)."' WHERE nick='$prizai[nick]'");
 		}
 		
 		$lt = rand(10,50);
@@ -1117,8 +1117,8 @@ if($nust['savaites_kovu_topas']-time() < 0){
 		
 		$time= time()+60*60*24*7;
 		
-		mysql_query("UPDATE nustatymai SET savaites_kovu_topas='$time', savaites_kreditai='$kred', savaites_litai='$lt'");
-		mysql_query("TRUNCATE TABLE savaites_topas");
+		$pdo->exec("UPDATE nustatymai SET savaites_kovu_topas='$time', savaites_kreditai='$kred', savaites_litai='$lt'");
+		$pdo->exec("TRUNCATE TABLE savaites_topas");
 	}
 		
 	}
@@ -1134,13 +1134,13 @@ while($dr = $drutuliai->fetch()){
     if($iv == 1) {
 		$pdo->exec("INSERT INTO pm SET what='Sistema', txt='Sveikinu laimėjus surinktų drakono rutulių tope <b>1</b>-ą vietą! Laimėjai <b>".$drlitai."</b> litus!', time='".time()."', gavejas='$dr[nick]', nauj='NEW'");
         $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+'$drlitai' WHERE nick='$dr[nick]'");
-		mysql_query("UPDATE nustatymai SET drtop_nick='$dr[nick]'");
+		$pdo->exec("UPDATE nustatymai SET drtop_nick='$dr[nick]'");
 	}
 	
 $new_drlitai = mt_rand(1,5);
 $new_drdata = date("Y-m-d");
-mysql_query("UPDATE nustatymai SET drtop_litai='$new_drlitai', drtop_date='$new_drdata'");
-mysql_query("TRUNCATE TABLE drtop");
+$pdo->exec("UPDATE nustatymai SET drtop_litai='$new_drlitai', drtop_date='$new_drdata'");
+$pdo->exec("TRUNCATE TABLE drtop");
 }
 }
 
@@ -1156,25 +1156,25 @@ while($sms = $sms_top->fetch()){
     if($i == 1){
         $pdo->exec("INSERT INTO pm SET what='Sistema', txt='Sveikinu laimėjus SMS tope <b>1</b>-ą vietą!! :) Laimėjai <b>".$smslitai."</b> Litų.', time='".time()."', gavejas='$sms[nick]', nauj='NEW'");
         $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+'$smslitai' WHERE nick='$sms[nick]'");
-		mysql_query("UPDATE nustatymai SET sms_nick='$sms[nick]'");
+		$pdo->exec("UPDATE nustatymai SET sms_nick='$sms[nick]'");
    }
 
 $new_smslitai = mt_rand(6,18);
 $new_smsdata = date("Y-m-d");
-mysql_query("UPDATE nustatymai SET sms_priz='$new_smslitai', sms_date='$new_smsdata' ");
-mysql_query("TRUNCATE TABLE sms_top");
+$pdo->exec("UPDATE nustatymai SET sms_priz='$new_smslitai', sms_date='$new_smsdata' ");
+$pdo->exec("TRUNCATE TABLE sms_top");
 }
 }
 
 if($apie['kmis'] == 0){
-    mysql_query("UPDATE zaidejai SET kmis='1' WHERE nick='$nick' ");
+    $pdo->exec("UPDATE zaidejai SET kmis='1' WHERE nick='$nick' ");
 }
 if($apie['snake'] == 0){
-    mysql_query("UPDATE zaidejai SET snake='1' WHERE nick='$nick' ");
+    $pdo->exec("UPDATE zaidejai SET snake='1' WHERE nick='$nick' ");
 }
 
 if($apie['sagos'] == 0){
-    mysql_query("UPDATE zaidejai SET sagos='1' WHERE nick='$nick' ");
+    $pdo->exec("UPDATE zaidejai SET sagos='1' WHERE nick='$nick' ");
 }
 
 //** SKRYDIS Į NAMEKŲ PLANETĄ

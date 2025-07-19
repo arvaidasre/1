@@ -11,7 +11,6 @@ try {
 } catch (PDOException $e) {
     die('Įvyko klaida jungiantis prie duomenų bazės: ' . $e->getMessage());
 }
-@mysql_select_db("wapdb_zaidimas");
 
 /*________________________________________________________________________________________________________*/
 
@@ -74,11 +73,11 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'3'  WHERE nick='$nick'");}else{
-  mysql_query("INSERT INTO sms_top SET sms ='3',nick='$nick' ");}
+if($tope>0){  $pdo->exec("UPDATE sms_top SET sms=sms+'3'  WHERE nick='$nick'");}else{
+  $pdo->exec("INSERT INTO sms_top SET sms ='3',nick='$nick' ");}
   
-      mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+$mok2 WHERE nick='$nick'");
-  mysql_query("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 3LTL. $a2x $data',kaina ='3', laikas = '$data $dataa' ");	  
+      $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+$mok2 WHERE nick='$nick'");
+  $pdo->exec("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 3LTL. $a2x $data',kaina ='3', laikas = '$data $dataa' ");	  
 echo "OK Aciu, kad siunciate. Gavote 12 LTL. www.wapdb.eu";
 exit();
 
@@ -91,11 +90,11 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'5'  WHERE nick='$nick'");}else{
-  mysql_query("INSERT INTO sms_top SET sms ='5',nick='$nick' ");}
+if($tope>0){  $pdo->exec("UPDATE sms_top SET sms=sms+'5'  WHERE nick='$nick'");}else{
+  $pdo->exec("INSERT INTO sms_top SET sms ='5',nick='$nick' ");}
     
-      mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+$mok3 WHERE nick='$nick'");
-  mysql_query("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 5LTL. $a2x $data',kaina ='5', laikas = '$data $dataa' ");
+      $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+$mok3 WHERE nick='$nick'");
+  $pdo->exec("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 5LTL. $a2x $data',kaina ='5', laikas = '$data $dataa' ");
 echo "OK Aciu, kad siunciate. Gavote 20 LTL. www.wapdb.eu";
 exit();
 
@@ -108,11 +107,11 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'10'  WHERE nick='$nick'");}else{
-  mysql_query("INSERT INTO sms_top SET sms ='10',nick='$nick' ");}
+if($tope>0){  $pdo->exec("UPDATE sms_top SET sms=sms+'10'  WHERE nick='$nick'");}else{
+  $pdo->exec("INSERT INTO sms_top SET sms ='10',nick='$nick' ");}
   
-      mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+$mok4 WHERE nick='$nick'");
-  mysql_query("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 10LTL. $a2x $data',kaina ='10', laikas = '$data $dataa' ");
+      $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+$mok4 WHERE nick='$nick'");
+  $pdo->exec("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 10LTL. $a2x $data',kaina ='10', laikas = '$data $dataa' ");
 echo "OK Aciu, kad siunciate. Gavote 40 LTL. www.wapdb.eu";
 exit();
 
@@ -125,11 +124,11 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'14'  WHERE nick='$nick'");}else{
-  mysql_query("INSERT INTO sms_top SET sms ='14',nick='$nick' ");}
+if($tope>0){  $pdo->exec("UPDATE sms_top SET sms=sms+'14'  WHERE nick='$nick'");}else{
+  $pdo->exec("INSERT INTO sms_top SET sms ='14',nick='$nick' ");}
   
-      mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+$mok5 WHERE nick='$nick'");
-  mysql_query("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 4LTL. $a2x $data',kaina ='14', laikas = '$data $dataa' ");
+      $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+$mok5 WHERE nick='$nick'");
+  $pdo->exec("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 4LTL. $a2x $data',kaina ='14', laikas = '$data $dataa' ");
 echo "OK Aciu, kad siunciate. Gavote 56 LTL. www.wapdb.eu";
 exit();
 
@@ -142,11 +141,11 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'5'  WHERE nick='$nick'");}else{
-  mysql_query("INSERT INTO sms_top SET sms ='5',nick='$nick' ");}
+if($tope>0){  $pdo->exec("UPDATE sms_top SET sms=sms+'5'  WHERE nick='$nick'");}else{
+  $pdo->exec("INSERT INTO sms_top SET sms ='5',nick='$nick' ");}
   
-      mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+$mok6 WHERE nick='$nick'");
-  mysql_query("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 5LTL. $a2x $data',kaina ='5', laikas = '$data $dataa' ");
+      $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+$mok6 WHERE nick='$nick'");
+  $pdo->exec("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 5LTL. $a2x $data',kaina ='5', laikas = '$data $dataa' ");
 echo "Aciu, kad siunciate. Gavote 20 LTL. www.dbza.us.lt";
 exit();
 
@@ -159,11 +158,11 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'10'  WHERE nick='$nick'");}else{
-  mysql_query("INSERT INTO sms_top SET sms ='10',nick='$nick' ");}
+if($tope>0){  $pdo->exec("UPDATE sms_top SET sms=sms+'10'  WHERE nick='$nick'");}else{
+  $pdo->exec("INSERT INTO sms_top SET sms ='10',nick='$nick' ");}
   
-      mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+$mok7 WHERE nick='$nick'");
-  mysql_query("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 10LTL. $a2x $data',kaina ='10', laikas = '$data $dataa' ");
+      $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+$mok7 WHERE nick='$nick'");
+  $pdo->exec("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 10LTL. $a2x $data',kaina ='10', laikas = '$data $dataa' ");
 echo "Aciu, kad siunciate. Gavote 40 LTL. www.dbza.us.lt";
 exit();
 
@@ -176,11 +175,11 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'14'  WHERE nick='$nick'");}else{
-  mysql_query("INSERT INTO sms_top SET sms ='14',nick='$nick' ");}
+if($tope>0){  $pdo->exec("UPDATE sms_top SET sms=sms+'14'  WHERE nick='$nick'");}else{
+  $pdo->exec("INSERT INTO sms_top SET sms ='14',nick='$nick' ");}
   
-      mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+$mok8 WHERE nick='$nick'");
-  mysql_query("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 14LTL. $a2x $data',kaina ='14', laikas = '$data $dataa' ");
+      $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+$mok8 WHERE nick='$nick'");
+  $pdo->exec("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 14LTL. $a2x $data',kaina ='14', laikas = '$data $dataa' ");
 echo "Aciu, kad siunciate. Gavote 56 LTL. dbza.us.lt";
 exit();
 
@@ -190,7 +189,7 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-mysql_query("UPDATE zaidejai SET vip='$vip' WHERE nick='$nick'");
+$pdo->exec("UPDATE zaidejai SET vip='$vip' WHERE nick='$nick'");
 echo "OK Aciu, kad siunciate. $nick tau ijungtas VIP 2 savaitem. Aciu, kad zaidziate www.wapdb.eu";
 exit();
 
@@ -200,7 +199,7 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-mysql_query("UPDATE zaidejai SET vip='$vip', kred=kred+10, sms_litai=sms_litai+20, sagos=sagos+5, nelec='$nelec' WHERE nick='$pava'");
+$pdo->exec("UPDATE zaidejai SET vip='$vip', kred=kred+10, sms_litai=sms_litai+20, sagos=sagos+5, nelec='$nelec' WHERE nick='$pava'");
 echo "OK Aciu, kad siunciate. Gavote 4 LTL. dbza.us.lt";
 exit();
 
@@ -210,7 +209,7 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-mysql_query("UPDATE zaidejai SET vip='$vip', kred=kred+10, sms_litai=sms_litai+20, sagos=sagos+5, nelec='$nelec' WHERE nick='$pava'");
+$pdo->exec("UPDATE zaidejai SET vip='$vip', kred=kred+10, sms_litai=sms_litai+20, sagos=sagos+5, nelec='$nelec' WHERE nick='$pava'");
 echo "Aciu, kad siunciate. Gavote 4 LTL. dbza.us.lt";
 exit();
 
@@ -220,7 +219,7 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-mysql_query("DELETE FROM block WHERE nick='$nick'");
+$pdo->exec("DELETE FROM block WHERE nick='$nick'");
 echo "Aciu, kad siunciate. Sekmingai nuimtas ban. dbza.us.lt";
 exit();
 
@@ -230,7 +229,7 @@ $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
 $stmt->execute([$nick]);
 $apie = $stmt->fetch();
 $nick = $apie['nick'];
-mysql_query("DELETE FROM block1 WHERE nick='$nick'");
+$pdo->exec("DELETE FROM block1 WHERE nick='$nick'");
 echo "Aciu, kad siunciate. Sekmingai nuimtas užtildymas. dbza.us.lt";
 exit();
 }

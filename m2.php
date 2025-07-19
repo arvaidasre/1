@@ -293,8 +293,8 @@ elseif($i == "grigas"){
 		echo '<div class="top"><b>Robotas Grigas</b></div>';
 		echo '<div class="main_c">Tu įvykdei paslaptingąją misiją !</div>';
 		echo '<div class="main"><b>Robotas Grigas</b> tau dovanoja: <b>3 litus ir 10 kreditų!</b></div>';
-		mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+'3', kred=kred+'10', grigas='+' WHERE nick='$nick'");
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 500");	
+		$pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+'3', kred=kred+'10', grigas='+' WHERE nick='$nick'");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 500");	
 	} else {
 		echo '<div class="top"><b>Klaida !</b></div>';
 		echo '<div class="error">Jūs neturite <b>500</b> Saiyan tail!</div>';	
@@ -304,8 +304,8 @@ elseif($i == "grigas"){
       echo '<div class="top"><b>Robotas Grigas</b></div>';
       echo '<div class="main_c">Tu įvykdei paslaptingąją misiją !</div>';
       echo '<div class="main_l"><b>Robotas Grigas</b> tau dovanoja: <b>3 litus ir 10 kreditų!</b></div>';
-	  mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+'3', kred=kred+'10', grigas='+' WHERE nick='$nick'");
-	  mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 500");
+	  $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+'3', kred=kred+'10', grigas='+' WHERE nick='$nick'");
+	  $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 500");
 	  } else {
       echo '<div class="top"><b>Klaida ! ! !</b></div>';
       echo '<div class="error">Neturi 500 Saiyan tail arba jau įvykdei šią misiją!</div>';
@@ -314,32 +314,34 @@ elseif($i == "grigas"){
 }
 elseif($i == "black"){
    online('Kviečią Black smoke shenron drakoną');
-   $kiek_yra= mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='41' AND tipas='3'"));
+   $stmt_count = $pdo->prepare("SELECT * FROM inventorius WHERE nick = ? AND daiktas='41' AND tipas='3'");
+   $stmt_count->execute([$nick]);
+   $kiek_yra = $stmt_count->rowCount();
 
    if( $kiek_yra > 6){
       echo '<div class="top"><b>Black smoke shenron</b></div>';
       echo '<div class="main_c"><img src="img/black.png" alt="*"></div>';
       if($id == 1){
          echo '<div class="acept">Jūsų noras išpildytas! Gavai 15 kreditų.</div>';
-         mysql_query("UPDATE zaidejai SET kred=kred+'15' WHERE nick='$nick' ");
- mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='29' && tipas='3' LIMIT 7");
+         $pdo->exec("UPDATE zaidejai SET kred=kred+'15' WHERE nick='$nick' ");
+ $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='29' && tipas='3' LIMIT 7");
       }
       elseif($id == 2){
          echo '<div class="acept">Jūsų noras išpildytas! Gavai '.sk(20000000).' zen\'ų.</div>';
-         mysql_query("UPDATE zaidejai SET litai=litai+'20000000' WHERE nick='$nick' ");
- mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='29' && tipas='3' LIMIT 7");
+         $pdo->exec("UPDATE zaidejai SET litai=litai+'20000000' WHERE nick='$nick' ");
+ $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='29' && tipas='3' LIMIT 7");
       }
       elseif($id == 3){
          echo '<div class="acept">Jūsų noras išpildytas! Gavai 20% savo Jėgos.</div>';
          $jeggoo = round($jega*20/100);
-         mysql_query("UPDATE zaidejai SET jega=jega+'$jeggoo' WHERE nick='$nick' ");
- mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='29' && tipas='3' LIMIT 7");
+         $pdo->exec("UPDATE zaidejai SET jega=jega+'$jeggoo' WHERE nick='$nick' ");
+ $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='29' && tipas='3' LIMIT 7");
       }
       elseif($id == 4){
          echo '<div class="acept">Jūsų noras išpildytas! Gavai 15% savo Gynybos.</div>';
          $gynnoo = round($gynyba*15/100);
-         mysql_query("UPDATE zaidejai SET gynyba=gynyba+'$gynnoo' WHERE nick='$nick' ");
- mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='29' && tipas='3' LIMIT 7");
+         $pdo->exec("UPDATE zaidejai SET gynyba=gynyba+'$gynnoo' WHERE nick='$nick' ");
+ $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='29' && tipas='3' LIMIT 7");
       } else {
          echo '<div class="main_c">Sveikas '.statusas($nick).'. Koki norą nori kad išpildyčiau?</div>';
          echo '<div class="main_l">

@@ -97,8 +97,8 @@ Jeigu neturite kosminio laivo, jį pasigaminti galite: "KAPSULIŲ KORPORACIJOJE"
 						$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='30', tipas='3'");
 						$stmt = $pdo->query("SELECT * FROM drtop WHERE nick='$nick'");
 						if($stmt->rowCount() > 0)
-						mysql_query("UPDATE drtop SET rutuliai=rutuliai+1 WHERE nick='$nick'"); else
-						mysql_query("INSERT INTO drtop SET nick='$nick', rutuliai='1'");
+						$pdo->exec("UPDATE drtop SET rutuliai=rutuliai+1 WHERE nick='$nick'"); else
+						$pdo->exec("INSERT INTO drtop SET nick='$nick', rutuliai='1'");
 					} else {
 						echo '<div class="main_c"><div class="error">Atsiprašome, tačiau nieko neradote!</div></div>';	
 					}

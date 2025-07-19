@@ -151,12 +151,12 @@ $pdo->exec("DELETE FROM zaidejai WHERE nick='$pav'");
 					$pdo->exec("DELETE FROM forum_zin WHERE nick='$pav'");
 					$pdo->exec("DELETE FROM forum_tem WHERE kas='$pav'");
 					$pdo->exec("DELETE FROM dtop WHERE nick='$pav'");
-					mysql_query("DELETE FROM block WHERE nick='$pav'");
-					mysql_query("DELETE FROM block1 WHERE nick='$pav'");
-					mysql_query("DELETE FROM auros WHERE nick='$pav'");
-					mysql_query("DELETE FROM aukcijonas2 WHERE kas='$pav'");
-					mysql_query("DELETE FROM aukcijonas WHERE kas='$pav'");
-					mysql_query("DELETE FROM susijungimas WHERE nick='$pav'"); 
+					$pdo->exec("DELETE FROM block WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM block1 WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM auros WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM aukcijonas2 WHERE kas='$pav'");
+					$pdo->exec("DELETE FROM aukcijonas WHERE kas='$pav'");
+					$pdo->exec("DELETE FROM susijungimas WHERE nick='$pav'"); 
 				   
 				   
             }
@@ -316,8 +316,8 @@ elseif($i == "admin")
                     echo '<div class="main_c"><div class="error">Paliktas tuščias laukelis!</div></div>';
                 }else{
                     $tmxs = time()+60;
-                    mysql_query("INSERT INTO news SET name='$pav', new='$new', kas='$nick', data='".time()."'");
-                    mysql_query("UPDATE nustatymai SET new_time='$tmxs' ");
+                    $pdo->exec("INSERT INTO news SET name='$pav', new='$new', kas='$nick', data='".time()."'");
+                    $pdo->exec("UPDATE nustatymai SET new_time='$tmxs' ");
                     echo '<div class="main_c"><div class="true">Naujiena pridėta!</div></div>';
                 }
             }
@@ -346,7 +346,7 @@ elseif($i == "admin")
                 echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
             }
             else{
-              mysql_query("DELETE FROM block WHERE nick='$kam'");
+              $pdo->exec("DELETE FROM block WHERE nick='$kam'");
 			  echo'<div class="main_c"><div class="true">$kam Banas nuimtas</div></div>';
             }
         }
@@ -402,8 +402,8 @@ $kred = post($_POST['kred']);
 $zinute = 'Sveikas, '.$nick.' administratorius padar&#279; visiems dalybas, t&#371; gavai - +'.$jega.' J&#279;gos, +'.$gynyba.' Gynybos, +'.$sms_litai.' Lit&#371;, +'.$zenai.' Zen&#371;, +'.$kred.' Kredit&#371;. Gero &#382;aidimo jums linki administracija! :)';
 $nst = $pdo->query("SELECT * FROM online ORDER BY id");
 while($ns = $nst->fetch()){
-mysql_query("INSERT INTO pm SET what='Sistema', txt='$zinute', time='".time()."', gavejas='$ns[nick]', nauj='NEW'");
-mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+'$sms_litai', jega=jega+'$jega', gynyba=gynyba+'$gynyba', litai=litai+'$zenai', kred=kred+'$kred' WHERE nick='$ns[nick]'");
+$pdo->exec("INSERT INTO pm SET what='Sistema', txt='$zinute', time='".time()."', gavejas='$ns[nick]', nauj='NEW'");
+$pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai+'$sms_litai', jega=jega+'$jega', gynyba=gynyba+'$gynyba', litai=litai+'$zenai', kred=kred+'$kred' WHERE nick='$ns[nick]'");
 unset($ns);
 }
 echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div></div>';
@@ -420,7 +420,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
                     echo '<div class="main_c"><div class="error">Paliktas tuščias laukelis!</div></div>';
                 }else{
                     
-                    mysql_query("UPDATE nustatymai SET count='$pav' ");
+                    $pdo->exec("UPDATE nustatymai SET count='$pav' ");
                     echo '<div class="main_c"><div class="true">Skaitliukai pakeisti!</div></div>';
                 }
             }
@@ -434,10 +434,10 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
         echo '<div class="top">Registracija ON/OFF</div>';
         if($nust['reg'] == "+"){
             echo '<div class="main_c"><div class="true">Įjungiai registraciją!</div></div>';
-            mysql_query("UPDATE nustatymai SET reg='-'");
+            $pdo->exec("UPDATE nustatymai SET reg='-'");
         }else{
             echo '<div class="main_c"><div class="error">Išungiai registraciją!</div></div>';
-            mysql_query("UPDATE nustatymai SET reg='+'");
+            $pdo->exec("UPDATE nustatymai SET reg='+'");
         }
          
     }
@@ -511,15 +511,15 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
             }
             else{
                 if($kaa == 1){
-                    mysql_query("UPDATE zaidejai SET statusas='Priz' WHERE nick='$kam' ");
+                    $pdo->exec("UPDATE zaidejai SET statusas='Priz' WHERE nick='$kam' ");
                     $txt = "$nick uždėjo tau žaidimo prižiurėtojo statusą.";
-                    mysql_query("INSERT INTO pm SET what='@Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$kam' ");
+                    $pdo->exec("INSERT INTO pm SET what='@Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$kam' ");
                     echo '<div class="main_c"><div class="true">Atlikta! Suteikiai '.$kam.' žaidimo prižiurėtojo statusą.</div></div>';
                 }
                 elseif($kaa == 2){
-                    mysql_query("UPDATE zaidejai SET statusas='' WHERE nick='$kam' ");
+                    $pdo->exec("UPDATE zaidejai SET statusas='' WHERE nick='$kam' ");
                     $txt = "$nick nuėmė tau žaidimo prižiurėtojo statusą.";
-                    mysql_query("INSERT INTO pm SET what='@Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$kam' ");
+                    $pdo->exec("INSERT INTO pm SET what='@Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$kam' ");
                     echo '<div class="main_c"><div class="true">Atlikta! Nuėmei '.$kam.' žaidimo prižiurėtojo statusą.</div></div>';
                 }
             }
@@ -552,15 +552,15 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
             }
             else{
                 if($kaa == 1){
-                    mysql_query("UPDATE zaidejai SET statusas='Mod' WHERE nick='$kam' ");
+                    $pdo->exec("UPDATE zaidejai SET statusas='Mod' WHERE nick='$kam' ");
                     $txt = "$nick Davė tau moderatoriaus statusą.";
-                    mysql_query("INSERT INTO pm SET what='Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$kam' ");
+                    $pdo->exec("INSERT INTO pm SET what='Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$kam' ");
                     echo '<div class="main_c"><div class="true">Atlikta! Suteikiai '.$kam.' moderatoriaus statusą.</div></div>';
                 }
                 elseif($kaa == 2){
-                    mysql_query("UPDATE zaidejai SET statusas='' WHERE nick='$kam' ");
+                    $pdo->exec("UPDATE zaidejai SET statusas='' WHERE nick='$kam' ");
                     $txt = "$nick Nuėme tavo moderatoriaus statusą.";
-                    mysql_query("INSERT INTO pm SET what='Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$kam' ");
+                    $pdo->exec("INSERT INTO pm SET what='Sistema', txt='$txt', time='".time()."', nauj='NEW', gavejas='$kam' ");
                     echo '<div class="main_c"><div class="true">Atlikta! Nuėmei '.$kam.' moderatoriaus statusą.</div></div>';
                 }
             }
@@ -582,7 +582,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
             if(empty($zinute)){
                 echo '<div class="main_c"><div class="error">Palikai tuščią laukelį.</div></div>';
             }else{
-                mysql_query("UPDATE nustatymai SET admin_topic='$zinute', admin_kas='$nick', admin_time='".time()."' ");
+                $pdo->exec("UPDATE nustatymai SET admin_topic='$zinute', admin_kas='$nick', admin_time='".time()."' ");
                 echo '<div class="main_c"><div class="true">Admin Topic\'as sėkmingai pakeistas.</div></div>';
         }
         }
@@ -613,7 +613,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
                     echo '<div class="main_c"><div class="error">Toks daiktas parduotuvėję jau yra!</div></div>';
                 } else {
                     echo '<div class="main_c"><div class="true">Daiktas sėkmingai įdėtas į parduotuvę.</div></div>';
-                    mysql_query("INSERT INTO shop SET name='$dgt[name]', prekes_id='$daiktas', pirkimo_kaina='$pkn', pardavimo_kaina='$pakn', tipas='$tipas' ");
+                    $pdo->exec("INSERT INTO shop SET name='$dgt[name]', prekes_id='$daiktas', pirkimo_kaina='$pkn', pardavimo_kaina='$pakn', tipas='$tipas' ");
                 }
             }
             echo '<div class="main">
@@ -652,7 +652,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
                     echo '<div class="main_c"><div class="error">Toks daiktas jau yra!</div></div>';
                 } else {
                     echo '<div class="main_c"><div class="error">Daiktas sėkmingai sukurtas.</div></div>';
-                    mysql_query("INSERT INTO items SET name='$pav', tipas='$tipas' ");
+                    $pdo->exec("INSERT INTO items SET name='$pav', tipas='$tipas' ");
                 }
             }
             echo '<div class="main">
@@ -681,7 +681,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
                     echo '<div class="main_c"><div class="error">Tokia lokaciją jau sukurta!</div></div>';
                 } else {
                     echo '<div class="main_c"><div class="true">Nauja lokaciją sukurta!</div></div>';
-                    mysql_query("INSERT INTO lokacijos SET name='$lok' ");
+                    $pdo->exec("INSERT INTO lokacijos SET name='$lok' ");
                 }
             }
             echo '<div class="main">
@@ -709,7 +709,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
                     echo '<div class="main_c"><div class="error">Toks monstras jau sukurtas!</div></div>';
                 } else {
                     echo '<div class="main_c"><div class="true">Naujas monstras sukurtas!</div></div>';
-                    mysql_query("INSERT INTO mobai SET name='$name', kg='$kg', pin='$zen', exp='$exp', lokacija='$lok' ");
+                    $pdo->exec("INSERT INTO mobai SET name='$name', kg='$kg', pin='$zen', exp='$exp', lokacija='$lok' ");
                 }
             }
             echo '<div class="main">
@@ -755,7 +755,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
                 }
                 else{
                     $b_laikas2 = time()+60*$b_laikas;
-                    mysql_query("INSERT INTO block SET nick='$b_nick', uz='$b_p', time='$b_laikas2', kas_ban='$nick'");
+                    $pdo->exec("INSERT INTO block SET nick='$b_nick', uz='$b_p', time='$b_laikas2', kas_ban='$nick'");
                     echo '<div class="main_c"><div class="true">Žaidėjas užblokuotas!</div></div>';
                 }
             }
@@ -807,7 +807,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
                 }
                 else{
                     echo '<div class="main_c"><div class="true">Balsavimas sukurtas!</div></div>';
-                    Mysql_query("INSERT INTO balsavimas SET klausimas='$kl', autorius='$nick', ats='$ats', ats2='$ats2', ats3='$ats3'");
+                    $pdo->exec("INSERT INTO balsavimas SET klausimas='$kl', autorius='$nick', ats='$ats', ats2='$ats2', ats3='$ats3'");
                 }
             }
             echo '<div class="main">
@@ -826,8 +826,8 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
         }
         elseif($ka == "clean_chat2"){
             echo '<div class="top">Pokalbių valymas</div>';
-            mysql_query("DELETE FROM pokalbiai");
-            mysql_query("INSERT INTO pokalbiai SET sms='".statusas($nick)." išvalė pokalbius.', nick='Sistema', data='".time()."' ");
+            $pdo->exec("DELETE FROM pokalbiai");
+            $pdo->exec("INSERT INTO pokalbiai SET sms='".statusas($nick)." išvalė pokalbius.', nick='Sistema', data='".time()."' ");
             echo '<div class="main_c"><div class="true">Pokalbiai išvalyti!</div></div>';
         }
         elseif($ka == "clean_pasiulymai"){
@@ -836,8 +836,8 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
         }
         elseif($ka == "clean_pasiulymai2"){
             echo '<div class="top">Pasiūlymų valymas</div>';
-            mysql_query("DELETE FROM pasiulymai");
-            mysql_query("INSERT INTO pasiulymai SET sms='".statusas($nick)." išvalė pasiūlymus.', nick='Sistema', data='".time()."' ");
+            $pdo->exec("DELETE FROM pasiulymai");
+            $pdo->exec("INSERT INTO pasiulymai SET sms='".statusas($nick)." išvalė pasiūlymus.', nick='Sistema', data='".time()."' ");
             echo '<div class="main_c"><div class="true">Pasiūlymai išvalyti!</div></div>';
         }
         elseif($ka == "clean_topic"){
@@ -846,8 +846,8 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
         }
         elseif($ka == "clean_topic2"){
             echo '<div class="top">Topic\'o valymas</div>';
-            mysql_query("DELETE FROM topic");
-            mysql_query("INSERT INTO topic SET message='".statusas($nick)." išvalė topiką.', kas='Sistema', time='".time()."' ");
+            $pdo->exec("DELETE FROM topic");
+            $pdo->exec("INSERT INTO topic SET message='".statusas($nick)." išvalė topiką.', kas='Sistema', time='".time()."' ");
             echo '<div class="main_c"><div class="true">Topic\'as išvalytas!</div></div>';
         }
         elseif($ka == "clean_news"){
@@ -856,8 +856,8 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
         }
         elseif($ka == "clean_news2"){
             echo '<div class="top">Naujienų valymas</div>';
-            mysql_query("DELETE FROM news");
-            mysql_query("INSERT INTO news SET sms='".statusas($nick)." išvalė naujienas.', nick='Sistema', data='".time()."' ");
+            $pdo->exec("DELETE FROM news");
+            $pdo->exec("INSERT INTO news SET sms='".statusas($nick)." išvalė naujienas.', nick='Sistema', data='".time()."' ");
             echo '<div class="main_c"><div class="true">Naujienos išvalytos!</div></div>';
         }
         elseif($ka == "clean_pm"){
@@ -866,8 +866,8 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
         }
         elseif($ka == "clean_pm2"){
             echo '<div class="top">PM valymas</div>';
-            mysql_query("DELETE FROM pm");
-            mysql_query("INSERT INTO pm SET message='".statusas($nick)." išvalė topiką.', kas='Sistema', time='".time()."' ");
+            $pdo->exec("DELETE FROM pm");
+            $pdo->exec("INSERT INTO pm SET message='".statusas($nick)." išvalė topiką.', kas='Sistema', time='".time()."' ");
             echo '<div class="main_c"><div class="true">PM išvalytas!</div></div>';
         }
         else{
@@ -914,11 +914,11 @@ elseif($i == "priz"){
 					if ($b_laikas2 > 6000000001) {
 					$b_laikas = 6000000001;
 					}
-					mysql_query("DELETE FROM pokalbiai WHERE nick='$b_nick'");
-					mysql_query("DELETE FROM pm WHERE what='$b_nick'");
-					mysql_query("DELETE FROM pas_kom WHERE kas='$b_nick'");
-                    mysql_query("DELETE FROM topic WHERE kas='$b_nick'");
-                    mysql_query("INSERT INTO block SET nick='$b_nick', uz='$b_p', time='$b_laikas2', kas_ban='$nick'");
+					$pdo->exec("DELETE FROM pokalbiai WHERE nick='$b_nick'");
+					$pdo->exec("DELETE FROM pm WHERE what='$b_nick'");
+					$pdo->exec("DELETE FROM pas_kom WHERE kas='$b_nick'");
+                    $pdo->exec("DELETE FROM topic WHERE kas='$b_nick'");
+                    $pdo->exec("INSERT INTO block SET nick='$b_nick', uz='$b_p', time='$b_laikas2', kas_ban='$nick'");
                     echo '<div class="main_c"><div class="true">Žaidėjas užblokuotas!</div></div>';
                 }
             }
@@ -950,7 +950,7 @@ elseif($i == "priz"){
                 echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
             }
             else{
-              mysql_query("DELETE FROM block WHERE nick='$kam'");
+              $pdo->exec("DELETE FROM block WHERE nick='$kam'");
 			  echo '<div class="main_c"><div class="true">$kam Banas nuimtas</div></div>';
             }
         }
@@ -1007,7 +1007,7 @@ elseif($i == "priz"){
         }
         elseif($ka == "clean_pm2"){
             echo '<div class="top">PM valymas</div>';
-            mysql_query("DELETE FROM pm");
+            $pdo->exec("DELETE FROM pm");
             echo '<div class="main_c"><div class="true">PM išvalytas!</div></div>';
         }
 		elseif($ka == "clean_perved_log"){
@@ -1016,7 +1016,7 @@ elseif($i == "priz"){
         }
         elseif($ka == "clean_preved_log2"){
             echo '<div class="top">Pervedimų logų valymas</div>';
-            mysql_query("DELETE FROM perved_log");
+            $pdo->exec("DELETE FROM perved_log");
             echo '<div class="main_c"><div class="true">Pervedimų logas išvalytas!</div></div>';
         }
 		elseif($ka == "clean_aukc_log"){
@@ -1025,7 +1025,7 @@ elseif($i == "priz"){
         }
         elseif($ka == "clean_aukc_log2"){
             echo '<div class="top">Aukciono logų valymas</div>';
-            mysql_query("DELETE FROM aukc_log");
+            $pdo->exec("DELETE FROM aukc_log");
             echo '<div class="main_c"><div class="true">Aukciono logas išvalytas!</div></div>';
         }
 		}
@@ -1071,7 +1071,7 @@ elseif($i == "mod"){
 										if ($b_laikas2 > 6000000001) {
 					$b_laikas = 6000000001;
 					}
-                    mysql_query("INSERT INTO block1 SET nick='$b_nick', uz='$b_p', time='$b_laikas2', kas_ban='$nick'");
+                    $pdo->exec("INSERT INTO block1 SET nick='$b_nick', uz='$b_p', time='$b_laikas2', kas_ban='$nick'");
                     echo '<div class="main_c"><div class="true">Žaidėjas užtildytas!</div></div>';
                 }
             }
@@ -1105,7 +1105,7 @@ elseif($i == "mod"){
                 echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
             }
             else{
-              mysql_query("DELETE FROM block1 WHERE nick='$kam'");
+              $pdo->exec("DELETE FROM block1 WHERE nick='$kam'");
 			  echo '<div class="main_c"><div class="error">$kam Atitildymas nuimtas!</div></div>';
             }
         }
@@ -1182,7 +1182,7 @@ elseif($i == "mod"){
                 }
                 else{
                     $b_laikas2 = time()+60*$b_laikas;
-                    mysql_query("INSERT INTO block SET nick='$b_nick', uz='$b_p', time='$b_laikas2', kas_ban='$nick'");
+                    $pdo->exec("INSERT INTO block SET nick='$b_nick', uz='$b_p', time='$b_laikas2', kas_ban='$nick'");
                     echo '<div class="acept">Žaidėjas užblokuotas!</div>';
                 }
             }
@@ -1203,7 +1203,7 @@ elseif($i == "mod"){
         }
         elseif($ka == "clean_news2"){
             echo '<div class="top"><b>Naujienų valymas</b></div>';
-            mysql_query("DELETE FROM news");
+            $pdo->exec("DELETE FROM news");
             echo '<div class="acept">Naujienos išvalytos!</div>';
         }*/
         elseif($ka == "clean_chat"){
@@ -1212,8 +1212,8 @@ elseif($i == "mod"){
         }
         elseif($ka == "clean_chat2"){
             echo '<div class="top">Pokalbių valymas</div>';
-            mysql_query("DELETE FROM pokalbiai");
-            mysql_query("INSERT INTO pokalbiai SET sms='".statusas($nick)." išvalė pokalbius.', nick='Sistema', data='".time()."' ");
+            $pdo->exec("DELETE FROM pokalbiai");
+            $pdo->exec("INSERT INTO pokalbiai SET sms='".statusas($nick)." išvalė pokalbius.', nick='Sistema', data='".time()."' ");
             echo '<div class="main_c"><div class="true">Pokalbiai išvalyti!</div></div>';
         }
         elseif($ka == "clean_topic"){
@@ -1222,8 +1222,8 @@ elseif($i == "mod"){
         }
         elseif($ka == "clean_topic2"){
             echo '<div class="top"><b>Topic\'o valymas</b></div>';
-            mysql_query("DELETE FROM topic");
-            mysql_query("INSERT INTO topic SET message='".statusas($nick)." išvalė topiką.', kas='Sistema', time='".time()."' ");
+            $pdo->exec("DELETE FROM topic");
+            $pdo->exec("INSERT INTO topic SET message='".statusas($nick)." išvalė topiką.', kas='Sistema', time='".time()."' ");
             echo '<div class="main_c"><div class="true">Topic\'as išvalytas!</div></div>';
         }
         

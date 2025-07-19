@@ -51,10 +51,10 @@ elseif($i == "popo2"){
    $stmt3->execute([$nick]);
    if($stmt1->rowCount() > 149 && $stmt2->rowCount() > 69 && $stmt3->rowCount() > 89){
       echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai '.sk(5).' kreditus ir '.sk(5000000).' zen\'ų.</div></div>';
-      mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' LIMIT 150");
-      mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' LIMIT 70");
-      mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 90");
-      mysql_query("UPDATE zaidejai SET kred=kred+'5', litai=litai+'5000000' WHERE nick='$nick' ");
+      $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' LIMIT 150");
+      $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' LIMIT 70");
+      $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 90");
+      $pdo->exec("UPDATE zaidejai SET kred=kred+'5', litai=litai+'5000000' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 150 Soul, 70 Stone ir 90 Sayian Tail.</div></div>';
    }
@@ -251,13 +251,13 @@ elseif($i == "karinn"){
        } else {
           if($apie['kmis'] == 1){
                $ko = "40 Lygio taškų.";
-               mysql_query("UPDATE zaidejai SET taskai=taskai+'40' WHERE nick='$nick'");
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' LIMIT 70");
+               $pdo->exec("UPDATE zaidejai SET taskai=taskai+'40' WHERE nick='$nick'");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' LIMIT 70");
           }
           elseif($apie['kmis'] == 2){
                $ko = "".sk(200000)." zen'ų.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' LIMIT 100");
-               mysql_query("UPDATE zaidejai SET litai=litai+'200000' WHERE nick='$nick'");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' LIMIT 100");
+               $pdo->exec("UPDATE zaidejai SET litai=litai+'200000' WHERE nick='$nick'");
           }
           elseif($apie['kmis'] == 3){
                $ko = "5 kreditus.";
@@ -271,13 +271,13 @@ elseif($i == "karinn"){
           }
           elseif($apie['kmis'] == 5){
                $ko = "".sk(2000)." Gynybos.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 100");
-               mysql_query("UPDATE zaidejai SET gynyba=gynyba+'2000' WHERE nick='$nick'");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 100");
+               $pdo->exec("UPDATE zaidejai SET gynyba=gynyba+'2000' WHERE nick='$nick'");
           }
           elseif($apie['kmis'] == 6){
                $ko = "".sk(3000)." Gyvybių lygio.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 110");
-               mysql_query("UPDATE zaidejai SET max_gyvybes=max_gyvybes+'3000' WHERE nick='$nick'");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 110");
+               $pdo->exec("UPDATE zaidejai SET max_gyvybes=max_gyvybes+'3000' WHERE nick='$nick'");
           }
           elseif($apie['kmis'] == 7){
                $ko = "".sk(10)." kreditų.";
@@ -286,8 +286,8 @@ elseif($i == "karinn"){
           }
           elseif($apie['kmis'] == 8){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           elseif($apie['kmis'] == 9){
                $ko = "5 kreditus ir ".sk(1000000)." zen'ų.";
@@ -298,11 +298,11 @@ elseif($i == "karinn"){
                $ko = "5% savo jėgos ir gynybos.";
                $jg = $jega*5/100;
                $gn = $gynyba*5/100;
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='3' && tipas='3' LIMIT 5");
-               mysql_query("UPDATE zaidejai SET jega=jega+'$jg', gynyba=gynyba+'$gn' WHERE nick='$nick' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='3' && tipas='3' LIMIT 5");
+               $pdo->exec("UPDATE zaidejai SET jega=jega+'$jg', gynyba=gynyba+'$gn' WHERE nick='$nick' ");
           }
           echo '<div class="main_c"><div class="true">Užduotis įvygdyta! Gavai '.$ko.'</div></div>';
-          mysql_query("UPDATE zaidejai SET kmis=kmis+'1' WHERE nick='$nick' ");
+          $pdo->exec("UPDATE zaidejai SET kmis=kmis+'1' WHERE nick='$nick' ");
        }
 
     }
@@ -317,9 +317,9 @@ elseif($i == "pupos"){
         echo '<div class="top"><b>Karino bokštas</b></div>';
         echo '<div class="main_c"><div class="true">Atlikta. Pasiėmiai 5 Stebuklingas pupas ir tave išmetė iš bokšto! Tau liko <b>1</b> gyvybė.<br>
 		<b>Taip pat krentant <b>Karinas</b> pasistengė, kad tu prarastum <b>staigaus persikėlimo techniką</b>!</div></div>';
-        mysql_query("UPDATE zaidejai SET gyvybes='1', sptechnika='0', sptechnika_time='0', kbokstas='0' WHERE nick='$nick' ");
+        $pdo->exec("UPDATE zaidejai SET gyvybes='1', sptechnika='0', sptechnika_time='0', kbokstas='0' WHERE nick='$nick' ");
         for($i = 0; $i<5; $i++){
-            mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='4', tipas='3'");
+            $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='4', tipas='3'");
         }
     }
     atgal('Atgal-?i=&Į Pradžią-game.php?i=');
@@ -331,7 +331,7 @@ elseif($i == "persikelti"){
         echo '<div class="main_c"><div class="error"><b>Klaida!</b> Jūs nesate išmokęs <b>Staigaus persikėlimo technikos</b>!</div></div>';
     } else {
 		echo '<script>document.location="?i="</script>';
-		mysql_query("UPDATE zaidejai SET kbokstas=kbokstas+'1' WHERE nick='$nick' ");	
+		$pdo->exec("UPDATE zaidejai SET kbokstas=kbokstas+'1' WHERE nick='$nick' ");	
 	}
     atgal('Atgal-?i=&Į Pradžią-game.php?i=');
 }

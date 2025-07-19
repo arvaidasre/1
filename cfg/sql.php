@@ -8,8 +8,6 @@ try {
 } catch (PDOException $e) {
     die('Įvyko klaida jungiantis prie duomenų bazės: ' . $e->getMessage());
 }
-mysql_select_db('wapdb_zaidimas');
-mysql_query("SET NAMES utf8");
 include_once 'config.php';
 
 ?>
