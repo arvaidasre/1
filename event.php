@@ -4,10 +4,19 @@ include_once 'cfg/sql.php';
 include_once 'cfg/login.php';
 head2();
 if($i == ""){
-    $sng_g = mysql_result(mysql_query("SELECT COUNT(*) FROM inventorius WHERE nick='$nick' AND daiktas='15'"),0);
-    $sng_m = mysql_result(mysql_query("SELECT COUNT(*) FROM inventorius WHERE nick='$nick' AND daiktas='14'"),0);
-    $sng_r = mysql_result(mysql_query("SELECT COUNT(*) FROM inventorius WHERE nick='$nick' AND daiktas='17'"),0);
-    $sng_b = mysql_result(mysql_query("SELECT COUNT(*) FROM inventorius WHERE nick='$nick' AND daiktas='16'"),0);
+    global $pdo;
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM inventorius WHERE nick=? AND daiktas='15'");
+$stmt->execute([$nick]);
+$sng_g = $stmt->fetchColumn();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM inventorius WHERE nick=? AND daiktas='14'");
+$stmt->execute([$nick]);
+$sng_m = $stmt->fetchColumn();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM inventorius WHERE nick=? AND daiktas='17'");
+$stmt->execute([$nick]);
+$sng_r = $stmt->fetchColumn();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM inventorius WHERE nick=? AND daiktas='16'");
+$stmt->execute([$nick]);
+$sng_b = $stmt->fetchColumn();
     if($ka == 'prize'){
         online('Žiemos eventas');
         echo '<div class="top">Žiemos Eventas</div>';
@@ -42,11 +51,16 @@ if($i == ""){
 			}
 			if($kiek<1){$kiek="100";}
             echo '<div class="main_c"><div class="true">Pasiėmei prizą ir gavai <b>'.sk($kiek).'</b> '.$ko.'</div></div>';
-            mysql_query("UPDATE zaidejai SET $ka=$ka+'$kiek' WHERE nick='$nick' ");
-            mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='15' && tipas='3' LIMIT 5");
-            mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='14' && tipas='3' LIMIT 5");
-            mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='17' && tipas='3' LIMIT 5");
-            mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='16' && tipas='3' LIMIT 5");
+            $stmt = $pdo->prepare("UPDATE zaidejai SET $ka=$ka+? WHERE nick=?");
+$stmt->execute([$kiek, $nick]);
+            $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='15' AND tipas='3' LIMIT 5");
+$stmt->execute([$nick]);
+            $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='14' AND tipas='3' LIMIT 5");
+$stmt->execute([$nick]);
+            $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='17' AND tipas='3' LIMIT 5");
+$stmt->execute([$nick]);
+            $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='16' AND tipas='3' LIMIT 5");
+$stmt->execute([$nick]);
         }
         atgal('Atgal-?i=&Į Pradžią-game.php?i=');
     }else{

@@ -33,7 +33,11 @@ online('Komandos įkurimas');
 	if($apie['sms_litai'] < 20){echo"Nepakanka litų";}
 	elseif(!empty($apie['team'])){echo"Tu jau esi komandoje";}
 	elseif($apie['lygis'] < 50 && $apie['statusas'] != 'Admin'){echo"Tik nuo 50 lygio";}
-	elseif(mysql_num_rows(mysql_query("SELECT * FROM team WHERE team='$pavad'")) == true){echo"Tokia komanda jau yra";}
+	else{
+		global $pdo;
+		$stmt = $pdo->prepare("SELECT * FROM team WHERE team = ?");
+		$stmt->execute([$pavad]);
+		if($stmt->rowCount() > 0){echo"Tokia komanda jau yra";}
 	else{
 		echo"Komanda įkurta";
 		mysql_query("INSERT INTO team SET team='$pavad', vadas='$nick', pinigai='0'");

@@ -6,8 +6,10 @@ include_once 'cfg/sql.php';
 
 //echo '<div class="main_c"><b>[DALYBOS!]</b> Šiandien <i>(2014.22.23 - antradenį)</i><b>20:00</b> įvyks dalybos! Kviečiam žaidėjus, draugus, pažįstamus!</b></div>';
 
-$nust = mysql_fetch_assoc(mysql_query("SELECT * FROM nustatymai"));
-$new = mysql_fetch_assoc(mysql_query("SELECT * FROM news ORDER BY id DESC LIMIT 1"));
+$stmt = $pdo->query("SELECT * FROM nustatymai");
+$nust = $stmt->fetch();
+$stmt = $pdo->query("SELECT * FROM news ORDER BY id DESC LIMIT 1");
+$new = $stmt->fetch();
 head();
 if($i == ""){
 		top('WAPDB.EU - DRAKONŲ KOVOS'); 
@@ -42,7 +44,9 @@ if($i == ""){
         $pass = post($_POST['pass']);
 		$password_hash = md5($pass);
         top('Prisijungimas');
-		$testas=mysql_query("SELECT id FROM zaidejai WHERE nick='$vardas' AND pass='$password_hash'");
+		$stmt = $pdo->prepare("SELECT id FROM zaidejai WHERE nick=? AND pass=?");
+		$stmt->execute([$vardas, $password_hash]);
+		$testas = $stmt;
         if(empty($vardas)){
             echo '<div class="main_c"><div class="error"><b>Klaida!</b> Neįvestas žaidėjo vardas!</div></div>';
 			atgal('Atgal-?i=');
@@ -51,13 +55,13 @@ if($i == ""){
             echo '<div class="main_c"><div class="error"><b>Klaida!</b> Neįvestas slaptažodis!</div></div>';
 			atgal('Atgal-?i=');
         }
-        elseif(mysql_num_rows($testas) == 0){
+        elseif($testas->rowCount() == 0){
             echo '<div class="main_c"><div class="error"><b>Klaida!</b> Blogas žaidėjo vardas arba slaptažodis!</div></div>';
 			atgal('Atgal-?i=');
         }else{
             echo '<div class="main_c"><div class="true">Sveikas(-a), <b>'.$vardas.'</b> prisijungus prie žaidimo!<br />Gerai praleiskite laiką!</b></div></div>';
 			atgal('Toliau-game.php&Į Pradžią-?i=');
-           	$id=mysql_fetch_assoc($testas);
+           	$id=$testas->fetch();
 			$_SESSION['login']=$id['id'];
 		  	//setcookie('vardas', $vardas, time()+3600*24*365);
 			//setcookie('pass', $pass, time()+3600*24*365);
@@ -82,7 +86,9 @@ if($i == ""){
             $kodas = isset($_POST['kodas']) ? preg_replace("/[^A-Za-z0-9_]/","",$_POST['kodas'])  : null;
 			$password_hash = md5($pass);
             //$kas = post($_POST['kas']);
-            //$vkn = mysql_fetch_assoc(mysql_query("SELECT * FROM veikejai WHERE id='$kas' "));
+            //$stmt = $pdo->prepare("SELECT * FROM veikejai WHERE id=?");
+            //$stmt->execute([$kas]);
+            //$vkn = $stmt->fetch();
             if(empty($vardas) OR empty($pass) OR empty($pass2)){
                 $klaida = 'Paliktas kažkuris tuščias laukelis!';
             }
@@ -104,7 +110,10 @@ if($i == ""){
             elseif(strlen($pass) > 20){
                 $klaida = 'Slaptažodis yra per ilgas. Max 20 simbolių.';
             }
-            elseif(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$vardas' ")) > 0 ){
+            else {
+                $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+                $stmt->execute([$vardas]);
+                if($stmt->rowCount() > 0){
                 $klaida = 'Toks žaidėjas jau užsiregistravęs!';
             }
             elseif($pass != $pass2){
@@ -113,7 +122,19 @@ if($i == ""){
             elseif(!$kodas && $kodas != $_SESSION['ca']){
                 $klaida = "Blogas apsaugos kodas!";
             } 
-			elseif(mysql_num_rows(mysql_query("SELECT * FROM zaidejai where ip='$ip'"))) {
+                    $klaida = 'Toks žaidėjas jau užsiregistravęs!';
+                }
+            }
+            elseif($pass != $pass2){
+                $klaida = 'Slaptažodžiai nesutampa!';
+            }
+            elseif(!$kodas && $kodas != $_SESSION['ca']){
+                $klaida = "Blogas apsaugos kodas!";
+            } 
+			else {
+                $stmt = $pdo->prepare("SELECT * FROM zaidejai where ip=?");
+                $stmt->execute([$ip]);
+                if($stmt->rowCount() > 0){
                 $klaida = "Toks IP jau užregistruotas!";
             }
 			
@@ -127,9 +148,9 @@ if($i == ""){
                 echo '<div class="main_c"><div class="true">Registracija sėkminga, <b>'.$vardas.'</b><br />Dabar galite prisijungti prie žaidimo ir siekti savo tikslo! :)</div></div>';
                 $zin = 'Sveikas atvykęs į naršyklinį <b>WAPDB.EU</b> dragon ball žaidimą. Pradėkite žaidimą atsiimdami <b>naujoko dovaną</b> ir pasikeldami <b>kovinę galią</b> <i>(KG)</i>. Ją pasikelti galite <b>Dž. Vėžlio saloje</b>.<br>
 				Jeigu turite klausimų, parašykite asmeninę žinutę administratoriui: <a href="?i=new&wh=alkotester">Alkotester</a>';
-                mysql_query("INSERT INTO pm SET what='Sistema', txt='$zin', gavejas='$vardas', time='".time()."', nauj='NEW' ") or die(mysql_error());
-                mysql_query("INSERT INTO zaidejai SET ip='$ip', nick='$vardas', pass='$password_hash', litai='10000', kred='15', veikejas='-', css='0', statusas='Žaidėjas', jega='10', gynyba='10', gyvybes='10', max_gyvybes='10', exp='0', expl='20', lygis='1', mini_chat='1', vip='".$vipgaliojimolaikas."', pad_time='".$padusimulaikas."', auto_time='".$autokovojimolaikas."', uzsiregistravo='".time()."', kg='20' ") or die(mysql_error());
-                mysql_query("INSERT INTO susijungimas SET nick='$vardas' ");
+                $pdo->exec("INSERT INTO pm SET what='Sistema', txt='$zin', gavejas='$vardas', time='".time()."', nauj='NEW' ");
+                $pdo->exec("INSERT INTO zaidejai SET ip='$ip', nick='$vardas', pass='$password_hash', litai='10000', kred='15', veikejas='-', css='0', statusas='Žaidėjas', jega='10', gynyba='10', gyvybes='10', max_gyvybes='10', exp='0', expl='20', lygis='1', mini_chat='1', vip='".$vipgaliojimolaikas."', pad_time='".$padusimulaikas."', auto_time='".$autokovojimolaikas."', uzsiregistravo='".time()."', kg='20' ");
+                $pdo->exec("INSERT INTO susijungimas SET nick='$vardas' ");
                 
             }
             if(isset($klaida)){
@@ -159,8 +180,12 @@ Vartotojai su nepriimtinais, prieštaraujančiais įstatymams vardais bus šalin
    if($ka == "ziuret"){
 
            top('Atnaujinimas');
-           if(mysql_num_rows(mysql_query("SELECT * FROM news WHERE id='$id'")) > 0){
-              $nau = mysql_fetch_assoc(mysql_query("SELECT * FROM news WHERE id=$id"));
+           $stmt = $pdo->prepare("SELECT * FROM news WHERE id=?");
+           $stmt->execute([$id]);
+           if($stmt->rowCount() > 0){
+              $stmt = $pdo->prepare("SELECT * FROM news WHERE id=?");
+              $stmt->execute([$id]);
+              $nau = $stmt->fetch();
               $vert = $nau['likes'] - $nau['unlike'];
               echo '<div class="main"><b>'.$nau['name'].'</b></div>
               <div class="main">'.$ico.' '.smile($nau['new']).'<br />[&raquo;] '.laikas($nau['data']).', <b>'.$nau['kas'].'</b>.<br />
@@ -173,16 +198,17 @@ Vartotojai su nepriimtinais, prieštaraujančiais įstatymams vardais bus šalin
        }
        else{
           top('Atnaujinimai');
-          $viso = mysql_result(mysql_query("SELECT COUNT(*) FROM news"),0);
+          $stmt = $pdo->query("SELECT COUNT(*) FROM news");
+          $viso = $stmt->fetchColumn();
        if($viso > 0){
         $rezultatu_rodymas=10;
             $total = @intval(($viso-1) / $rezultatu_rodymas) + 1;
             if (empty($psl) or $psl < 0) $psl = 1;
             if ($psl > $total) $psl = $total;
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-          $q = mysql_query("SELECT * FROM news ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
+          $q = $pdo->query("SELECT * FROM news ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
           $puslapiu = ceil($viso/$rezultatu_rodymas);
-          while($row = mysql_fetch_assoc($q)){
+          while($row = $q->fetch()){
             if(date('Y-m-d') == date('Y-m-d', $row['data'])){
                 echo '<div class="main">'.$ico.' <font color="red"><b>'.$row['name'].'</b></font><br/>
                 '.smile($row['new']).'<br/>

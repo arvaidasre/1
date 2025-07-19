@@ -31,7 +31,9 @@ if($i == "kirst2"){
        $KD = nr($_GET['KD']);
        online('Miške');
   
-  $ar_tinka = mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' AND tipas='3' AND daiktas='27'"));
+  global $pdo;
+  $stmt = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' AND tipas='3' AND daiktas='27'");
+  $ar_tinka = $stmt->rowCount();
       
        if($KD != $_SESSION['KODAS']){
             echo '<div class="errors">Taip ieškoti negalimą!</div>';
@@ -61,7 +63,8 @@ else {
             if($kik == 8) $malk = 'Vidutinės Malkos';
             if($kik == 9) $malk = 'Mažos Malkos';
 
-            $mlk = mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='24' AND tipas='3'"));
+            $stmt = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='24' AND tipas='3'");
+            $mlk = $stmt->rowCount();
          if ($nust['day'] == 4) { echo '<div class="main_n"><font color="red"><b>Å iandien medÅ¾iÅ³ kirtimo diena!</b></font></div>'; }
             echo '<div class="main_c">
             <font color="red">Tu nukirtai medį! Dabar turite: <b>'.sk($mlk+$kkiekk).'</b></font><br/></div>

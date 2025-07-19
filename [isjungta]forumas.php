@@ -9,12 +9,18 @@ if($i == ""){
     echo '<div class="top"><b>Forumas</b></div>';
     echo '<div class="main_c">WAPDB.EU - Forumas</div>';
     echo '<div class="main_l">'.$ico.' <b>Kategorijos</b>:</div>';
-    $visi = mysql_result(mysql_query("SELECT COUNT(*) FROM forum_kat"),0);
+    global $pdo;
+    $stmt = $pdo->query("SELECT COUNT(*) FROM forum_kat");
+    $visi = $stmt->fetchColumn();
     if($visi > 0){
-        $query = mysql_query("SELECT * FROM forum_kat ORDER BY id DESC LIMIT $visi");
+        $query = $pdo->query("SELECT * FROM forum_kat ORDER BY id DESC LIMIT $visi");
         echo '<div class="main_l">';
-        while($row = mysql_fetch_assoc($query)){
-            echo '<b>[&raquo;]</b> <a href="?i=temos&ID='.$row['id'].'">'.$row['name'].'</a> (<b>'.mysql_result(mysql_query("SELECT COUNT(*) FROM forum_tem WHERE kat='$row[id]'"),0).'/'.mysql_result(mysql_query("SELECT COUNT(*) FROM forum_zin WHERE kat='$row[id]'"),0).'</b>)<br />';
+        while($row = $query->fetch()){
+            $stmt1 = $pdo->query("SELECT COUNT(*) FROM forum_tem WHERE kat='$row[id]'");
+            $count1 = $stmt1->fetchColumn();
+            $stmt2 = $pdo->query("SELECT COUNT(*) FROM forum_zin WHERE kat='$row[id]'");
+            $count2 = $stmt2->fetchColumn();
+            echo '<b>[&raquo;]</b> <a href="?i=temos&ID='.$row['id'].'">'.$row['name'].'</a> (<b>'.$count1.'/'.$count2.'</b>)<br />';
         }
         echo '</div>';
         echo '<div class="main_c">
@@ -39,7 +45,8 @@ if($i == ""){
 }
 elseif($i == "temos"){
     $ID = isset($_GET['ID']) ? $klase->sk($_GET['ID']) : null;
-    if(mysql_num_rows(mysql_query("SELECT * FROM forum_kat WHERE id='$ID'")) == 0){
+    $stmt = $pdo->query("SELECT * FROM forum_kat WHERE id='$ID'");
+    if($stmt->rowCount() == 0){
         echo '<div class="top"><b>Forumas</b></div>';
         echo '<div class="error">Tokios kategorijos nėra!</div>';
         atgal('Atgal-?i=&Į Pradžią-?i=');
@@ -67,8 +74,8 @@ elseif($i == "temos"){
                 $klaida = 'Kitą temą galėsite kurti už '.laikas($_SESSION['time']-time(),1).'';
             }
             else{
-                mysql_query("INSERT INTO forum_tem SET name='$tema', kat='$ID', kas='$nick'");
-                mysql_query("INSERT INTO forum_zin SET nick='$nick', text='$zinute', data='".time()."', kat='$ID', tem='".kiek('forum_tem')."'");
+                $pdo->exec("INSERT INTO forum_tem SET name='$tema', kat='$ID', kas='$nick'");
+                $pdo->exec("INSERT INTO forum_zin SET nick='$nick', text='$zinute', data='".time()."', kat='$ID', tem='".kiek('forum_tem')."'");
                 $_SESSION['time'] = time()+120;
                 $klaida = 'Tema sėkmingai sukurta!';
             }
@@ -87,9 +94,11 @@ elseif($i == "temos"){
        echo '<div class="main_c"><a href="?i=temos&ID='.$ID.'">Atgal</a> | <a href="game.php">Į Pradžią</a></div>';
     }else{
         online('Forumo kategorijos');
-        $inf_kat = mysql_fetch_assoc(mysql_query("SELECT * FROM forum_kat WHERE id='$ID'"));
+        $stmt = $pdo->query("SELECT * FROM forum_kat WHERE id='$ID'");
+        $inf_kat = $stmt->fetch();
         echo '<div class="top"><b>Forumas - '.$inf_kat['name'].'</b></div>';
-        $viso = mysql_result(mysql_query("SELECT COUNT(*) FROM forum_tem WHERE kat='$ID'"),0);
+        $stmt = $pdo->query("SELECT COUNT(*) FROM forum_tem WHERE kat='$ID'");
+        $viso = $stmt->fetchColumn();
         echo '<div class="main_c"><a href="?i=temos&ID='.$ID.'&ka=kurti"><b>Kurti temą</b></a></div>';
         echo '<div class="main_l">'.$ico.' <b>'.$inf_kat['name'].' temos</b>:</div>';
         if($viso > 0){
@@ -98,12 +107,14 @@ elseif($i == "temos"){
             if (empty($psl) or $psl < 0) $psl = 1;
             if ($psl > $total) $psl = $total;
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-            $query = mysql_query("SELECT * FROM forum_tem WHERE kat='$ID' ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+            $query = $pdo->query("SELECT * FROM forum_tem WHERE kat='$ID' ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
             $puslapiu=ceil($viso/$rezultatu_rodymas);
             
             echo '<div class="main_l">';
-            while($row = mysql_fetch_assoc($query)){
-                echo '<b>[&raquo;]</b> <a href="?i=ziureti&ID='.$row['kat'].'&T='.$row['id'].'">'.$row['name'].'</a> (<b>'.mysql_result(mysql_query("SELECT COUNT(*) FROM forum_zin WHERE kat='$ID' AND tem='$row[id]'"),0).'</b>) [<b>'.statusas($row['kas']).'</b>]<br />';
+            while($row = $query->fetch()){
+                $stmt_count = $pdo->query("SELECT COUNT(*) FROM forum_zin WHERE kat='$ID' AND tem='$row[id]'");
+                $count = $stmt_count->fetchColumn();
+                echo '<b>[&raquo;]</b> <a href="?i=ziureti&ID='.$row['kat'].'&T='.$row['id'].'">'.$row['name'].'</a> (<b>'.$count.'</b>) [<b>'.statusas($row['kas']).'</b>]<br />';
             }
             echo '</div>';
             echo '<div class="main_c">'.puslapiavimas($puslapiu,$psl,'?i=temos&ID='.$ID.'').'</div>';
@@ -116,14 +127,18 @@ elseif($i == "temos"){
 }
 elseif($i == "ziureti"){
     $ID = isset($_GET['ID']) ? $klase->sk($_GET['ID']) : null;  $T = isset($_GET['T']) ? $klase->sk($_GET['T']) : null;
-    $inf_kat = mysql_fetch_assoc(mysql_query("SELECT * FROM forum_kat WHERE id='$ID'"));
-        $inf_tem = mysql_fetch_assoc(mysql_query("SELECT * FROM forum_tem WHERE id='$T'"));
-    if(mysql_num_rows(mysql_query("SELECT * FROM forum_kat WHERE id='$ID'")) == 0){
+    $stmt_kat = $pdo->query("SELECT * FROM forum_kat WHERE id='$ID'");
+    $inf_kat = $stmt_kat->fetch();
+    $stmt_tem = $pdo->query("SELECT * FROM forum_tem WHERE id='$T'");
+    $inf_tem = $stmt_tem->fetch();
+    $stmt = $pdo->query("SELECT * FROM forum_kat WHERE id='$ID'");
+    if($stmt->rowCount() == 0){
         echo '<div class="top"><b>Forumas</b></div>';
         echo '<div class="error">Tokios kategorijos nėra!</div>';
         atgal('Atgal-?i=&Į Pradžią-?i=');
     }
-    elseif(mysql_num_rows(mysql_query("SELECT * FROM forum_tem WHERE id='$T'")) == 0){
+    $stmt = $pdo->query("SELECT * FROM forum_tem WHERE id='$T'");
+    if($stmt->rowCount() == 0){
         echo '<div class="top"><b>Forumas</b></div>';
         echo '<div class="error">Tokios temos nėra!</div>';
         atgal('Atgal-?i=&Į Pradžią-?i=');
@@ -142,16 +157,17 @@ elseif($i == "ziureti"){
         elseif($_SESSION['time'] > time()){
             echo '<script>document.location="?i=ziureti&ID='.$ID.'&T='.$T.'"</script>';
         }else{
-            mysql_query("INSERT INTO forum_zin SET nick='$nick', text='$zin', data='".time()."', kat='$ID', tem='$T'");
+            $pdo->exec("INSERT INTO forum_zin SET nick='$nick', text='$zin', data='".time()."', kat='$ID', tem='$T'");
             $_SESSION['time'] = time()+5;
-            mysql_query("UPDATE zaidejai SET forums=forums+1 WHERE nick='$nick'");
+            $pdo->exec("UPDATE zaidejai SET forums=forums+1 WHERE nick='$nick'");
             echo '<script>document.location="?i=ziureti&ID='.$ID.'&T='.$T.'"</script>';
         }
     }
     else{
         online('Žiūri forumo temą');
         echo '<div class="top"><b>Forumas - '.$inf_kat['name'].' - '.$inf_tem['name'].'</b></div>';
-        $viso = mysql_result(mysql_query("SELECT COUNT(*) FROM forum_zin WHERE kat='$ID' AND tem='$T'"),0);
+        $stmt_viso = $pdo->query("SELECT COUNT(*) FROM forum_zin WHERE kat='$ID' AND tem='$T'");
+        $viso = $stmt_viso->fetchColumn();
         echo '<div class="main_l">'.$ico.' <b>'.$inf_tem['name'].' žinutės</b>:</div>';
         echo '<div class="main_c">
     <form action="?i=ziureti&ID='.$ID.'&T='.$T.'&ka=rasyti" method="post"/>
@@ -159,8 +175,8 @@ elseif($i == "ziureti"){
     <input type="submit" value="Rašyti / Atnaujinti"/></form>
     </div>';
         if($viso > 0){
-            $query = mysql_query("SELECT * FROM forum_zin WHERE kat='$ID' AND tem='$T' ORDER BY id DESC LIMIT 10");
-            while($row = mysql_fetch_assoc($query)){
+            $query = $pdo->query("SELECT * FROM forum_zin WHERE kat='$ID' AND tem='$T' ORDER BY id DESC LIMIT 10");
+            while($row = $query->fetch()){
                 echo '<div class="main_l"><b>[&raquo;]</b> <a href="game.php?i=apie&ka='.$row['nick'].'"><b>'.statusas($row['nick']).'</b></a> - '.smile($row['text']).'<br /><small>'.laikas($row['data']).'</small></div>';
             }
             echo '<div class="main_c">'.puslapiavimas($puslapiu,$psl,'?i=temos&ID='.$ID.'').'</div>';

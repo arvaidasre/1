@@ -62,19 +62,23 @@ elseif($i == "buy"){
 	echo '<div class="main_c"><div class="true">Keičiant veikėja prarandate 50% kovinės galios.</div></div>';
     echo '<div class="title">'.$ico.' Veikėjai:</div>
 	<div class="main">';
-	$query = mysql_query("SELECT * FROM veikejai");
-	while($row = mysql_fetch_assoc($query)){
+	$query = $pdo->query("SELECT * FROM veikejai");
+	while($row = $query->fetch()){
 		echo '[<b>&raquo;</b>] <a href="?i=vkeitimas2&id='.$row['id'].'">'.$row['name'].'</a><br/>';
 	}
 	echo '<div class="title">Viso veikėjų: <b>'.kiek('veikejai').'</b></div>';
 	atgal('Atgal-litai.php?i=& Į Pradžią-game.php?i=');
 } elseif ($i == "vkeitimas2") {
 	online('Keičiasi veikėją');
-    if(mysql_num_rows(mysql_query("SELECT * FROM veikejai WHERE id='$id'")) == 0){
+    $stmt = $pdo->prepare("SELECT * FROM veikejai WHERE id = ?");
+    $stmt->execute([$id]);
+    if($stmt->rowCount() == 0){
         top('Klaida!');
         echo '<div class="main_c"><div class="error">Tokio veikėjo nėra!</div></div>';
     } else {
-        $veik = mysql_fetch_assoc(mysql_query("SELECT * FROM veikejai WHERE id='$id' "));
+        $stmt = $pdo->prepare("SELECT * FROM veikejai WHERE id = ?");
+        $stmt->execute([$id]);
+        $veik = $stmt->fetch();
         top('Apie veikėja '.$veik['name']);
         if($veik['name'] == 'Vedžitas'){
             $imgssxx = 'Vedzitas';
@@ -85,18 +89,25 @@ elseif($i == "buy"){
         echo '<div class="main">
         [&raquo;] Veikėjas: '.$veik['name'].'<br/>
         [&raquo;] Turi transformacijų: '.$veik['trans'].'<br/>
-        [&raquo;] Veikėją pasirinko: '.mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE veikejas='$veik[name]' ")).' žaidėjų<br/>
+        [&raquo;] Veikėją pasirinko: ';
+        $count_stmt = $pdo->prepare("SELECT COUNT(*) FROM zaidejai WHERE veikejas = ?");
+        $count_stmt->execute([$veik['name']]);
+        echo $count_stmt->fetchColumn().' žaidėjų<br/>
         </div>';
         echo '<div class="main_c"><a href="?i=vkconfirm&id='.$veik['id'].'">Pasirinkti šį veikėją</a></div>';
     }
     atgal('Atgal-?i=vkeitimas&Į Pradžią-game.php?i=');
 } elseif ($i == "vkconfirm") {
     online('Keičiasi veikėją');
-    if(mysql_num_rows(mysql_query("SELECT * FROM veikejai WHERE id='$id'")) == 0){
+    $stmt = $pdo->prepare("SELECT * FROM veikejai WHERE id = ?");
+    $stmt->execute([$id]);
+    if($stmt->rowCount() == 0){
         top('Klaida!');
         echo '<div class="main_c"><div class="error">Tokio veikėjo nėra!</div></div>';
     } else {
-        $veik = mysql_fetch_assoc(mysql_query("SELECT * FROM veikejai WHERE id='$id' "));
+        $stmt = $pdo->prepare("SELECT * FROM veikejai WHERE id = ?");
+        $stmt->execute([$id]);
+        $veik = $stmt->fetch();
         if($veik['name'] == 'Vedžitas'){
             $imgssxx = 'Vedzitas';
         } else {
@@ -108,7 +119,8 @@ elseif($i == "buy"){
 		} else {
 			top('Veikėjo pasirinkimas');
 			echo '<div class="main_c"><div class="true">Jūs pasirinkote <b>'.$veik['name'].'</b> veikėją!</div></div>';
-			mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'20', veikejas='$veik[name]', foto='$imgssxx-0' WHERE nick='$nick' "); 
+			$stmt = $pdo->prepare("UPDATE zaidejai SET sms_litai=sms_litai-20, veikejas=?, foto=? WHERE nick=?");
+			$stmt->execute([$veik['name'], $imgssxx.'-0', $nick]); 
 		}
     }
     atgal('Į Pradžią-game.php?i=');
@@ -250,7 +262,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  {echo '<div class="acept">Atlikta, nusipirkai Vegeta  gods.</div>';
  $jega1 = round($jega*8);$gynyba1 = round($gynyba*8);
  mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
- mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'45', veikejas='Vegeta gods', foto='Vegeta gods-0', trans='0' WHERE nick='$nick'");}
+ $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'45', veikejas='Vegeta gods', foto='Vegeta gods-0', trans='0' WHERE nick='$nick'");}
  atgal('Atgal-?i=vegeta&Į Pradžią-game.php?i=');
  }
  elseif($i == "ozaru2"){
@@ -266,7 +278,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  {echo '<div class="acept">Atlikta, nusipirkai Gold Oozaru.</div>';
  $jega1 = round($jega*12);$gynyba1 = round($gynyba*12);
  mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
- mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'65', veikejas='Gold Oozaru', foto='ozaru', trans='0' WHERE nick='$nick'");}
+ $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'65', veikejas='Gold Oozaru', foto='ozaru', trans='0' WHERE nick='$nick'");}
  atgal('Atgal-?i=ozaru&Į Pradžią-game.php?i=');
  }
   elseif($i == "svegetto2"){
@@ -282,7 +294,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  {echo '<div class="acept">Atlikta, nusipirkai Super Vegetto.</div>';
  $jega1 = round($jega*2);$gynyba1 = round($gynyba*2);
  mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
- mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'20', veikejas='Super Vegetto', foto='svegetto', trans='0' WHERE nick='$nick'");}
+ $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'20', veikejas='Super Vegetto', foto='svegetto', trans='0' WHERE nick='$nick'");}
  atgal('Atgal-?i=svegetto&Į Pradžią-game.php?i=');
  }
    elseif($i == "xicor2"){
@@ -298,7 +310,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  {echo '<div class="acept">Atlikta, nusipirkai Xicor.</div>';
  $jega1 = round($jega*4);$gynyba1 = round($gynyba*4);
  mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
- mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'30', veikejas='Xicor', foto='xicor', trans='0' WHERE nick='$nick'");}
+ $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'30', veikejas='Xicor', foto='xicor', trans='0' WHERE nick='$nick'");}
  atgal('Atgal-?i=xicor&Į Pradžią-game.php?i=');
  }
  elseif($i == "goku"){
@@ -331,7 +343,7 @@ echo'Veikėjo pirkti negalite, nes turite toki patį arba geresnį.<br/>';
  {echo '<div class="acept">Atlikta, nusipirkai Goku  gods.</div>';
  $jega1 = round($jega*10);$gynyba1 = round($gynyba*10);
  mysql_query("UPDATE zaidejai SET gynyba='$gynyba1', jega='$jega1' WHERE nick='$nick' ");
- mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'55', veikejas='Goku gods', foto='Goku gods-0', trans='0' WHERE nick='$nick'");
+ $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'55', veikejas='Goku gods', foto='Goku gods-0', trans='0' WHERE nick='$nick'");
  }
  
  atgal('Atgal-?i=goku&Į Pradžią-game.php?i=');
@@ -355,7 +367,7 @@ elseif($i == "inf2"){
     } else {
         echo '<div class="main_c"><div class="true">Atlikta, tavo informacija užslaptinta!</div></div>';
         $timex = time()+60*60*$timezz;
-        mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', inf_uzslaptinimas='$timex' WHERE nick='$nick'");
+        $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', inf_uzslaptinimas='$timex' WHERE nick='$nick'");
 	}
     atgal('Atgal-?i=auto&Į Pradžią-game.php?i=');
 } 
@@ -386,7 +398,7 @@ elseif($i == "auto2"){
     } else {
         echo '<div class="main_c"><div class="true">Atlikta, auto kovojimai nupirkti!</div></div>';
         $timex = time()+60*60*$timezz;
-        mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', auto_time='$timex' WHERE nick='$nick'");
+        $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', auto_time='$timex' WHERE nick='$nick'");
 	}
     atgal('Atgal-?i=auto&Į Pradžią-game.php?i=');
 } elseif($i == "krd"){
@@ -470,7 +482,7 @@ elseif($i == "krd2"){
         echo '<div class="main_c"><div class="error">Tau nepakanka litų!</div></div>';
     } else {
         echo '<div class="main_c"><div class="true">Atlikta, nusipirkai <b>'.$kiek.'</b> kreditų.</div></div>';
-        mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', kred=kred+'$kiek' WHERE nick='$nick'");
+        $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', kred=kred+'$kiek' WHERE nick='$nick'");
 	}
     atgal('Atgal-?i=krd&Į Pradžią-game.php?i=');
 } elseif ($i == "jg") {
@@ -550,7 +562,7 @@ elseif($i == "krd2"){
         echo '<div class="main_c">Atlikta, nusipirkai <b>'.$jgp.'</b>% '.$kas.'!</div></div>';
 		$procentai = $apie[$prideda]*$jgp/100;
 		$jgpridejimas = $apie[$prideda]+$procentai;
-        mysql_query("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', $prideda=$jgpridejimas WHERE nick='$nick'");
+        $pdo->exec("UPDATE zaidejai SET sms_litai=sms_litai-'$kaina', $prideda=$jgpridejimas WHERE nick='$nick'");
 	}
     atgal('Atgal-?i=jg&Į Pradžią-game.php?i=');
 } elseif($i == "mod"){

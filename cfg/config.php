@@ -184,19 +184,19 @@ else {
 
 //** POST 
 function post($kint){
-    return trim(mysql_real_escape_string(stripslashes(htmlspecialchars($kint, ENT_QUOTES, 'utf-8'))));
+    return trim(stripslashes(htmlspecialchars($kint, ENT_QUOTES, 'utf-8')));
 }
 
 //** GET apsauga
 class aps{
     public function raides($x)
     {
-        return trim(mysql_real_escape_string(htmlspecialchars($x))); 
+        return trim(htmlspecialchars($x)); 
         
     } 
     public function sk($x)
     {
-        return trim(mysql_real_escape_string(htmlspecialchars(abs($x)))); 
+        return trim(htmlspecialchars(abs($x))); 
         
     } 
 }
@@ -292,8 +292,9 @@ if($id){
 
 
 function smile($text){
-    $qu = mysql_query("SELECT * FROM smile");
-    while($row = mysql_fetch_assoc($qu)){
+    global $pdo;
+    $qu = $pdo->query("SELECT * FROM smile");
+    while($row = $qu->fetch()){
         $text = str_replace("".$row['kodas'].""," ".$row['img']." ", $text);
     }
     return $text;
@@ -312,7 +313,9 @@ function atgal($nrd){
 }
 
 function kiek($tab){
-    $rez = mysql_result(mysql_query("SELECT COUNT(*) FROM $tab"),0);
+    global $pdo;
+    $stmt = $pdo->query("SELECT COUNT(*) FROM $tab");
+    $rez = $stmt->fetchColumn();
     return $rez;
 }
 
@@ -332,7 +335,7 @@ function skaicius($sk){
 }
 
 if(kiek('online') > $nust['max_on']){
-    mysql_query("UPDATE nustatymai SET max_on='".kiek('online')."'");
+    $pdo->exec("UPDATE nustatymai SET max_on='".kiek('online')."'");
 }
 
 function top($tekstas){
@@ -341,10 +344,10 @@ function top($tekstas){
 
 //** APSAUGA
 function aps($xe){
-    return trim(mysql_real_escape_string(stripslashes(htmlspecialchars($xe, ENT_QUOTES, 'utf-8'))));
+    return trim(stripslashes(htmlspecialchars($xe, ENT_QUOTES, 'utf-8')));
 }
 function nr($xe){
-    return trim(mysql_real_escape_string(htmlspecialchars(abs($xe)))); 
+    return trim(htmlspecialchars(abs($xe))); 
 }
 
 function foot(){
@@ -361,6 +364,6 @@ function statistic() {
 }
 
 // Trina iš MYSQL vartotojus, kurie yra jau atsijungę
-mysql_query("DELETE FROM online WHERE time < '".time()."'");
+$pdo->exec("DELETE FROM online WHERE time < '".time()."'");
 
 ?>

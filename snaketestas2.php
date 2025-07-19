@@ -139,7 +139,7 @@ elseif($i == "snake"){
           
           elseif($apie['snake'] == 3){
                $ko = "".sk(1000)." Jėgos.";
-               mysql_query("UPDATE zaidejai SET jega=jega+'1000', kred=kred-'25' WHERE nick='$nick'");
+               $pdo->exec("UPDATE zaidejai SET jega=jega+'1000', kred=kred-'25' WHERE nick='$nick'");
           }
           elseif($apie['snake'] == 4){
                $ko = "".sk(2000)." Gynybos.";

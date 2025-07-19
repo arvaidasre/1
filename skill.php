@@ -3,7 +3,9 @@ ob_start();
 include_once 'cfg/sql.php';
 include_once 'cfg/login.php';
 head2();
-$st = mysql_fetch_assoc(mysql_query("SELECT * FROM technikos WHERE nick='$nick' "));
+global $pdo;
+$stmt = $pdo->query("SELECT * FROM technikos WHERE nick='$nick' ");
+$st = $stmt->fetch();
 if($i == ""){
    online('Įgūdžiuose');
    top('Įgūdžiai');
@@ -40,7 +42,7 @@ elseif($i == "trans"){
             $tr = $apie['trans']+1;
             $im = "$img-$tr";
            
-            mysql_query("UPDATE zaidejai SET jega=jega+'$trans_jegos2', gynyba=gynyba+'$trans_gynybos2', trans=trans+'1', foto='$im' WHERE nick='$nick' ") or die(mysql_error());
+            $pdo->exec("UPDATE zaidejai SET jega=jega+'$trans_jegos2', gynyba=gynyba+'$trans_gynybos2', trans=trans+'1', foto='$im' WHERE nick='$nick' ");
             
         }
     } else {
@@ -346,7 +348,7 @@ elseif($i == "trans"){
        elseif($apie['kred'] < 20){
 	        echo '<div class="error">Neturi pakankamai kreditų!</div>';
        }
-       elseif(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' ")) < 100){
+       elseif(($stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick=? AND daiktas='6' AND tipas='3'")) && $stmt->execute([$nick]) && $stmt->rowCount() < 100){
           echo '<div class="main_c"><div class="error">Neturite pakankamai Fusion Tail!</div></div>';
        } else {
           echo '<div class="main_c"><div class="true">Sėkmingai išmokote <b>susijungimo šokį</b>.</div></div>';
@@ -357,10 +359,10 @@ elseif($i == "trans"){
        atgal('Atgal-?i=fusion&Į Pradžią-game.php?i=');
     } else {
     if($ka == "delete"){
-	if(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'")) == 0){
+	if(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$nick]) && $stmt->rowCount() == 0){
 		mysql_query("DELETE FROM susijungimas WHERE nick='$nick'");
 	}
-       if(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$wh'")) == 0){
+       if(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$wh]) && $stmt->rowCount() == 0){
           echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
        }
        elseif($wh !== $fsn['kitas_zaidejas']){
@@ -376,7 +378,8 @@ elseif($i == "trans"){
        if(empty($fsn['ar_kvieti'])){
           echo '<div class="main_c"><div class="error">Jūs nieko nekviečiat susijungti!</div></div>';
        } else {
-          $fsnn = mysql_fetch_assoc(mysql_query("SELECT * FROM susijungimas WHERE nick='$nick' "));
+          $stmt = $pdo->query("SELECT * FROM susijungimas WHERE nick='$nick' ");
+          $fsnn = $stmt->fetch();
           echo '<div class="main_c"><div class="true">Sėkmingai atšauktas kvietmas!</div></div>';
           mysql_query("UPDATE susijungimas SET kas_kviecia='' WHERE nick='$fsnn[ka_kvieti]' ");
           mysql_query("UPDATE susijungimas SET ar_kvieti='', ka_kvieti='' WHERE nick='$nick' ");
@@ -387,7 +390,7 @@ elseif($i == "trans"){
        if(empty($fsn['kas_kviecia'])){
           echo '<div class="main_c"><div class="error">Jusų niekas nekviečia susijungti!</div></div>';
        }
-       elseif(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$wh'")) == 0){
+       elseif(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$wh]) && $stmt->rowCount() == 0){
           echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
        } else {
           echo '<div class="main_c"><div class="true">Sėkmingai priėmėte <b>'.statusas($wh).'</b> pasiūlymą susijungti!</div></div>';
@@ -400,7 +403,7 @@ elseif($i == "trans"){
        if(empty($fsn['kas_kviecia'])){
           echo '<div class="main_c"><div class="error">Jūs nesate susijungęs!</div></div>';
        }
-       elseif(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$wh'")) == 0){
+       elseif(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$wh]) && $stmt->rowCount() == 0){
           echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
        } else {
           echo '<div class="main_c"><div class="true">Sėkmingai atmetei <b>'.statusas($wh).'</b> pasiūlymą susijungti!</div></div>';
@@ -434,7 +437,8 @@ elseif($i == "trans"){
        if(!empty($fsn['ar_susijungias'])){ } else {
        if(isset($_POST['submit'])){
           $kak = strtolower(post($_POST['kvieciu']));
-          $fsnn = mysql_fetch_assoc(mysql_query("SELECT * FROM susijungimas WHERE nick='$kak' "));
+          $stmt = $pdo->query("SELECT * FROM susijungimas WHERE nick='$kak' ");
+          $fsnn = $stmt->fetch();
           if(empty($kak)){
              echo '<div class="main_c"><div class="error">Palikai tuščią laukelį!</div></div>';
           }
@@ -461,7 +465,7 @@ elseif($i == "trans"){
           elseif(!empty($fsnn['kas_kviecia'])){
              echo '<div class="main_c"><div class="error">Žaidėją <b>'.statusas($kak).'</b> jau kviečia susijungti!</div></div>';
           }
-          elseif(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$kak'")) == 0){
+          elseif(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$kak]) && $stmt->rowCount() == 0){
              echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
           }
           elseif(!empty($fsn['ar_kvieti'])){
@@ -491,11 +495,12 @@ elseif($i == "trans"){
 elseif($i == "auros"){
    online('Mokosi auras');
    if($ka == "inf"){
-      if(mysql_num_rows(mysql_query("SELECT * FROM auru_inf WHERE id='$id'")) == 0){
+      if(($stmt = $pdo->prepare("SELECT * FROM auru_inf WHERE id=?")) && $stmt->execute([$id]) && $stmt->rowCount() == 0){
           top('Klaida!');
           echo '<div class="main_c"><div class="error">Tokios auros nėra!</div></div>';
       } else {
-          $aur = mysql_fetch_assoc(mysql_query("SELECT * FROM auru_inf WHERE id='$id' "));
+          $stmt = $pdo->query("SELECT * FROM auru_inf WHERE id='$id' ");
+          $aur = $stmt->fetch();
           top($aur['name']);
           echo '<div class="main_c"><img src="'.$aur['img'].'" border="1"></div>';
           echo '<div class="title">'.$ico.' <b>Apie '.$aur['name'].'</b>:</div>';
@@ -520,7 +525,7 @@ elseif($i == "auros"){
       elseif($lygis < $aur['lygis']){
          $klaida = "Tavo lygis per žemas! Reikia $aur[lygis] lygio!";
       }
-      elseif(mysql_num_rows(mysql_query("SELECT * FROM auru_inf WHERE id='$id'")) == 0){
+      elseif(($stmt = $pdo->prepare("SELECT * FROM auru_inf WHERE id=?")) && $stmt->execute([$id]) && $stmt->rowCount() == 0){
          $klaida = "Tokios auros nėra!";
       }
       
@@ -538,7 +543,7 @@ elseif($i == "auros"){
       echo '<div class="title">'.$ico.' <b>Auros</b>:</div>';
       echo '<div class="main">';
       $query = mysql_query("SELECT * FROM auru_inf");
-      while($row = mysql_fetch_assoc($query)){
+      while($row = $query->fetch()){
           echo '<b>[&raquo;]</b> <a href="skill.php?i=auros&ka=inf&id='.$row['id'].'">'.$row['name'].'</a><br/>';
           unset($row);
       }

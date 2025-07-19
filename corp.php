@@ -2,7 +2,8 @@
 ob_start();
 include_once 'cfg/sql.php';
 include_once 'cfg/login.php';
-$pask_inf = mysql_fetch_assoc(mysql_query("SELECT * FROM pasiekimai WHERE nick='$nick'"));
+$stmt = $pdo->query("SELECT * FROM pasiekimai WHERE nick='$nick'");
+$pask_inf = $stmt->fetch();
 $galiojimas = time()+60*60*24*7;
 head2();
 if($i == ""){
@@ -53,13 +54,14 @@ elseif($ka == "radaras2"){
 online('Gamina radarą');
 echo '<div class="top">Radaro gaminimas</div>';
 echo '<div class="main_c"><img src="img/radar.png" alt="radaras"></div>';
-  $kiek_yra = mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='5' AND tipas='3'"));
+  $stmt = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='5' AND tipas='3'");
+  $kiek_yra = $stmt->rowCount();
 if ($apie['radaras'] > time()) {
 	echo '<div class="main_c"><div class="error">Jūa jau turite radarą!</div></div>';
 } elseif($kiek_yra > 699){
 	echo '<div class="main_c"><div class="true">Pasigaminote radarą <b>1 savaitei</b> (7d.)!</div></div>';
-	mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 700");
-	mysql_query("UPDATE zaidejai SET radaras='$galiojimas' WHERE nick='$nick'");
+	$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 700");
+	$pdo->exec("UPDATE zaidejai SET radaras='$galiojimas' WHERE nick='$nick'");
 } else {
 echo '<div class="main_c"><div class="error">Klaida! Jūs neturite 700 microshemų.</div></div>';
 }
@@ -83,13 +85,14 @@ elseif($ka == "ki2"){
 online('Gamina kovinės galios matuokli');
 echo '<div class="top">K.G matuoklio gaminimas</div>';
 echo '<div class="main_c"><img src="img/kgm.png"></div>';
-$kiek_yra = mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='5' AND tipas='3'"));
+$stmt = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='5' AND tipas='3'");
+$kiek_yra = $stmt->rowCount();
 if ($apie['kg_mat'] > time()) {
 	echo '<div class="main_c"><div class="error">Jūa jau turite K.G matuoklį!</div></div>';
 } elseif($kiek_yra > 399){
 	echo '<div class="main_c"><div class="true">Pasigaminai K.G matuokli <b>1 savaitei</b> (7d.)!</div></div>';
-	mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 400");
-	mysql_query("UPDATE zaidejai SET kg_mat='$galiojimas' WHERE nick='$nick'");
+	$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 400");
+	$pdo->exec("UPDATE zaidejai SET kg_mat='$galiojimas' WHERE nick='$nick'");
 } else {
 echo '<div class="main_c"><div class="error">Klaida! Jūs neturite 400 microshemų.</div></div>';
 }
@@ -107,8 +110,10 @@ if ($ka == "klaivas") {
 } elseif($ka == "klaivas2") {
 	online('Gamina kosminį laivą');
 	top('Kosminis laivas');
-	$mikroschem = mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='5' AND tipas='3'"));
-	$powerstone = mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='23' AND tipas='3'"));
+	$stmt = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='5' AND tipas='3'");
+	$mikroschem = $stmt->rowCount();
+	$stmt = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='23' AND tipas='3'");
+	$powerstone = $stmt->rowCount();
 	if ($klaivas == 1) {
 		echo '<div class="error"><b>Klaida!</b> Jūs jau esate pasigaminęs kosminį laivą!</div></div>';	
 	} elseif ($lygis < 50) {
@@ -119,10 +124,10 @@ if ($ka == "klaivas") {
 		echo '<div class="main_c"><div class="error">Klaida! Jūs neturite 900 Power Stone!</div></div>';
 	} else {
 		echo '<div class="main_c"><div class="true">Sėkmingai pradėjote <b>kosminio laivo</b> gaminimą! Jį gaminsite 2 valandas.</div></div>';
-	mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 600");
-	mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='23' && tipas='3' LIMIT 900");
+	$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 600");
+	$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='23' && tipas='3' LIMIT 900");
 	$time = time()+60*60;
-	mysql_query("UPDATE zaidejai SET klaivas_time='$time', klaivas='1' WHERE nick='$nick'");
+	$pdo->exec("UPDATE zaidejai SET klaivas_time='$time', klaivas='1' WHERE nick='$nick'");
     }	
 	atgal('Atgal-corp.php?i=&Į Pradžią-game.php?i=');
 }

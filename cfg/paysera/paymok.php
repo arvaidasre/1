@@ -4,7 +4,13 @@ include ('WebToPay.php');
 /*______________________________________MYSQL PRISIJUNGIMAS_______________________________________________*/
 
 
-$tikrina=@mysql_connect("localhost","wapdb_zaidimas","bbO8L96E");
+try {
+    $pdo = new PDO('mysql:host=localhost;dbname=wapdb_zaidimas;charset=utf8', 'wapdb_zaidimas', 'bbO8L96E');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die('Įvyko klaida jungiantis prie duomenų bazės: ' . $e->getMessage());
+}
 @mysql_select_db("wapdb_zaidimas");
 
 /*________________________________________________________________________________________________________*/
@@ -44,20 +50,24 @@ $dataa = date("H:i:s");
 
 
 if($rakt == "wapdbeu1"){
-$tope = mysql_num_rows(mysql_query("SELECT * FROM sms_top WHERE nick='$nick'"));
+$stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
+$stmt->execute([$nick]);
+$tope = $stmt->rowCount();
 $apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
 $nick = $apie['nick'];
-if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'1'  WHERE nick='$nick'");}else{
-  mysql_query("INSERT INTO sms_top SET sms ='1',nick='$nick' ");}
+if($tope>0){  $pdo->prepare("UPDATE sms_top SET sms=sms+1 WHERE nick=?");}else{
+  $pdo->prepare("INSERT INTO sms_top SET sms=1, nick=?");}
 
-    mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+$mok1 WHERE nick='$nick'");
-  mysql_query("INSERT INTO sms_log SET zinute ='$siuntejo_nr $nick  Pirko litu uz 1 lita. $a2x $data',kaina ='1', laikas = '$data $dataa' ");
+    $pdo->prepare("UPDATE zaidejai SET sms_litai=sms_litai+? WHERE nick=?");
+  $pdo->prepare("INSERT INTO sms_log SET zinute=?, kaina='1', laikas=?");
 echo"OK Aciu, kad siunciate. Gavote 4 LTL. www.wapdb.eu";
 exit();
 
 }
 if($rakt == "wapdbeu3") {
-$tope = mysql_num_rows(mysql_query("SELECT * FROM sms_top WHERE nick='$nick'"));
+$stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
+$stmt->execute([$nick]);
+$tope = $stmt->rowCount();
 $apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'3'  WHERE nick='$nick'");}else{
@@ -70,7 +80,9 @@ exit();
 
 }
 if($rakt == "wapdbeu5") {
-$tope = mysql_num_rows(mysql_query("SELECT * FROM sms_top WHERE nick='$nick'"));
+$stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
+$stmt->execute([$nick]);
+$tope = $stmt->rowCount();
 $apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'5'  WHERE nick='$nick'");}else{
@@ -83,7 +95,9 @@ exit();
 
 }
 if($rakt == "wapdbeu10") {
-$tope = mysql_num_rows(mysql_query("SELECT * FROM sms_top WHERE nick='$nick'"));
+$stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
+$stmt->execute([$nick]);
+$tope = $stmt->rowCount();
 $apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'10'  WHERE nick='$nick'");}else{
@@ -96,7 +110,9 @@ exit();
 
 }
 if($rakt == "wapdbeu14") {
-$tope = mysql_num_rows(mysql_query("SELECT * FROM sms_top WHERE nick='$nick'"));
+$stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
+$stmt->execute([$nick]);
+$tope = $stmt->rowCount();
 $apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'14'  WHERE nick='$nick'");}else{
@@ -109,7 +125,9 @@ exit();
 
 }
 if($ka == "dbza55") {
-$tope = mysql_num_rows(mysql_query("SELECT * FROM sms_top WHERE nick='$nick'"));
+$stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
+$stmt->execute([$nick]);
+$tope = $stmt->rowCount();
 $apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'5'  WHERE nick='$nick'");}else{
@@ -122,7 +140,9 @@ exit();
 
 }
 if($ka == "dbza100") {
-$tope = mysql_num_rows(mysql_query("SELECT * FROM sms_top WHERE nick='$nick'"));
+$stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
+$stmt->execute([$nick]);
+$tope = $stmt->rowCount();
 $apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'10'  WHERE nick='$nick'");}else{
@@ -135,7 +155,9 @@ exit();
 
 }
 if($ka == "dbza140") {
-$tope = mysql_num_rows(mysql_query("SELECT * FROM sms_top WHERE nick='$nick'"));
+$stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
+$stmt->execute([$nick]);
+$tope = $stmt->rowCount();
 $apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'14'  WHERE nick='$nick'");}else{

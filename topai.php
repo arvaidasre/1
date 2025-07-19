@@ -49,7 +49,9 @@ elseif($i == "top"){
         online(''.$tp.' TOP\'as');
         echo '<div class="top">'.$tp.' TOP</div>';
         echo '<div class="main">'.$ico.' <b>'.$tp.' TOP\'as</b>:</div>';
-        $viso = mysql_result(mysql_query("SELECT COUNT(*) FROM zaidejai"),0);
+        global $pdo;
+        $stmt = $pdo->query("SELECT COUNT(*) FROM zaidejai");
+        $viso = $stmt->fetchColumn();
         
         if($viso > 0){
             $rezultatu_rodymas=10;
@@ -66,13 +68,13 @@ elseif($i == "top"){
             $iki = $psl * $rezultatu_rodymas;
        	    }*/
             
-            $query = mysql_query("SELECT * FROM zaidejai ORDER BY (0 + $pg) DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+            $query = $pdo->query("SELECT * FROM zaidejai ORDER BY (0 + $pg) DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
 			$vt = $nuo_kiek;
             $puslapiu=ceil($viso/$rezultatu_rodymas);
             
             echo '<div class="main">';
             if($ID == 11){
-                while($top = mysql_fetch_assoc($query)){
+                while($top = $query->fetch()){
                 $vt++;
                 if($top['nick'] == $nick){
                     echo '<font color="red"><b>'.$vt.'</b>.</font> <a href="game.php?i=apie&wh='.$top['nick'].'">'.statusas($top['nick']).'</a> (<b>'.laikas($top[$pg], 1).'</b>)<br />';
@@ -81,7 +83,7 @@ elseif($i == "top"){
                 }
             }
             }else{
-                while($top = mysql_fetch_assoc($query)){
+                while($top = $query->fetch()){
                 $vt++;
                 if($top['nick'] == $nick){
                     echo '<font color="red"><b>'.$vt.'</b>.</font> <a href="game.php?i=apie&wh='.$top['nick'].'">'.statusas($top['nick']).'</a> (<b>'.sk($top[$pg]).'</b>)<br />';

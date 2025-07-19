@@ -8,10 +8,12 @@ if($i == ""){
    online('Vygdo sagas');
    top('Sagos');
 
-      $query = mysql_query("SELECT * FROM sagos");
+      global $pdo;
+      $query = $pdo->query("SELECT * FROM sagos");
        echo '<div class="main">';
-       while($row = mysql_fetch_assoc($query)){
-$sagu = mysql_num_rows(mysql_query("SELECT * FROM sagos_info WHERE saga='$row[ID]'"));
+       while($row = $query->fetch()){
+$stmt = $pdo->query("SELECT * FROM sagos_info WHERE saga='$row[ID]'");
+$sagu = $stmt->rowCount();
 
 if($apie[sagos]>$row[sagu2]){ echo '  <b>[<font color="green">**</font>]</b> <b>'.$row['pavadinimas'].'</b><br/>';
 }else{
@@ -59,8 +61,8 @@ foot();
 
 echo '<div class="top">'.$sag[pavadinimas].'</div>';
 
-      $query = mysql_query("SELECT * FROM sagos_info WHERE ID='$apie[sagos]' ");
-       while($row = mysql_fetch_assoc($query)){
+      $query = $pdo->query("SELECT * FROM sagos_info WHERE ID='$apie[sagos]'");
+       while($row = $query->fetch()){
 if($row['ko']=="kgi"){$ko="KG";}
 if($row['ko']=="litai"){$ko="zenų";}
 if($row['ko']=="sms_litai"){$ko="litų";}
@@ -113,16 +115,16 @@ foot();
 
 echo '<div class="top">'.$sag[pavadinimas].'</div>';
 
-      $query = mysql_query("SELECT * FROM sagos_info WHERE ID='$apie[sagos]' ");
-       while($row = mysql_fetch_assoc($query)){
+      $query = $pdo->query("SELECT * FROM sagos_info WHERE ID='$apie[sagos]'");
+       while($row = $query->fetch()){
 if($row['ko']=="kgi"){$ko="KG"; $kiek="$row[atlygis]"; $sql="jega";}
 if($row['ko']=="litai"){$ko="zenų"; $kiek="$row[atlygis]"; $sql="litai";}
 if($row['ko']=="sms_litai"){$ko="litų"; $kiek="$row[atlygis]"; $sql="sms_litai";}
 if($kgi>$row[kg]){$fight="<font color=\"green\">Jūs kovą laimėjote ir gaunate <b> ".$row['atlygis']." ".$ko."</b> </font>";
-mysql_query("UPDATE zaidejai SET sagos=sagos+'1',$sql=$sql+'$kiek' WHERE nick='$nick' ");
+$pdo->exec("UPDATE zaidejai SET sagos=sagos+'1',$sql=$sql+'$kiek' WHERE nick='$nick'");
 }
 if($kgi<$row[kg]){$fight="<font color=\"red\">Jūs kovą pralaimėjote ir prarandate visas gyvybes. </font>";
-mysql_query("UPDATE zaidejai SET gyvybes='0' WHERE nick='$nick' ");
+$pdo->exec("UPDATE zaidejai SET gyvybes='0' WHERE nick='$nick'");
 
 }
 
