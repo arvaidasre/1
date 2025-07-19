@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 function masinee($txt) {
     return htmlentities($txt, ENT_QUOTES);
 }
@@ -743,6 +743,13 @@ $xx = ''.$vipas.'<span style="color:'.$n['color'].';">'.$nick.'</span>';
 return $xx;
 }
 
+/**
+ * Updates or inserts the player's online status and location in the database.
+ *
+ * If the player is not already marked as online, creates a new record with their current location, user agent, IP address, and timestamps. Otherwise, updates the player's location and activity timestamp.
+ *
+ * @param string $vt The current location or area of the player within the game.
+ */
 function online($vt){
 global $nick, $nars, $ip, $timx;
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM online WHERE nick = ?");
@@ -765,7 +772,11 @@ $stmt->execute([$top['vksm'], $top['nick']]);
 $krit="0";
 $timt = time();
 if($apie[vip]>$timt){
-//* Daiktų dropas
+/**
+ * Randomly awards the player with special items based on chance and VIP status.
+ *
+ * This function determines if the player receives one of several possible rare items, such as Dragon Balls, stones, or special scrolls, by evaluating random chance conditions. If the player is eligible, the corresponding items are added to their inventory, and relevant top collector tables are updated. A message is displayed to inform the player of the found items.
+ */
 function dropas(){
     global $radaras, $ico, $nick, $mano_online;
 
@@ -874,7 +885,11 @@ function dropas(){
 }else{
 
 
-//* Daiktų dropas
+/**
+ * Randomly awards the player with special items based on chance and game state.
+ *
+ * This function determines if the player receives rare or special items (such as Dragon Balls, stones, or event items) during gameplay, based on random chance and certain conditions like radar activity or location. Awarded items are added to the player's inventory, and relevant leaderboards are updated. Informational messages are displayed to the player when items are found.
+ */
 function dropas(){
     global $radaras, $ico, $nick, $mano_online;
 
