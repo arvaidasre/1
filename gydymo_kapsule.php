@@ -10,7 +10,8 @@ if($i == ""){
     if($ka == "dov"){
         if($apie['gyvybes'] < 1 AND $apie['kred'] >1){
 
-            mysql_query("UPDATE zaidejai SET gyvybes='$apie[max_gyvybes]', kred=kred-'1' WHERE nick='$nick' ");
+            global $pdo;
+            $pdo->exec("UPDATE zaidejai SET gyvybes='$apie[max_gyvybes]', kred=kred-'1' WHERE nick='$nick' ");
             echo '<div class="main">'.$ico.' <b>Atlikta!</b> Gyvybės atpildytos, praradote kreditą.</div>';
         } else {
             echo '<div class="main">'.$ico.' <b>Klaida!</b> Jūsų gyvybė nėra mažiau už 1 arba neturite kredito!</div>';

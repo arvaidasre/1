@@ -35,7 +35,8 @@ Jeigu neturite kosminio laivo, jį pasigaminti galite: "KAPSULIŲ KORPORACIJOJE"
 	} else {
 		echo '<div class="main_c"><div class="true">Sėkmingai pradėjote kelionę į <b>Namekų Planetą</b>!</div></div>';
 		$time = time()+60*10;
-		mysql_query("UPDATE zaidejai SET namek_time='$time', namek='+' WHERE nick='$nick'");
+		global $pdo;
+		$pdo->exec("UPDATE zaidejai SET namek_time='$time', namek='+' WHERE nick='$nick'");
 	}
 	atgal('Atgal-?i=&Į Pradžią-game.php?i=');
 } elseif ($i == "senolis") {
@@ -72,7 +73,8 @@ Jeigu neturite kosminio laivo, jį pasigaminti galite: "KAPSULIŲ KORPORACIJOJE"
 			$nsmax_gyvybes = $max_gyvybes+$nmax_gyvybes;
 			echo '<div class="main_c"><div class="true">Namekų senolis, jums sėkmingai prikėlė miegančiąsias galias!<br>
 	    Įgavote: <b>'.$sjega.'%</b> jėgos, <b>'.$sgynyba.'%</b> gynybos, <b>'.$smax_gyvybes.'%</b> gyvybių!</div></div>';
-			mysql_query("UPDATE zaidejai SET jega='$nsjega', gynyba='$nsgynyba', max_gyvybes='$nsmax_gyvybes', mgalios='+' WHERE nick='$nick'");
+			global $pdo;
+			$pdo->exec("UPDATE zaidejai SET jega='$nsjega', gynyba='$nsgynyba', max_gyvybes='$nsmax_gyvybes', mgalios='+' WHERE nick='$nick'");
 		} else {
 			echo '<div class="main_c"><div class="error"><b>Klaida!</b> Senolis, jums jau prikėlė miegančiąsias jėgas!</div></div>';	
 		}
@@ -91,15 +93,17 @@ Jeigu neturite kosminio laivo, jį pasigaminti galite: "KAPSULIŲ KORPORACIJOJE"
 				if ($apie['indball'] < time()) {
 					if (rand(1,10) == 4) {
 						echo '<div class="main_c"><div class="true"><b>Sveikiname!</b> Radote vieną nameko drakono rutulį!</div></div>';
-						mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='30', tipas='3'");
-						if(mysql_num_rows(mysql_query("SELECT * FROM drtop WHERE nick='$nick'")) > 0)
-						mysql_query("UPDATE drtop SET rutuliai=rutuliai+1 WHERE nick='$nick'"); else
-						mysql_query("INSERT INTO drtop SET nick='$nick', rutuliai='1'");
+						global $pdo;
+						$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='30', tipas='3'");
+						$stmt = $pdo->query("SELECT * FROM drtop WHERE nick='$nick'");
+						if($stmt->rowCount() > 0)
+						$pdo->exec("UPDATE drtop SET rutuliai=rutuliai+1 WHERE nick='$nick'"); else
+						$pdo->exec("INSERT INTO drtop SET nick='$nick', rutuliai='1'");
 					} else {
 						echo '<div class="main_c"><div class="error">Atsiprašome, tačiau nieko neradote!</div></div>';	
 					}
 					$time = time() + 60 * 60 * 12;
-					mysql_query("UPDATE zaidejai SET indball='$time' WHERE nick='$nick' ");
+					$pdo->exec("UPDATE zaidejai SET indball='$time' WHERE nick='$nick' ");
 				} else {
 					echo '<div class="main_c"><div class="error"><b>Klaida!</b> Tu jau ieškojai nameko drakono rutulių!</div></div>';	
 				}

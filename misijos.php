@@ -2,7 +2,10 @@
 ob_start();
 include_once 'cfg/sql.php';
 include_once 'cfg/login.php';
-$pask_inf = mysql_fetch_assoc(mysql_query("SELECT * FROM pasiekimai WHERE nick='$nick'"));
+global $pdo;
+$stmt = $pdo->prepare("SELECT * FROM pasiekimai WHERE nick = ?");
+$stmt->execute([$nick]);
+$pask_inf = $stmt->fetch();
 head2();
 if($i == ""){
    online('Misijos');
@@ -20,9 +23,9 @@ if($i == ""){
 elseif($i == "rinkimas"){
    online('Rinkimo misijos');
    
-   $rnk = mysql_fetch_assoc(mysql_query("SELECT * FROM rinkimas WHERE nick='$nick' "));
-   $dgt = mysql_fetch_assoc(mysql_query("SELECT * FROM items WHERE id='$rnk[daiktas]' && tipas='$rnk[tipas]' "));
-   $invo = mysql_fetch_assoc(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='$rnk[daiktas]' && tipas='$rnk[tipas]' "));
+   $rnk = $pdo->query("SELECT * FROM rinkimas WHERE nick='$nick' ")->fetch();
+   $dgt = $pdo->query("SELECT * FROM items WHERE id='$rnk[daiktas]' && tipas='$rnk[tipas]' ")->fetch();
+   $invo = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='$rnk[daiktas]' && tipas='$rnk[tipas]' ")->fetch();
    
    if($rnk['ka'] == "litai"){
    $ko = "Zen'ų";
@@ -42,12 +45,14 @@ elseif($i == "rinkimas"){
    
    if($ka == "OK"){
       echo '<div class="top">Vygdyti rinkimo misiją</div>';
-      if(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='$rnk[daiktas]' && tipas='$rnk[tipas]' ")) < $rnk['kiek']){
+      $stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick = ? AND daiktas = ? AND tipas = ?");
+      $stmt->execute([$nick, $rnk['daiktas'], $rnk['tipas']]);
+      if($stmt->rowCount() < $rnk['kiek']){
          echo '<div class="main_c"><div class="error">Neturi pakankamai <b>'.$dgt['name'].'</b>!</div></div>';
       } else {
          echo '<div class="main_c">Įvygdytą! Gavai <b>'.sk($rnk['atlygis']).'</b> '.$ko.'!</div></div>';
-         mysql_query("UPDATE zaidejai SET $rnk[ka]=$rnk[ka]+'$rnk[atlygis]' WHERE nick='$nick' ");
-         mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='$rnk[daiktas]' && tipas='$rnk[tipas]' LIMIT $rnk[kiek]");
+         $pdo->exec("UPDATE zaidejai SET {$rnk['ka']}={$rnk['ka']}+'{$rnk['atlygis']}' WHERE nick='$nick' ");
+         $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' AND daiktas='{$rnk['daiktas']}' AND tipas='{$rnk['tipas']}' LIMIT {$rnk['kiek']}");
          
          $rnd = rand(1,5);
          $rnds = rand(1,5);
@@ -96,7 +101,8 @@ elseif($i == "rinkimas"){
          
          //-------//
          
-         mysql_query("UPDATE rinkimas SET kiek='$rndd', atlygis='$atl', ka='$wa', daiktas='$dg', tipas='3' WHERE nick='$nick' ");
+         $stmt = $pdo->prepare("UPDATE rinkimas SET kiek = ?, atlygis = ?, ka = ?, daiktas = ?, tipas = '3' WHERE nick = ?");
+         $stmt->execute([$rndd, $atl, $wa, $dg, $nick]);
       }
    } else {
       echo '<div class="top">Rinkimo misijos</div>';
@@ -261,8 +267,8 @@ elseif($i == "pasiekimai"){
 
 
             echo '<div class="main_c"><div class="true">Įvykdėte pasiekimą. Gaunate <b>'.sk($duos).'</b> '.$ko.'.</div></div>';
-            mysql_query("UPDATE pasiekimai SET $ids = '+' WHERE nick='$nick'");
-            mysql_query("UPDATE zaidejai SET $ko2 = $ko2 + $duos WHERE nick='$nick'");
+            $pdo->exec("UPDATE pasiekimai SET $ids = '+' WHERE nick='$nick'");
+            $pdo->exec("UPDATE zaidejai SET $ko2 = $ko2 + $duos WHERE nick='$nick'");
         }
       atgal('Atgal-misijos.php?i=pasiekimai&Į Pradžią-game.php?i=');
     }else{
@@ -486,10 +492,12 @@ elseif($i == "uzd"){
    online('Vykdo Bulmos užduotį');
    echo '<div class="top">Bulmos Užduotis</div>';
    echo '<div class="main_c"><img src="img/bulma.png"></div>';
-   if(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' ")) > 199){
+   $stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick = ? AND daiktas = '5' AND tipas = '3'");
+   $stmt->execute([$nick]);
+   if($stmt->rowCount() > 199){
       echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai 10 kreditų.</div></div>';
-      mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 200");
-      mysql_query("UPDATE zaidejai SET kred=kred+'10' WHERE nick='$nick' ");
+      $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' AND daiktas='5' AND tipas='3' LIMIT 200");
+      $pdo->exec("UPDATE zaidejai SET kred=kred+'10' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 200 microshemų.</div></div>';
    }
@@ -512,10 +520,12 @@ elseif($ka == "dzino2"){
    online('Vykdo Dž. Vėžlio užduotį');
    echo '<div class="top">Dž. Vėžlio Užduotis</div>';
    echo '<div class="main_c"><img src="img/roshi.png"></div>';
-   if(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' ")) > 249){
+   $stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick = ? AND daiktas = '8' AND tipas = '3'");
+   $stmt->execute([$nick]);
+   if($stmt->rowCount() > 249){
       echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai '.sk(25000000).' zen\'ų.</div></div>';
-      mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' LIMIT 250");
-      mysql_query("UPDATE zaidejai SET litai=litai+'25000000' WHERE nick='$nick' ");
+      $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' AND daiktas='8' AND tipas='3' LIMIT 250");
+      $pdo->exec("UPDATE zaidejai SET litai=litai+'25000000' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 150 Stone.</div></div>';
    }
@@ -538,14 +548,16 @@ elseif($ka == "fryzo2"){
    online('Vykdo Fryzo užduotį');
    echo '<div class="top"><b>Fryzo Užduotis</b></div>';
    echo '<div class="main_c"><img src="img/frieza.png"></div>';
-   if(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='22' && tipas='3' ")) > 249){
+   $stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick = ? AND daiktas = '22' AND tipas = '3'");
+   $stmt->execute([$nick]);
+   if($stmt->rowCount() > 249){
 		echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai 1% jegos ir 2% gynybos.</div></div>';
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='22' && tipas='3' LIMIT 250");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' AND daiktas='22' AND tipas='3' LIMIT 250");
 		$jegu = $jega*1/100;
 		$jegos = $jega+$jegu;
 		$gynyb = $gynyba*2/100;
 		$gynybos = $gynyba+$gynyb;
-      mysql_query("UPDATE zaidejai SET jega='$jegos', gynyba='$gynybos' WHERE nick='$nick' ");
+      $pdo->exec("UPDATE zaidejai SET jega='$jegos', gynyba='$gynybos' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 250 Magic Ball.</div></div>';
    }
@@ -566,12 +578,14 @@ elseif($ka == "fryzo2"){
    online('Vykdo Android 17 užduotį');
 	echo '<div class="top">Android 17 Užduotis</div>';
 	echo '<div class="main_c"><img src="img/android17.png"></div>';
-   if(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='23' && tipas='3' ")) > 244){
+   $stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick = ? AND daiktas = '23' AND tipas = '3'");
+   $stmt->execute([$nick]);
+   if($stmt->rowCount() > 244){
 		echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai 6% jegos ir '.sk(20000000).' zenų.</div></div>';
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='23' && tipas='3' LIMIT 245");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='23' && tipas='3' LIMIT 245");
 		$jegu = $jega*1/100;
 		$jegos = $jega+$jegu;
-      mysql_query("UPDATE zaidejai SET jega='$jegos', litai=litai+'2000000' WHERE nick='$nick' ");
+      $pdo->exec("UPDATE zaidejai SET jega='$jegos', litai=litai+'2000000' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 145 Power Stone.</div></div>';
    }
@@ -591,12 +605,14 @@ elseif($ka == "fryzo2"){
    online('Vykdo Guldo užduotį');
 	echo '<div class="top">Guldo Užduotis</div>';
 	echo '<div class="main_c"><img src="img/guldas.png"></div>';
-   if(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='21' && tipas='3' ")) > 299){
+   $stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick = ? AND daiktas = '21' AND tipas = '3'");
+   $stmt->execute([$nick]);
+   if($stmt->rowCount() > 299){
 		echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai 9% gynybos ir 5 kreditus</div></div>';
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='21' && tipas='3' LIMIT 300");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='21' && tipas='3' LIMIT 300");
 		$gynyb = $gynyba*1/100;
 		$gynybos = $gynyba+$gynyb;
-      mysql_query("UPDATE zaidejai SET gynyba='$gynybos', kred=kred+'5' WHERE nick='$nick' ");
+      $pdo->exec("UPDATE zaidejai SET gynyba='$gynybos', kred=kred+'5' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 300 Gold Stone.</div></div>';
    }
@@ -617,9 +633,11 @@ elseif($ka == "fryzo2"){
 	online('Vykdo Babidi užduotį');
 	echo '<div class="top">Babidi Užduotis</div>';
 	echo '<div class="main_c"><img src="img/babidi.png"></div>';
-   if(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$nick' && '".$apie['nelec']." > time()'")) == 1){
+   $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick = ? AND ? > time()");
+   $stmt->execute([$nick, $apie['nelec']]);
+   if($stmt->rowCount() == 1){
 		echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai '.sk(40000000).' zenų!</div></div>';
-      mysql_query("UPDATE zaidejai SET litai=litai+'40000000', nelec='0' WHERE nick='$nick' ");
+      $pdo->exec("UPDATE zaidejai SET litai=litai+'40000000', nelec='0' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi nusipirkęs neliečiamybės.</div></div>';
    }
@@ -639,10 +657,12 @@ elseif($ka == "fryzo2"){
 	online('Vykdo Dr. Brief užduotį');
 	echo '<div class="top">Dr. Brief Užduotis</div>';
 	echo '<div class="main_c"><img src="img/drbrief.png"></div>';
-   if(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='18' && tipas='3' ")) > 599){
+   $stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick = ? AND daiktas = '18' AND tipas = '3'");
+   $stmt->execute([$nick]);
+   if($stmt->rowCount() > 599){
 		echo '<div class="main_c"><div class="acept">Užduotis įvygdytą! Gavai '.sk(5000000000).' zenų ir 1 kreditą.</div></div>';
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='18' && tipas='3' LIMIT 600");
-      mysql_query("UPDATE zaidejai SET litai=litai+'5000000000', kred=kred+'1' WHERE nick='$nick' ");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='18' && tipas='3' LIMIT 600");
+      $pdo->exec("UPDATE zaidejai SET litai=litai+'5000000000', kred=kred+'1' WHERE nick='$nick' ");
    } else {
       echo '<div class="main_c"><div class="error"><b>Klaida!</b> Tu neturi 600 Energy Stone.</div></div>';
    }
@@ -662,11 +682,13 @@ elseif($ka == "fryzo2"){
 	online('Vykdo Mr. Satan užduotį');
 	echo '<div class="top">Mr. Satan Užduotis</div>';
 	echo '<div class="main_c"><img src="img/mrsatan.png"></div>';
-   if(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='19' && tipas='3' ")) > 499){
+   $stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick = ? AND daiktas = '19' AND tipas = '3'");
+   $stmt->execute([$nick]);
+   if($stmt->rowCount() > 499){
 		echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai 50 Microshemų.</div></div>';
-		mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='19' && tipas='3' LIMIT 500");
+		$pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='19' && tipas='3' LIMIT 500");
 		for($i = 0; $i < 50; $i++){
-      	mysql_query("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
+      	$pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='5', tipas='3'");
 		}
    } else {
       echo '<div class="main_c"><div class="error"><b>Klaida!</b> Tu neturi 500 Pragaro vaisių.</div></div>';

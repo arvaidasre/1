@@ -18,14 +18,17 @@ $klaida = "Tu esi užtildytas!";
         if($lygis < 35){
             $klaida = "Tavo lygis per žemas! Reikia 35 lygio!";
         }
-        if(mysql_num_rows(mysql_query("SELECT * FROM pasiulymai WHERE pasiulymas='$pasiulymas'")) > 0 ){
+        $stmt = $pdo->prepare("SELECT * FROM pasiulymai WHERE pasiulymas=?");
+        $stmt->execute([$pasiulymas]);
+        if($stmt->rowCount() > 0 ){
             $klaida = "Toks pasiūlymas jau yra!";
         }
 
         if ($klaida != ""){
             echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
         } else {
-            mysql_query("INSERT INTO pasiulymai SET kas='$nick', pasiulymas='$pasiulymas', laikas='".time()."', busena='Neperžiūrėtas' ");
+            $stmt = $pdo->prepare("INSERT INTO pasiulymai SET kas=?, pasiulymas=?, laikas=?, busena='Neperžiūrėtas'");
+            $stmt->execute([$nick, $pasiulymas, time()]);
             echo '<div class="main_c"><div class="true">Pasiūlymas sėkmingai pridėtas!</div></div>';
         }
     }
@@ -35,18 +38,19 @@ $klaida = "Tu esi užtildytas!";
     <textarea name="pasiulymas" rows="3"></textarea><br />
     <input type="submit" name="submit" class="submit" value="Rašyti"/>
     </div>';
-    $viso = mysql_result(mysql_query("SELECT COUNT(*) FROM pasiulymai "),0);
+    $stmt = $pdo->query("SELECT COUNT(*) FROM pasiulymai");
+    $viso = $stmt->fetchColumn();
     if($viso > 0){
     $rezultatu_rodymas=10;
             $total = @intval(($viso-1) / $rezultatu_rodymas) + 1;
             if (empty($psl) or $psl < 0) $psl = 1;
             if ($psl > $total) $psl = $total;
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-     $query = mysql_query("SELECT * FROM pasiulymai ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+     $query = $pdo->query("SELECT * FROM pasiulymai ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
      $puslapiu = ceil($viso/$rezultatu_rodymas);
-     while ($row = mysql_fetch_assoc($query)) {
-	 $teig = mysql_num_rows(mysql_query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='+'"));
-         	 $neig = mysql_num_rows(mysql_query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='-'"));
+     while ($row = $query->fetch()) {
+	 $teig = $pdo->query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='+'")->rowCount();
+         	 $neig = $pdo->query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='-'")->rowCount();
 		 echo '<div class="main">
          '.$ico.' <a href="game.php?i=apie&wh='.$row['kas'].'">'.statusas($row['kas']).'</a>: '.smile($row['pasiulymas']).'
 		 <br />
@@ -60,12 +64,15 @@ $klaida = "Tu esi užtildytas!";
          if($row['komentaras'] == ""){} else {
              echo '<br/>'.$ico.' <b><font color="green">Administratoriaus komentaras:</font></b> <i>'.smile($row['komentaras']).'</i>';
          }
-         echo '<br/>'.$ico.' <a href="pasiulymai.php?i=komentarai&id='.$row['id'].'">Komentarai</a> ('.mysql_num_rows(mysql_query("SELECT * FROM pas_kom WHERE p_id='$row[id]' ")).')';
+         $stmt_kom = $pdo->prepare("SELECT * FROM pas_kom WHERE p_id=?");
+         $stmt_kom->execute([$row['id']]);
+         echo '<br/>'.$ico.' <a href="pasiulymai.php?i=komentarai&id='.$row['id'].'">Komentarai</a> ('.$stmt_kom->rowCount().')';
          echo '</div>';
          unset($row);
      }
      echo '<div class="main_c">'.puslapiavimas($puslapiu,$psl,'?i=').'</div>';
-     echo '<div class="main_c">Viso pasiūlymų: <b>'.mysql_num_rows(mysql_query("SELECT * FROM pasiulymai")).'</b></div>';
+     $stmt_total = $pdo->query("SELECT * FROM pasiulymai");
+     echo '<div class="main_c">Viso pasiūlymų: <b>'.$stmt_total->rowCount().'</b></div>';
    } else {
    echo '<div class="error">Pasiūlymų nėra!</div>';
    }
@@ -82,11 +89,15 @@ elseif($i == "rep"){
         top('Klaida!');
         echo '<div class="main_c"><div class="error">Tokios reputacijos nėra!</div></div>';
 	  }
-	  elseif(!mysql_num_rows(mysql_query("SELECT * FROM pasiulymai WHERE id='$ed'"))){
+	  $stmt_check = $pdo->prepare("SELECT * FROM pasiulymai WHERE id=?");
+	  $stmt_check->execute([$ed]);
+	  if(!$stmt_check->rowCount()){
         top('Klaida!');
         echo '<div class="main_c"><div class="error">Toks pasiulymas neegzistuoja!</div></div>';
     }
-	  elseif(mysql_num_rows(mysql_query("SELECT * FROM prep WHERE kam='$ed' && kas='$nick'"))){
+	  $stmt_rep = $pdo->prepare("SELECT * FROM prep WHERE kam=? AND kas=?");
+	  $stmt_rep->execute([$ed, $nick]);
+	  elseif($stmt_rep->rowCount()){
         top('Klaida!');
         echo '<div class="main_c"><div class="error">Šiam pasiulymui jau davei reputacijos!</div></div>';
     } else {
@@ -98,7 +109,8 @@ elseif($i == "rep"){
 	 $ka = "-";
 	 }
         echo '<div class="main_c"><div class="true">Pasiulymui davėte <b>'.$ka.'</b> REP!</div></div>';
-       mysql_query("INSERT INTO prep SET kas='$nick', kam='$ed', ka='$ka'");
+       $stmt_insert = $pdo->prepare("INSERT INTO prep SET kas=?, kam=?, ka=?");
+       $stmt_insert->execute([$nick, $ed, $ka]);
 	  }
    atgal('Į Pradžią-?i=');
 }
@@ -108,7 +120,10 @@ elseif($i == "edit"){
         echo '<div class="top">Klaida !</div>';
         echo '<div class="main_c"><div class="error">Tu ne Administratorius!</div></div>';
     }
-    elseif(mysql_num_rows(mysql_query("SELECT * FROM pasiulymai WHERE id='$id'")) == false){
+    else {
+        $stmt_check = $pdo->prepare("SELECT * FROM pasiulymai WHERE id=?");
+        $stmt_check->execute([$id]);
+        if(!$stmt_check->rowCount()){
         echo '<div class="top">Klaida !</div>';
         echo '<div class="main_c"><div class="error">Tokio pasiūlymo nėra!</div></div>';
     } else {
@@ -122,7 +137,8 @@ elseif($i == "edit"){
             if ($klaida != ""){
                 echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
             } else {
-                mysql_query("UPDATE pasiulymai SET busena='$st' WHERE id='$id' ");
+                $stmt_update = $pdo->prepare("UPDATE pasiulymai SET busena=? WHERE id=?");
+                $stmt_update->execute([$st, $id]);
                 echo '<div class="main_c"><div class="true">Būsena pakeista.</div></div>';
             }
         }
@@ -148,12 +164,15 @@ elseif($i == "delete"){
         echo '<div class="top">Klaida !</div>';
         echo '<div class="main_c"><div class="error">Tu ne Administratorius!</div></div>';
     }
-    elseif(mysql_num_rows(mysql_query("SELECT * FROM pasiulymai WHERE id='$id'")) == false){
+    else {
+        $stmt_check = $pdo->prepare("SELECT * FROM pasiulymai WHERE id=?");
+        $stmt_check->execute([$id]);
+        if(!$stmt_check->rowCount()){
         echo '<div class="top">Klaida !</div>';
         echo '<div class="main_c"><div class="error">Tokio pasiūlymo nėra!</div></div>';
     } else {
-        mysql_query("DELETE FROM pasiulymai WHERE id='$id'");
-        mysql_query("DELETE FROM pas_kom WHERE p_id='$id'");
+        $pdo->exec("DELETE FROM pasiulymai WHERE id='$id'");
+        $pdo->exec("DELETE FROM pas_kom WHERE p_id='$id'");
         echo '<div class="top">Pasiūlymo trinimas</div>';
         echo '<div class="main_c"><div class="true">Pasiūlymas ištrintas!</div></div>';
     }
@@ -165,7 +184,10 @@ elseif($i == "koment"){
         echo '<div class="top">Klaida !</div>';
         echo '<div class="main_c"><div class="error">Tu ne Administratorius!</div></div>';
     }
-    elseif(mysql_num_rows(mysql_query("SELECT * FROM pasiulymai WHERE id='$id'")) == false){
+    else {
+        $stmt_check = $pdo->prepare("SELECT * FROM pasiulymai WHERE id=?");
+        $stmt_check->execute([$id]);
+        if(!$stmt_check->rowCount()){
         echo '<div class="top">Klaida !</div>';
         echo '<div class="main_c"><div class="error">Tokio pasiūlymo nėra!</div></div>';
     } else {
@@ -180,7 +202,8 @@ elseif($i == "koment"){
             if ($klaida != ""){
                 echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
             } else {
-                mysql_query("UPDATE pasiulymai SET komentaras='$kom' WHERE id='$id' ");
+                $stmt_update = $pdo->prepare("UPDATE pasiulymai SET komentaras=? WHERE id=?");
+                $stmt_update->execute([$kom, $id]);
                 echo '<div class="main_c"><div class="true">Komentaras parašytas.</div></div>';
             }
         }
@@ -194,7 +217,9 @@ elseif($i == "koment"){
 }
 elseif($i == "komentarai"){
     online('Pasiūlymų komentarai');
-    if(mysql_num_rows(mysql_query("SELECT * FROM pasiulymai WHERE id='$id'")) == false){
+    $stmt_check = $pdo->prepare("SELECT * FROM pasiulymai WHERE id=?");
+    $stmt_check->execute([$id]);
+    if(!$stmt_check->rowCount()){
         echo '<div class="top">Klaida !</div>';
         echo '<div class="main_c"><div class="error">Tokio pasiūlymo nėra!</div></div>';
     } else {
@@ -208,13 +233,16 @@ elseif($i == "komentarai"){
             if($lygis < 20){
                 $klaida = "Tavo lygis per žemas! Reikia 20 lygio.";
             }
-            if(mysql_num_rows(mysql_query("SELECT * FROM pas_kom WHERE kom='$kom' AND p_id='$id' ")) > 0 ){
+            $stmt_kom_check = $pdo->prepare("SELECT * FROM pas_kom WHERE kom=? AND p_id=?");
+            $stmt_kom_check->execute([$kom, $id]);
+            if($stmt_kom_check->rowCount() > 0){
                 $klaida = "Toks komentaras jau yra.";
             }
             if ($klaida != ""){
                 echo '<div class="error">'.$klaida.'</div>';
             } else {
-                mysql_query("INSERT INTO pas_kom SET kas='$nick', kom='$kom', laikas='".time()."', p_id='$id' ");
+                $stmt_insert = $pdo->prepare("INSERT INTO pas_kom SET kas=?, kom=?, laikas=?, p_id=?");
+                $stmt_insert->execute([$nick, $kom, time(), $id]);
                 echo '<div class="main_c"><div class="true">Komentaras parašytas.</div></div>';
             }
         }
@@ -223,17 +251,20 @@ elseif($i == "komentarai"){
         Komentaras:<br /><textarea name="kom" rows="3"></textarea><br />
         <input type="submit" name="submit" class="submit"value="Rašyti"/>
         </div>';
-    $viso = mysql_result(mysql_query("SELECT COUNT(*) FROM pas_kom WHERE p_id='$id' "),0);
+    $stmt_count = $pdo->prepare("SELECT COUNT(*) FROM pas_kom WHERE p_id=?");
+    $stmt_count->execute([$id]);
+    $viso = $stmt_count->fetchColumn();
     if($viso > 0){
     $rezultatu_rodymas=10;
             $total = @intval(($viso-1) / $rezultatu_rodymas) + 1;
             if (empty($psl) or $psl < 0) $psl = 1;
             if ($psl > $total) $psl = $total;
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-     $query = mysql_query("SELECT * FROM pas_kom WHERE p_id='$id' ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+     $query = $pdo->prepare("SELECT * FROM pas_kom WHERE p_id=? ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+     $query->execute([$id]);
      $puslapiu = ceil($viso/$rezultatu_rodymas);
      $nr = 1+$page_sql;
-     while ($row = mysql_fetch_assoc($query)) {
+     while ($row = $query->fetch()) {
          echo '<div class="main">
          <b>'.$nr.'.</b> <a href="game.php?i=apie&wh='.$row['kas'].'">'.statusas($row['kas']).'</a>: '.smile($row['kom']).'<br/>
          '.laikas($row['laikas']).'';
@@ -242,7 +273,9 @@ elseif($i == "komentarai"){
          unset($row);
      }
      echo '<div class="main_c">'.puslapiavimas($puslapiu,$psl,'?i=komentarai&id='.$id.'').'</div>';
-     echo '<div class="main_c">Viso komentarų: <b>'.mysql_num_rows(mysql_query("SELECT * FROM pas_kom WHERE p_id='$id' ")).'</b></div>';
+     $stmt_count = $pdo->prepare("SELECT * FROM pas_kom WHERE p_id=?");
+     $stmt_count->execute([$id]);
+     echo '<div class="main_c">Viso komentarų: <b>'.$stmt_count->rowCount().'</b></div>';
    } else {
    echo '<div class="main_c"><div class="error">Komentarų nėra.</div></div>';
    }

@@ -61,12 +61,12 @@ switch($i){
 	else{
 		if($apie['pad_time']-time() > 0){
 			echo "".$ico." Pasiimiai savo dovaną ir gavai: <b>100,000,000</b> pinigų, <b>50</b> kreditų ir <b>10</b> litų!";
-			mysql_query("UPDATE zaidejai SET litai=litai+100000000, kred=kred+50, kaledine_dovana='+', sms_litai=sms_litai+10 WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET litai=litai+100000000, kred=kred+50, kaledine_dovana='+', sms_litai=sms_litai+10 WHERE nick='$nick'");
 		}
 		else{
 			$padusimulaikas = time()+ 60 * 60 * 24;
 			echo "".$ico." Pasiimiai savo dovaną ir gavai: <b>100,000,000</b> pinigų, <b>50</b> kreditų ir <b>2</b> dienoms mažesnius padusimus!";
-			mysql_query("UPDATE zaidejai SET litai=litai+100000000, kred=kred+50, kaledine_dovana='+', pad_time='".$padusimulaikas."' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET litai=litai+100000000, kred=kred+50, kaledine_dovana='+', pad_time='".$padusimulaikas."' WHERE nick='$nick'");
 		}
 	}
 	echo "</div>";

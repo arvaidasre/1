@@ -20,22 +20,23 @@ if($kgi > 25000000) $smugis = rand(92000,150000);
 
 $smugis=$smugis/1.5;
 
-if(mysql_num_rows(mysql_query("SELECT * FROM boss")) == 0){
-mysql_query("INSERT INTO boss SET name='Garlikas', img='img/boss/Jr.Garlic.png', max_hp='20000', hp='20000', exp='10000', zen='100000', krd='1' ,max_hit='4000', laikas='3600'");
+$stmt = $pdo->query("SELECT * FROM boss");
+if($stmt->rowCount() == 0){
+$pdo->exec("INSERT INTO boss SET name='Garlikas', img='img/boss/Jr.Garlic.png', max_hp='20000', hp='20000', exp='10000', zen='100000', krd='1' ,max_hit='4000', laikas='3600'");
 
-mysql_query("INSERT INTO boss SET name='Turles', img='img/boss/turles.png', max_hp='50000', hp='50000', exp='30000', zen='250000', krd='1', max_hit='8000', laikas='7200'");
+$pdo->exec("INSERT INTO boss SET name='Turles', img='img/boss/turles.png', max_hp='50000', hp='50000', exp='30000', zen='250000', krd='1', max_hit='8000', laikas='7200'");
 
-mysql_query("INSERT INTO boss SET name='Kuleris', img='img/boss/kuleris.png', max_hp='100000', hp='100000', exp='70000', zen='500000', krd='2', max_hit='8000', laikas='9000'");
+$pdo->exec("INSERT INTO boss SET name='Kuleris', img='img/boss/kuleris.png', max_hp='100000', hp='100000', exp='70000', zen='500000', krd='2', max_hit='8000', laikas='9000'");
 
-mysql_query("INSERT INTO boss SET name='Babidis', img='img/boss/babidis.png', max_hp='200000', hp='200000', exp='150000', zen='1700000', krd='2', max_hit='12000', laikas='12600'");
+$pdo->exec("INSERT INTO boss SET name='Babidis', img='img/boss/babidis.png', max_hp='200000', hp='200000', exp='150000', zen='1700000', krd='2', max_hit='12000', laikas='12600'");
 
-mysql_query("INSERT INTO boss SET name='Super Buu', img='img/boss/superbuu.png', max_hp='500000', hp='500000', exp='350000', zen='2300000', krd='2', max_hit='18000', laikas='14400'");
+$pdo->exec("INSERT INTO boss SET name='Super Buu', img='img/boss/superbuu.png', max_hp='500000', hp='500000', exp='350000', zen='2300000', krd='2', max_hit='18000', laikas='14400'");
 
-mysql_query("INSERT INTO boss SET name='Dr. Myuu', img='img/boss/drmyuu.png', max_hp='1000000', hp='1000000', exp='800000', zen='4100000', krd='2', max_hit='25000', laikas='18000'");
+$pdo->exec("INSERT INTO boss SET name='Dr. Myuu', img='img/boss/drmyuu.png', max_hp='1000000', hp='1000000', exp='800000', zen='4100000', krd='2', max_hit='25000', laikas='18000'");
 
-mysql_query("INSERT INTO boss SET name='Lord Yao', img='img/boss/lordyao.png', max_hp='2500000', hp='2500000', exp='1300000', zen='7350000', krd='2', max_hit='49000', laikas='19800'");
+$pdo->exec("INSERT INTO boss SET name='Lord Yao', img='img/boss/lordyao.png', max_hp='2500000', hp='2500000', exp='1300000', zen='7350000', krd='2', max_hit='49000', laikas='19800'");
 
-mysql_query("INSERT INTO boss SET name='Nuova Shenron', img='img/boss/nuovashenron.png', max_hp='5780000', hp='5780000', exp='1730000', zen='78100000', krd='3', max_hit='81000', laikas='21600'");
+$pdo->exec("INSERT INTO boss SET name='Nuova Shenron', img='img/boss/nuovashenron.png', max_hp='5780000', hp='5780000', exp='1730000', zen='78100000', krd='3', max_hit='81000', laikas='21600'");
 }
 
 if($i == ""){
@@ -44,8 +45,8 @@ echo '<div class="top">Boss Village</div>';
 echo '<div class="main_c">Čia jūs galite mušti bosus ir gauti tam tikrų dalykų.</div>';
 echo '<div class="title">'.$ico.' Bosai:</div>
 <div class="main">';
-$query = mysql_query("SELECT * FROM boss ORDER BY ID");
-while($row = mysql_fetch_assoc($query)){
+$query = $pdo->query("SELECT * FROM boss ORDER BY ID");
+while($row = $query->fetch()){
 if($row['prisikels']-time() > 0){
 echo '[&raquo;] '.$row['name'].' prisikels už <b>'.laikas($row['prisikels']-time(), 1).'</b> <i>(Bosą nukirto: <b>'.$row['nukirto'].'</b>)</i><br/>';
 } else {
@@ -58,14 +59,18 @@ atgal('Į Pradžią-game.php?i=');
 }
 elseif($i == "inf"){
 online('Boss Village');
-$boss = mysql_fetch_array(mysql_query("SELECT * FROM boss WHERE id='$id'"));
+$stmt = $pdo->prepare("SELECT * FROM boss WHERE id = ?");
+$stmt->execute([$id]);
+$boss = $stmt->fetch();
 $tims = $boss['laikas'];
 if($boss['prisikels']-time() > 0){
 echo '<div class="top">Klaida !</div>';
 echo '<div class="main_c"><img src="'.$boss['img'].'" alt="'.$boss['name'].'"></div>';
 echo '<div class="main_c"><div class="error">'.$boss['name'].' nukautas, prisikels už <b>'.laikas($boss['prisikels']-time(), 1).'</b></div></div>';
 }
-elseif(mysql_num_rows(mysql_query("SELECT * FROM boss WHERE id='$id'")) == 0){
+$stmt = $pdo->prepare("SELECT * FROM boss WHERE id = ?");
+$stmt->execute([$id]);
+elseif($stmt->rowCount() == 0){
 echo '<div class="top">Klaida !</div>';
 echo '<div class="main_c"><div class="error">Toks bosas neegzistuoja!</div></div>';
 }
@@ -93,14 +98,18 @@ atgal('Atgal-?i=&Į Pradžią-game.php?i=');
 elseif($i == "attack"){
 online('Boss Village');
 $KD = $klase->sk($_GET['KD']);
-$boss = mysql_fetch_array(mysql_query("SELECT * FROM boss WHERE id='$id'"));
+$stmt = $pdo->prepare("SELECT * FROM boss WHERE id = ?");
+$stmt->execute([$id]);
+$boss = $stmt->fetch();
 $tims = $boss['laikas'];
 if($boss['prisikels']-time() > 0){
 echo '<div class="top">Klaida !</div>';
 echo '<div class="main_c"><img src="'.$boss['img'].'" alt="'.$boss['name'].'"></div>';
 echo '<div class="main_c"><div class="error">'.$boss['name'].' nukautas, prisikels už <b>'.laikas($boss['prisikels']-time(), 1).'</b></div></div>';
 }
-elseif(mysql_num_rows(mysql_query("SELECT * FROM boss WHERE id='$id'")) == 0){
+$stmt = $pdo->prepare("SELECT * FROM boss WHERE id = ?");
+$stmt->execute([$id]);
+elseif($stmt->rowCount() == 0){
 echo '<div class="top">Klaida !</div>';
 echo '<div class="main_c"><div class="error">Toks bosas neegzistuoja!</div></div>';
 }
@@ -147,13 +156,21 @@ if($bosui_liko > 0){
 $KD = rand(9999,99999);
 $_SESSION['refresh'] = $KD;
 $_SESSION['pad'] = time()+$pad;
-mysql_query("UPDATE zaidejai SET vveiksmai=vveiksmai+'1', gyvybes=gyvybes-'$hit' WHERE nick='$nick' ");
-mysql_query("UPDATE boss SET hp='$bosui_liko' WHERE id='$id'");
+$pdo->exec("UPDATE zaidejai SET vveiksmai=vveiksmai+'1', gyvybes=gyvybes-'$hit' WHERE nick='$nick' ");
+$pdo->exec("UPDATE boss SET hp='$bosui_liko' WHERE id='$id'");
 
 	// SUKURTA: JEIGU NARYS VAKAR LAIMĖJO DIENOS TOPĄ, TAI ŠIANDIENA JO VEIKSMAI NESISKAIČIUOJA IR NEDALYVAUJA TOP'E!
 	// YRA PARAŠOMA IF FUNKCIJA! IF($NUST('dtop_nick' == $nick) ..
 	if ($nust['dtop_nick'] !== $nick) {
-    if(mysql_num_rows(mysql_query("SELECT * FROM dtop WHERE nick='$nick'")) > 0) {mysql_query("UPDATE dtop SET vksm=vksm+1 WHERE nick='$nick'");} else{ mysql_query("INSERT INTO dtop SET vksm='1', nick='$nick'");}
+    $stmt = $pdo->prepare("SELECT * FROM dtop WHERE nick = ?");
+    $stmt->execute([$nick]);
+    if($stmt->rowCount() > 0) {
+        $stmt = $pdo->prepare("UPDATE dtop SET vksm=vksm+1 WHERE nick = ?");
+        $stmt->execute([$nick]);
+    } else {
+        $stmt = $pdo->prepare("INSERT INTO dtop SET vksm='1', nick = ?");
+        $stmt->execute([$nick]);
+    }
 	}
 
 
@@ -171,10 +188,10 @@ $krdx = rand(1,$boss['krd']);
 $zenx = rand(1,$boss['zen']);
 $expx = rand(1,$boss['exp']);
 $pliusss = rand(111,333);
-mysql_query("UPDATE zaidejai SET exp=exp+'$expx', litai=litai+'$zenx', kred=kred+'$krdx' WHERE nick='$nick' ");
+$pdo->exec("UPDATE zaidejai SET exp=exp+'$expx', litai=litai+'$zenx', kred=kred+'$krdx' WHERE nick='$nick' ");
 
 $time = time()+$boss['laikas'];
-mysql_query("UPDATE boss SET hp='$boss[max_hp]', prisikels='$time', nukirto='$nick' WHERE id='$id'");
+$pdo->exec("UPDATE boss SET hp='$boss[max_hp]', prisikels='$time', nukirto='$nick' WHERE id='$id'");
 
 echo '<div class="main_c"><div class="true">Įtrenkiai Last Hit! Gavai <b>'.sk($krdx).'</b> kreditų, <b>'.sk($zenx).'</b> zen\'ų ir <b>'.sk($expx).'</b> EXP.</div></div>';
 }

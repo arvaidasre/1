@@ -9,7 +9,8 @@ if($i == ""){
    echo '<div class="main_c">Čia jūs galite pasiimti daiktus, kutriuos išmetė kiti žaidėjai.</div>';
       
    echo '<div class="title">'.$ico.' Išmesti daiktai:</div>';
-   $viso = mysql_result(mysql_query("SELECT COUNT(*) FROM siukslynas"),0);
+   $stmt = $pdo->query("SELECT COUNT(*) FROM siukslynas");
+   $viso = $stmt->fetchColumn();
    if($viso > 0){
        $rezultatu_rodymas=10;
        $total = @intval(($viso-1) / $rezultatu_rodymas) + 1;
@@ -17,11 +18,13 @@ if($i == ""){
        if ($psl > $total) $psl = $total;
        $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
             
-       $query = mysql_query("SELECT * FROM siukslynas ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+       $query = $pdo->query("SELECT * FROM siukslynas ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
        $puslapiu=ceil($viso/$rezultatu_rodymas);
        echo '<div class="main">';
-       while($row = mysql_fetch_assoc($query)){
-           $daigto_inf = mysql_fetch_assoc(mysql_query("SELECT * FROM items WHERE id='$row[daiktas]' "));
+       while($row = $query->fetch()){
+           $stmt2 = $pdo->prepare("SELECT * FROM items WHERE id = ?");
+           $stmt2->execute([$row['daiktas']]);
+           $daigto_inf = $stmt2->fetch();
            echo '[&raquo;] <a href="siukslynas.php?i=imti&id='.$row['id'].'"><b>'.sk($row['kiek']).'</b> '.$daigto_inf['name'].'</a>';
            echo '<br/>';
            unset($row);        
@@ -35,14 +38,20 @@ if($i == ""){
 }
 elseif($i == "imti"){
    online('Šiukšlynas');
-   if(!mysql_num_rows(mysql_query("SELECT * FROM siukslynas WHERE id='$id'"))){
+   $stmt = $pdo->prepare("SELECT * FROM siukslynas WHERE id = ?");
+   $stmt->execute([$id]);
+   if(!$stmt->rowCount()){
        echo '<div class="top">Klaida !</div>';
        echo '<div class="main_c"><div class="error">Tokio išmesto daikto nėra!</div></div>';
    } else {
        echo '<div class="top">Šiukšlynas</div>';
        
-       $inf = mysql_fetch_assoc(mysql_query("SELECT * FROM siukslynas WHERE id='$id'"));
-       $daigtas = mysql_fetch_assoc(mysql_query("SELECT * FROM items WHERE id='$inf[daiktas]' "));
+       $stmt = $pdo->prepare("SELECT * FROM siukslynas WHERE id = ?");
+       $stmt->execute([$id]);
+       $inf = $stmt->fetch();
+       $stmt2 = $pdo->prepare("SELECT * FROM items WHERE id = ?");
+       $stmt2->execute([$inf['daiktas']]);
+       $daigtas = $stmt2->fetch();
 
        echo '<div class="main">
        '.$ico.' Daiktas: <b>'.sk($inf['kiek']).' '.$daigtas['name'].'</b><br/>
@@ -59,12 +68,15 @@ elseif($i == "imti"){
            } else {
                echo '<div class="main_c"><div class="true">Atlikta! Pasiėmei '.sk($kieks).' '.$daigtas['name'].'.</div></div>';
                for($i = 0; $i<$kieks; $i++){
-                   mysql_query("INSERT INTO inventorius SET nick='$nick',daiktas='".$inf['daiktas']."',tipas='$daigtas[tipas]'");
+                   $stmt = $pdo->prepare("INSERT INTO inventorius SET nick = ?, daiktas = ?, tipas = ?");
+                   $stmt->execute([$nick, $inf['daiktas'], $daigtas['tipas']]);
                }
                if($inf['kiek']-$kieks < 1){
-                   mysql_query("DELETE FROM siukslynas WHERE id='$inf[id]'");
+                   $stmt = $pdo->prepare("DELETE FROM siukslynas WHERE id = ?");
+                   $stmt->execute([$inf['id']]);
                } else {
-                   mysql_query("UPDATE siukslynas SET kiek=kiek-'$kieks' WHERE id='$inf[id]'");
+                   $stmt = $pdo->prepare("UPDATE siukslynas SET kiek = kiek - ? WHERE id = ?");
+                   $stmt->execute([$kieks, $inf['id']]);
                }
            }
        }

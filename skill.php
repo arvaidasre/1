@@ -3,7 +3,9 @@ ob_start();
 include_once 'cfg/sql.php';
 include_once 'cfg/login.php';
 head2();
-$st = mysql_fetch_assoc(mysql_query("SELECT * FROM technikos WHERE nick='$nick' "));
+global $pdo;
+$stmt = $pdo->query("SELECT * FROM technikos WHERE nick='$nick' ");
+$st = $stmt->fetch();
 if($i == ""){
    online('Įgūdžiuose');
    top('Įgūdžiai');
@@ -40,7 +42,7 @@ elseif($i == "trans"){
             $tr = $apie['trans']+1;
             $im = "$img-$tr";
            
-            mysql_query("UPDATE zaidejai SET jega=jega+'$trans_jegos2', gynyba=gynyba+'$trans_gynybos2', trans=trans+'1', foto='$im' WHERE nick='$nick' ") or die(mysql_error());
+            $pdo->exec("UPDATE zaidejai SET jega=jega+'$trans_jegos2', gynyba=gynyba+'$trans_gynybos2', trans=trans+'1', foto='$im' WHERE nick='$nick' ");
             
         }
     } else {
@@ -135,8 +137,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*3/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_1='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_1='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "2") {
 			if ($st['st_2'] == "+") {
@@ -149,8 +151,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*4/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_2='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_2='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "3") {
 			if ($st['st_3'] == "+") {
@@ -163,8 +165,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*6/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_3='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_3='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "4") {
 			if ($st['st_4'] == "+") {
@@ -177,8 +179,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*8/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_4='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_4='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "5") {
 			if ($st['st_5'] == "+") {
@@ -191,8 +193,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*10/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_5='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_5='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "6") {
 			if ($st['st_6'] == "+") {
@@ -205,8 +207,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*12/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_6='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_6='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "7") {
 			if ($st['st_7'] == "+") {
@@ -219,8 +221,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*14/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_7='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_7='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "8") {
 			if ($st['st_8'] == "+") {
@@ -233,8 +235,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*16/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba'' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_8='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba'' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_8='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "9") {
 			if ($st['st_9'] == "+") {
@@ -247,8 +249,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*18/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_9='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_9='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "10") {
 			if ($st['st_10'] == "+") {
@@ -261,8 +263,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*20/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' idball='0' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_10='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' idball='0' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_10='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "11") {
 			if ($st['st_11'] == "+") {
@@ -275,8 +277,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*22/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' grigas='' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_11='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' grigas='' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_11='+' WHERE nick='$nick'");
 			}
 		} elseif ($id == "12") {
 			if ($st['st_12'] == "+") {
@@ -289,8 +291,8 @@ elseif($i == "trans"){
 			$stjega = $jega+$sjega;
 			$sgynyba = $gynyba*24/100;
 			$stgynyba = $gynyba+$sgynyba;
-			mysql_query("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
-			mysql_query("UPDATE technikos SET st_12='+' WHERE nick='$nick'");
+			$pdo->exec("UPDATE zaidejai SET jega='$stjega', gynyba='$stgynyba' WHERE nick='$nick'");
+			$pdo->exec("UPDATE technikos SET st_12='+' WHERE nick='$nick'");
 			}
 		}
 		atgal('Atgal-?i=stechnikos& Į Pradžią-game.php?i=');
@@ -308,10 +310,10 @@ elseif($i == "trans"){
 			echo '<div class="true">Sėkmingai pradėjote mokytis staigaus persikėlimo technikos!</div>';
 			if ($st['st_12'] == "+") {
 				$time = time()+60*3;
-				mysql_query("UPDATE zaidejai SET kred=kred-'1', sptechnika_time='$time', sptechnika='1' WHERE nick='$nick'");	
+				$pdo->exec("UPDATE zaidejai SET kred=kred-'1', sptechnika_time='$time', sptechnika='1' WHERE nick='$nick'");	
 			} else {
 				$time = time()+60*10;
-				mysql_query("UPDATE zaidejai SET kred=kred-'1', sptechnika_time='$time', sptechnika='1' WHERE nick='$nick'");
+				$pdo->exec("UPDATE zaidejai SET kred=kred-'1', sptechnika_time='$time', sptechnika='1' WHERE nick='$nick'");
 			}
 		}
 		atgal('Atgal-?i=sptechnika& Į Pradžią-game.php?i=');
@@ -331,8 +333,8 @@ elseif($i == "trans"){
 	}
 } elseif($i == "fusion"){
     online('Susijungimo šokis');
-    $fsn = mysql_fetch_assoc(mysql_query("SELECT * FROM susijungimas WHERE nick='$nick'"));
-    $fsn2 = mysql_fetch_assoc(mysql_query("SELECT * FROM susijungimas WHERE nick='$fsn[kitas_zaidejas]' "));
+    $fsn = $pdo->query("SELECT * FROM susijungimas WHERE nick='$nick'")->fetch();
+    $fsn2 = $pdo->query("SELECT * FROM susijungimas WHERE nick='$fsn[kitas_zaidejas]' ")->fetch();
     if($fsn['ar_susijungias'] == "") $su_kuo = 'Niekuo'; else $su_kuo = $fsn['kitas_zaidejas'];
     echo '<div class="top">Susijungimo šokis</div>';
     echo '<div class="main_c"><img src="img/fusion_dance.png" alt="*"></div>';
@@ -346,29 +348,29 @@ elseif($i == "trans"){
        elseif($apie['kred'] < 20){
 	        echo '<div class="error">Neturi pakankamai kreditų!</div>';
        }
-       elseif(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' ")) < 100){
+       elseif(($stmt = $pdo->prepare("SELECT * FROM inventorius WHERE nick=? AND daiktas='6' AND tipas='3'")) && $stmt->execute([$nick]) && $stmt->rowCount() < 100){
           echo '<div class="main_c"><div class="error">Neturite pakankamai Fusion Tail!</div></div>';
        } else {
           echo '<div class="main_c"><div class="true">Sėkmingai išmokote <b>susijungimo šokį</b>.</div></div>';
-          mysql_query("UPDATE susijungimas SET fusion_dance='+' WHERE nick='$nick' ");
-          mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-          mysql_query("UPDATE zaidejai SET kred=kred-'20' WHERE nick='$nick' ");
+          $pdo->exec("UPDATE susijungimas SET fusion_dance='+' WHERE nick='$nick' ");
+          $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+          $pdo->exec("UPDATE zaidejai SET kred=kred-'20' WHERE nick='$nick' ");
        }
        atgal('Atgal-?i=fusion&Į Pradžią-game.php?i=');
     } else {
     if($ka == "delete"){
-	if(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'")) == 0){
-		mysql_query("DELETE FROM susijungimas WHERE nick='$nick'");
+	if(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$nick]) && $stmt->rowCount() == 0){
+		$pdo->exec("DELETE FROM susijungimas WHERE nick='$nick'");
 	}
-       if(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$wh'")) == 0){
+       if(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$wh]) && $stmt->rowCount() == 0){
           echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
        }
        elseif($wh !== $fsn['kitas_zaidejas']){
           echo '<div class="main_c"><div class="error">Tu nesi susijunges su <b>'.statusas($wh).'</b>!</div></div>';
        } else {
           echo '<div class="main_c"><div class="true">Sėkmingai atsijungėte nuo <b>'.statusas($wh).'</b>!</div></div>';
-          mysql_query("UPDATE susijungimas SET ar_susijungias='', kitas_zaidejas='', uzdirbo_exp='0' WHERE nick='$nick'");
-          mysql_query("UPDATE susijungimas SET ar_susijungias='', kitas_zaidejas='', uzdirbo_exp='0' WHERE nick='$wh'");
+          $pdo->exec("UPDATE susijungimas SET ar_susijungias='', kitas_zaidejas='', uzdirbo_exp='0' WHERE nick='$nick'");
+          $pdo->exec("UPDATE susijungimas SET ar_susijungias='', kitas_zaidejas='', uzdirbo_exp='0' WHERE nick='$wh'");
        }
        atgal('Atgal-?i=fusion&Į Pradžią-game.php?i=');
     } else {
@@ -376,10 +378,11 @@ elseif($i == "trans"){
        if(empty($fsn['ar_kvieti'])){
           echo '<div class="main_c"><div class="error">Jūs nieko nekviečiat susijungti!</div></div>';
        } else {
-          $fsnn = mysql_fetch_assoc(mysql_query("SELECT * FROM susijungimas WHERE nick='$nick' "));
+          $stmt = $pdo->query("SELECT * FROM susijungimas WHERE nick='$nick' ");
+          $fsnn = $stmt->fetch();
           echo '<div class="main_c"><div class="true">Sėkmingai atšauktas kvietmas!</div></div>';
-          mysql_query("UPDATE susijungimas SET kas_kviecia='' WHERE nick='$fsnn[ka_kvieti]' ");
-          mysql_query("UPDATE susijungimas SET ar_kvieti='', ka_kvieti='' WHERE nick='$nick' ");
+          $pdo->exec("UPDATE susijungimas SET kas_kviecia='' WHERE nick='$fsnn[ka_kvieti]' ");
+          $pdo->exec("UPDATE susijungimas SET ar_kvieti='', ka_kvieti='' WHERE nick='$nick' ");
        }
        atgal('Atgal-?i=fusion&Į Pradžią-game.php?i=');
     } else {
@@ -387,12 +390,12 @@ elseif($i == "trans"){
        if(empty($fsn['kas_kviecia'])){
           echo '<div class="main_c"><div class="error">Jusų niekas nekviečia susijungti!</div></div>';
        }
-       elseif(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$wh'")) == 0){
+       elseif(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$wh]) && $stmt->rowCount() == 0){
           echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
        } else {
           echo '<div class="main_c"><div class="true">Sėkmingai priėmėte <b>'.statusas($wh).'</b> pasiūlymą susijungti!</div></div>';
-          mysql_query("UPDATE susijungimas SET ar_susijungias='+', kitas_zaidejas='$nick', ar_kvieti='', ka_kvieti='' WHERE nick='$wh'");
-          mysql_query("UPDATE susijungimas SET ar_susijungias='+', kitas_zaidejas='$wh', kas_kviecia='' WHERE nick='$nick'");
+          $pdo->exec("UPDATE susijungimas SET ar_susijungias='+', kitas_zaidejas='$nick', ar_kvieti='', ka_kvieti='' WHERE nick='$wh'");
+          $pdo->exec("UPDATE susijungimas SET ar_susijungias='+', kitas_zaidejas='$wh', kas_kviecia='' WHERE nick='$nick'");
        }
        atgal('Atgal-?i=fusion&Į Pradžią-game.php?i=');
     } else {
@@ -400,12 +403,12 @@ elseif($i == "trans"){
        if(empty($fsn['kas_kviecia'])){
           echo '<div class="main_c"><div class="error">Jūs nesate susijungęs!</div></div>';
        }
-       elseif(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$wh'")) == 0){
+       elseif(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$wh]) && $stmt->rowCount() == 0){
           echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
        } else {
           echo '<div class="main_c"><div class="true">Sėkmingai atmetei <b>'.statusas($wh).'</b> pasiūlymą susijungti!</div></div>';
-          mysql_query("UPDATE susijungimas SET ar_kvieti='', ka_kvieti='' WHERE nick='$wh'");
-	        mysql_query("UPDATE susijungimas SET kas_kviecia='' WHERE nick='$nick'");
+          $pdo->exec("UPDATE susijungimas SET ar_kvieti='', ka_kvieti='' WHERE nick='$wh'");
+	        $pdo->exec("UPDATE susijungimas SET kas_kviecia='' WHERE nick='$nick'");
        }
        atgal('Atgal-?i=fusion&Į Pradžią-game.php?i=');
     } else {
@@ -434,7 +437,8 @@ elseif($i == "trans"){
        if(!empty($fsn['ar_susijungias'])){ } else {
        if(isset($_POST['submit'])){
           $kak = strtolower(post($_POST['kvieciu']));
-          $fsnn = mysql_fetch_assoc(mysql_query("SELECT * FROM susijungimas WHERE nick='$kak' "));
+          $stmt = $pdo->query("SELECT * FROM susijungimas WHERE nick='$kak' ");
+          $fsnn = $stmt->fetch();
           if(empty($kak)){
              echo '<div class="main_c"><div class="error">Palikai tuščią laukelį!</div></div>';
           }
@@ -461,15 +465,15 @@ elseif($i == "trans"){
           elseif(!empty($fsnn['kas_kviecia'])){
              echo '<div class="main_c"><div class="error">Žaidėją <b>'.statusas($kak).'</b> jau kviečia susijungti!</div></div>';
           }
-          elseif(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$kak'")) == 0){
+          elseif(($stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?")) && $stmt->execute([$kak]) && $stmt->rowCount() == 0){
              echo '<div class="main_c"><div class="error">Toks žaidėjas neegzistuoja!</div></div>';
           }
           elseif(!empty($fsn['ar_kvieti'])){
              echo '<div class="main_c"><div class="error">Tu jau kažką kvieti susijungti!</div></div>';
           } else {
              echo '<div class="main_c"><div class="true">Kvietimas susijungti sėkmingai išsiūstas žaidėjui <b>'.statusas($kak).'</b>!</div></div>';
-             mysql_query("UPDATE susijungimas SET ar_kvieti='taip', ka_kvieti='$kak' WHERE nick='$nick' ");
-             mysql_query("UPDATE susijungimas SET kas_kviecia='$nick' WHERE nick='$kak' ");
+             $pdo->exec("UPDATE susijungimas SET ar_kvieti='taip', ka_kvieti='$kak' WHERE nick='$nick' ");
+             $pdo->exec("UPDATE susijungimas SET kas_kviecia='$nick' WHERE nick='$kak' ");
           }
 
        }
@@ -491,11 +495,12 @@ elseif($i == "trans"){
 elseif($i == "auros"){
    online('Mokosi auras');
    if($ka == "inf"){
-      if(mysql_num_rows(mysql_query("SELECT * FROM auru_inf WHERE id='$id'")) == 0){
+      if(($stmt = $pdo->prepare("SELECT * FROM auru_inf WHERE id=?")) && $stmt->execute([$id]) && $stmt->rowCount() == 0){
           top('Klaida!');
           echo '<div class="main_c"><div class="error">Tokios auros nėra!</div></div>';
       } else {
-          $aur = mysql_fetch_assoc(mysql_query("SELECT * FROM auru_inf WHERE id='$id' "));
+          $stmt = $pdo->query("SELECT * FROM auru_inf WHERE id='$id' ");
+          $aur = $stmt->fetch();
           top($aur['name']);
           echo '<div class="main_c"><img src="'.$aur['img'].'" border="1"></div>';
           echo '<div class="title">'.$ico.' <b>Apie '.$aur['name'].'</b>:</div>';
@@ -510,8 +515,8 @@ elseif($i == "auros"){
    }
    elseif($ka == "mokytis"){
       top('Aurų mokymasis');
-      $aur = mysql_fetch_assoc(mysql_query("SELECT * FROM auru_inf WHERE id='$id' "));
-      $auros = mysql_fetch_assoc(mysql_query("SELECT * FROM auros WHERE nick='$nick' "));
+      $aur = $pdo->query("SELECT * FROM auru_inf WHERE id='$id' ")->fetch();
+      $auros = $pdo->query("SELECT * FROM auros WHERE nick='$nick' ")->fetch();
       $aaur = 'aura'.$aur['id'];
       
       if($auros[$aaur] == "+"){
@@ -520,7 +525,7 @@ elseif($i == "auros"){
       elseif($lygis < $aur['lygis']){
          $klaida = "Tavo lygis per žemas! Reikia $aur[lygis] lygio!";
       }
-      elseif(mysql_num_rows(mysql_query("SELECT * FROM auru_inf WHERE id='$id'")) == 0){
+      elseif(($stmt = $pdo->prepare("SELECT * FROM auru_inf WHERE id=?")) && $stmt->execute([$id]) && $stmt->rowCount() == 0){
          $klaida = "Tokios auros nėra!";
       }
       
@@ -528,8 +533,8 @@ elseif($i == "auros"){
          echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
       } else {
          echo '<div class="main_c"><div class="true">Aura išmokta! Įgavai <b>'.sk($aur['jegos']).'</b> Jėgos ir <b>'.sk($aur['gynybos']).'</b> Gynybos.</div></div>';
-         mysql_query("UPDATE auros SET $aaur='+' WHERE nick='$nick' ");
-         mysql_query("UPDATE zaidejai SET jega=jega+'$aur[jegos]', gynyba=gynyba+'$aur[gynybos]' WHERE nick='$nick' ");
+         $pdo->exec("UPDATE auros SET $aaur='+' WHERE nick='$nick' ");
+         $pdo->exec("UPDATE zaidejai SET jega=jega+'$aur[jegos]', gynyba=gynyba+'$aur[gynybos]' WHERE nick='$nick' ");
       }
       atgal('Atgal-?i=auros&Į Pradžią-game.php?i=');
    } else {
@@ -537,8 +542,8 @@ elseif($i == "auros"){
       echo '<div class="main_c">Auros - čia jūs galite mokytis auras, išmoke vis naują aurą jūs įgausite tam tikra kieki Jėgos ir Gynybos. </div>';
       echo '<div class="title">'.$ico.' <b>Auros</b>:</div>';
       echo '<div class="main">';
-      $query = mysql_query("SELECT * FROM auru_inf");
-      while($row = mysql_fetch_assoc($query)){
+      $query = $pdo->query("SELECT * FROM auru_inf");
+      while($row = $query->fetch()){
           echo '<b>[&raquo;]</b> <a href="skill.php?i=auros&ka=inf&id='.$row['id'].'">'.$row['name'].'</a><br/>';
           unset($row);
       }

@@ -14,7 +14,8 @@ $kiek = round($gynyba*3/100);
 			
 			if($kiek<20){$kiek="22";}if($kiek2<20){$kiek2="22";}
             $time = time() + 60 * 60 * 24;
-            mysql_query("UPDATE zaidejai SET jega=jega+'$kiek2',gynyba=gynyba+'$kiek', gravitacijos_kambarys='$time' WHERE nick='$nick' ");
+            global $pdo;
+            $pdo->exec("UPDATE zaidejai SET jega=jega+'$kiek2',gynyba=gynyba+'$kiek', gravitacijos_kambarys='$time' WHERE nick='$nick' ");
             echo '<div class="main">'.$ico.' <b>Atlikta!</b> Gavai <b>'.sk($kiek).'</b> gynybos ir <b>'.sk($kiek2).'</b> jėgos.</div>';
         } else {
             echo '<div class="main">'.$ico.' <b>Klaida!</b> Tu jau šiandien treniravaisi!</div>';

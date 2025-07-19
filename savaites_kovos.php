@@ -38,12 +38,14 @@ switch($i){
 	echo "<div class='main_c'>Savaitės kovų konkursas baigsis už <b>".laikas($nust['savaites_kovu_topas']-time(), 1)."</b></div>";
 	echo "<div class='title'>Šios savaitės TOP 5:</div>";
 	echo "<div class='main'>";
-	$query = mysql_query("SELECT * FROM savaites_topas ORDER BY (0+ veiksmai) DESC LIMIT 0,5");
-	if(mysql_num_rows(mysql_query("SELECT * FROM savaites_topas")) == 0){
+	global $pdo;
+$query = $pdo->query("SELECT * FROM savaites_topas ORDER BY (0+ veiksmai) DESC LIMIT 0,5");
+	$count_stmt = $pdo->query("SELECT * FROM savaites_topas");
+if($count_stmt->rowCount() == 0){
 		echo "".$ico." Kolkas niekas dar nekovoja dėl prizo!";
 	}
 	else{
-		while($kas = mysql_fetch_assoc($query)){
+		while($kas = $query->fetch()){
 			$vt++;
 			echo "".$ico." <a href='game.php?i=apie&wh=".$kas['nick']."'>".$kas['nick']."</a> (".$kas['veiksmai'].") <br/>";
 		}

@@ -2,7 +2,9 @@
 ob_start();
 include_once 'cfg/sql.php';
 include_once 'cfg/login.php';
-$new = mysql_fetch_assoc(mysql_query("SELECT * FROM news ORDER BY id DESC LIMIT 1"));
+global $pdo;
+$stmt = $pdo->query("SELECT * FROM news ORDER BY id DESC LIMIT 1");
+$new = $stmt->fetch();
 head2();
 if ($i == "") {
     online('Kalnai');
@@ -33,7 +35,8 @@ $_SESSION['refresh'] = $KD;
    }
       elseif ($i == "ieskot2") {
 	  $KD = $klase->sk($_GET['KD']);
-	  $ar_tinka = mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' AND tipas='3' AND daiktas='29'"));
+	  $stmt = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' AND tipas='3' AND daiktas='29'");
+	  $ar_tinka = $stmt->rowCount();
        online('M2 - Uolienų ieško');
 	     if($KD != $_SESSION['refresh']){
           echo '<div class="top"><b>Klaida ! ! !</b></div>';
@@ -54,7 +57,8 @@ if ($ar == 1)  {
  echo ' <div class="main_l">&raquo; <a href="m2_uolienos.php?i=ieskot2&KD='.$KD.'">Ieškoti dar kartą...</a></div>';
 		 
 } else {
-  $kiek_yra= mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='28' AND tipas='3'"));
+  $stmt = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' AND daiktas='28' AND tipas='3'");
+  $kiek_yra = $stmt->rowCount();
   
 $kiek_yra=$kiek_yra+1;
       echo '<div class="top"><b>Tau pavyko!</b></div>';
@@ -63,14 +67,14 @@ $kiek_yra=$kiek_yra+1;
 		  if ($nust['day'] != 6) {
 $timt = time();
 if($apie[vip]>$timt){
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
     '3'
     )");
 
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
@@ -79,7 +83,7 @@ if($apie[vip]>$timt){
 
 }else{
 
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
@@ -91,25 +95,25 @@ if($apie[vip]>$timt){
 $timt = time();
 if($apie[vip]>$timt){
 
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
     '3'
     )");
-	          mysql_query("INSERT INTO inventorius VALUES(
+	          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
     '3'
     )");
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
     '3'
     )");
-	          mysql_query("INSERT INTO inventorius VALUES(
+	          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
@@ -117,7 +121,7 @@ if($apie[vip]>$timt){
     )");
 }else{
 
-          mysql_query("INSERT INTO inventorius VALUES(
+          $pdo->exec("INSERT INTO inventorius VALUES(
     '',
     '$nick',
     '28',
@@ -132,7 +136,7 @@ if($apie[vip]>$timt){
 	$pad = 1;
 	}  
 $padas = time() + $pad;
-		  mysql_query("UPDATE zaidejai SET kov=$padas WHERE nick='$nick'");
+		  $pdo->exec("UPDATE zaidejai SET kov=$padas WHERE nick='$nick'");
 }
 }
     echo '<div class="main_c"><a href="m2_uolienos.php?i=ieskot">Atgal</a> | <a href="game.php?i=">Į Pradžią</a></div>';

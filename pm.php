@@ -17,16 +17,17 @@ if($i == ""){
 elseif($i == "gautos_all"){
    online('Žiūri Gautas žinutęs');
    top('<b>Gautos žinutės</b>');
-   $viso = mysql_result(mysql_query("SELECT COUNT(*) FROM pm WHERE gavejas='$nick' "),0);
+   $stmt = $pdo->query("SELECT COUNT(*) FROM pm WHERE gavejas='$nick' ");
+   $viso = $stmt->fetchColumn();
    if($viso > 0){
     $rezultatu_rodymas=10;
             $total = @intval(($viso-1) / $rezultatu_rodymas) + 1;
             if (empty($psl) or $psl < 0) $psl = 1;
             if ($psl > $total) $psl = $total;
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-     $query = mysql_query("SELECT * FROM pm WHERE gavejas='$nick' ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+     $query = $pdo->query("SELECT * FROM pm WHERE gavejas='$nick' ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
      $puslapiu = ceil($viso/$rezultatu_rodymas);
-     while($row = mysql_fetch_assoc($query)){
+     while($row = $query->fetch()){
    echo '<div class="main">';
    if($row['nauj'] == "NEW"){
        $kl = '<b>(<font color="red">!!!</font>)</b>';
@@ -49,11 +50,12 @@ elseif($i == "read"){
    $ID = $klase->sk($_GET['ID']);
    online('Skaito Gautą žinutę');
    top('PM Dėžutė');
-   $pmr = mysql_fetch_assoc(mysql_query("SELECT * FROM pm WHERE id='$ID' "));
+   $stmt = $pdo->query("SELECT * FROM pm WHERE id='$ID' ");
+   $pmr = $stmt->fetch();
    if(strtolower($pmr['gavejas']) != strtolower($nick)){
       echo '<div class="main_c"><div class="error">Tokios žinutės tu negavai!</div></div>';
    } else {
-      mysql_query("UPDATE pm SET nauj='OLD' WHERE id='$ID' ");
+      $pdo->exec("UPDATE pm SET nauj='OLD' WHERE id='$ID' ");
       echo '<div class="main">'.$ico.' <b>'.statusas($pmr['what']).'</b>: '.smile($pmr['txt']).'<br/>
       '.laikas($pmr['time']).'</div>';
    if($pmr['what'] != 'Sistema'){
@@ -66,8 +68,8 @@ elseif($i == "read"){
 
 echo '<div class="main"><b>Trumpa istorija:</b> <i>(paskutinės 10 žinučių)</i><br/>';
 
-$on = mysql_query("SELECT * FROM pm WHERE gavejas='$nick' AND what='$pmr[what]' OR gavejas='$pmr[what]' AND what='$nick' ORDER by id DESC LIMIT 10");
-while ($onn = mysql_fetch_row($on))
+$on = $pdo->query("SELECT * FROM pm WHERE gavejas='$nick' AND what='$pmr[what]' OR gavejas='$pmr[what]' AND what='$nick' ORDER by id DESC LIMIT 10");
+while ($onn = $on->fetch(PDO::FETCH_NUM))
 	{
 if($onn[1]!=="$nick")
 {
@@ -121,10 +123,11 @@ elseif($i == "write"){
       if($lygis < 40 AND $kam !== "alkotester" AND $statusas !== "Admin" ){
         echo '<div class="main_c"><div class="error">Tavo lygis per žemas! Reikia 40 lygio!</div></div>';
       } else {
-      if(mysql_num_rows(mysql_query("SELECT * FROM zaidejai WHERE nick='$kam'")) == 0){
+      $stmt = $pdo->query("SELECT * FROM zaidejai WHERE nick='$kam'");
+      if($stmt->rowCount() == 0){
         echo '<div class="main_c"><div class="error">Tokio žaidėjo nėra!</div></div>';
       } else {
-          mysql_query("INSERT INTO pm SET what='$nick', txt='$txt', gavejas='$kam', time='".time()."', nauj='NEW' ") or die(mysql_error());
+          $pdo->exec("INSERT INTO pm SET what='$nick', txt='$txt', gavejas='$kam', time='".time()."', nauj='NEW' ");
         echo '<div class="main_c"><div class="true">Žinutė išsiųsta!</div></div>';
           }
           }
@@ -138,7 +141,7 @@ elseif($i == "delete_gautos"){
    top('<b>Žinučių trinimas</b>');
    if($ka == "yes"){
        echo '<div class="main_c"><div class="true">Visos žinutės ištrintos.</div></div>';
-       mysql_query("DELETE FROM pm WHERE gavejas='$nick' ");
+       $pdo->exec("DELETE FROM pm WHERE gavejas='$nick' ");
    } else {
    echo '<div class="main_c"><div class="true">Ar tikrai norite ištrinti visas žinutes?<br/>
    <a href="pm.php?i=delete_gautos&ka=yes">Taip</a> | <a href="pm.php?i=">Ne</a>

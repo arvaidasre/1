@@ -3,7 +3,9 @@ ob_start();
 include_once 'cfg/sql.php';
 include_once 'cfg/login.php';
 head2();
-$smis = mysql_fetch_assoc(mysql_query("SELECT * FROM snake_misijos "));
+global $pdo;
+$stmt = $pdo->query("SELECT * FROM snake_misijos");
+$smis = $stmt->fetch();
 if($apie['snake'] >= 21){
             $snakem = 20;
         } else {
@@ -56,18 +58,19 @@ elseif($i == "vygdyti"){
         elseif($apie['snake'] >= 21){
             echo '<div class="error">Tu jau įvygdei visas Gyvatės kelio misijas.</div>';
         } else {
-            mysql_query("UPDATE zaidejai SET $smis[atlygis_ko]=$smis[atlygis_ko]+'$smis[atlygis]', litai=litai-'$smis[kiek]', snake=snake+'1' WHERE nick='$nick' ");
+            $pdo->exec("UPDATE zaidejai SET $smis[atlygis_ko]=$smis[atlygis_ko]+'$smis[atlygis]', litai=litai-'$smis[kiek]', snake=snake+'1' WHERE nick='$nick' ");
             echo '<div class="acept">Įvygdei <b>'.$snakem.'-ają</b> Gyvatės kelio misiją. Gavai '.sk($smis['atlygis']).' '.$ko.'.</div>';
         }
     } else {
-        if(mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='$smis[daikto_id]' ")) < $smis['kiek']){
+        $stmt = $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='$smis[daikto_id]' ");
+        if($stmt->rowCount() < $smis['kiek']){
             echo '<div class="error">Neturi pakankamai <b>'.$smis['name'].'</b>!</div>';
         }
         elseif($apie['snake'] >= 21){
             echo '<div class="error">Tu jau įvygdei visas Gyvatės kelio misijas.</div>';
         } else {
-            mysql_query("UPDATE zaidejai SET $smis[atlygis_ko]=$smis[atlygis_ko]+'$smis[atlygis]', snake=snake+'1' WHERE nick='$nick' ");
-            mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='$smis[daikto_id]' LIMIT $smis[kiek]");
+            $pdo->exec("UPDATE zaidejai SET $smis[atlygis_ko]=$smis[atlygis_ko]+'$smis[atlygis]', snake=snake+'1' WHERE nick='$nick' ");
+            $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='$smis[daikto_id]' LIMIT $smis[kiek]");
             echo '<div class="acept">Įvygdei <b>'.$snakem.'-ają</b> Gyvatės kelio misiją. Gavai '.sk($smis['atlygis']).' '.$ko.'.</div>';
         }
     }

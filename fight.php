@@ -4,14 +4,17 @@ include_once 'cfg/sql.php';
 include_once 'cfg/login.php';
 head2();
 if($i == ""){
-    $kito_inf = mysql_fetch_assoc(mysql_query("SELECT * FROM zaidejai WHERE nick='$wh'"));
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick = ?");
+    $stmt->execute([$wh]);
+    $kito_inf = $stmt->fetch();
 	
 	if($kito_inf[statusas] == "Admin"){
 	    echo '<div class="top"><b>Kova nepavyko!</b></div>';
         echo '<div class="error">Administracijos pulti negalima!</div>';
     }
 	
-    elseif(mysql_result(mysql_query("SELECT COUNT(*) FROM zaidejai WHERE nick='$wh'"),0) < 1){
+    elseif(($stmt = $pdo->prepare("SELECT COUNT(*) FROM zaidejai WHERE nick = ?")) && $stmt->execute([$wh]) && $stmt->fetchColumn() < 1){
         echo '<div class="top"><b>Kova nepavyko!</b></div>';
         echo '<div class="error">Tokio žaidėjo nėra!</div>';
     }
@@ -51,15 +54,15 @@ if($i == ""){
         if($kgi > $jo_kgi){
             $puse_lt = round($kito_inf['litai']/2);
             echo '<div class="main_c"><b>'.statusas($nick).'</b> nukovė <b>'.statusas($wh).'</b> ir laimi šią kovą !!<br />Gavai <b>'.sk($puse_lt).' zen\'ų.</b></div>';
-            mysql_query("UPDATE zaidejai SET litai=litai-'$puse_lt' WHERE nick='$wh'");
-            mysql_query("UPDATE zaidejai SET litai=litai+'$puse_lt', last_att='$wh', attime='$attim' WHERE nick='$nick'");
-            mysql_query("INSERT INTO pm SET what='Sistema', txt='Tave užpuolė <b>".statusas($nick)."</b> ir tu pralaimėjai kovą! Praradai <b>".sk($puse_lt)."</b> zenų.', time='".time()."', gavejas='$wh', nauj='NEW'")or die(mysql_error());
+            $pdo->prepare("UPDATE zaidejai SET litai=litai-? WHERE nick=?")->execute([$puse_lt, $wh]);
+            $pdo->prepare("UPDATE zaidejai SET litai=litai+?, last_att=?, attime=? WHERE nick=?")->execute([$puse_lt, $wh, $attim, $nick]);
+            $pdo->prepare("INSERT INTO pm SET what='Sistema', txt=?, time=?, gavejas=?, nauj='NEW'")->execute(['Tave užpuolė <b>'.statusas($nick).'</b> ir tu pralaimėjai kovą! Praradai <b>'.sk($puse_lt).'</b> zenų.', time(), $wh]);
         }else{
             $puse_lt = round($apie['litai']/2);
             echo '<div class="main_c"><b>'.statusas($wh).'</b> nukovė <b>'.statusas($nick).'</b> ir laimi šią kovą !!</div>';
-            mysql_query("UPDATE zaidejai SET litai=litai-'$puse_lt', last_att='$wh', attime='$attim' WHERE nick='$nick'");
-            mysql_query("UPDATE zaidejai SET litai=litai+'$puse_lt' WHERE nick='$wh'");
-            mysql_query("INSERT INTO pm SET what='Sistema', txt='Tave užpuolė <b>".statusas($nick)."</b> ir tu laimėjai kovą! Gavai <b>".sk($puse_lt)."</b> zenų.', time='".time()."', gavejas='$wh', nauj='NEW'")or die(mysql_error()); 
+            $pdo->prepare("UPDATE zaidejai SET litai=litai-?, last_att=?, attime=? WHERE nick=?")->execute([$puse_lt, $wh, $attim, $nick]);
+            $pdo->prepare("UPDATE zaidejai SET litai=litai+? WHERE nick=?")->execute([$puse_lt, $wh]);
+            $pdo->prepare("INSERT INTO pm SET what='Sistema', txt=?, time=?, gavejas=?, nauj='NEW'")->execute(['Tave užpuolė <b>'.statusas($nick).'</b> ir tu laimėjai kovą! Gavai <b>'.sk($puse_lt).'</b> zenų.', time(), $wh]); 
         }
         
     }

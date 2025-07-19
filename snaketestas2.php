@@ -103,137 +103,137 @@ elseif($i == "snake"){
         echo '<div class="main_c"><img src="img/snake.png" border="1"></div>';
        if($apie['snake'] > 18) $err = 'Tokios užduoties nėra.';
        elseif($apie['snake'] < 1) $err = 'Tokios užduoties nėra.';
-       elseif($apie['snake'] == 1 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' ")) < 150) $err = 'Neturi 150 Soul.';
-       elseif($apie['snake'] == 2 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' ")) < 200) $err = 'Neturi 200 Stone.';
+       elseif($apie['snake'] == 1 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' ")->rowCount() < 150) $err = 'Neturi 150 Soul.';
+       elseif($apie['snake'] == 2 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' ")->rowCount() < 200) $err = 'Neturi 200 Stone.';
        elseif($apie['snake'] == 3 && $kreditai < 25) $err = 'Neturi 25 kreditų.';
-       elseif($apie['snake'] == 4 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' ")) < 200) $err = 'Neturi 200 Microshem.';
-       elseif($apie['snake'] == 5 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' ")) < 330) $err = 'Neturi 330 Sayian Tail.';      
-       elseif($apie['snake'] == 6 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' ")) < 300) $err = 'Neturi 300 Fusion Tail.';      
-       elseif($apie['snake'] == 7 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='3' && tipas='3' ")) < 5) $err = 'Neturi 5 Žemės Drakono rutulių.';
-	   elseif($apie['snake'] == 8 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='23' && tipas='3' ")) < 300) $err = 'Neturi 300 Power Stone.';
-	   elseif($apie['snake'] == 9 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='22' && tipas='3' ")) < 400) $err = 'Neturi 400 Magic Ball.';
-	   elseif($apie['snake'] == 10 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='21' && tipas='3' ")) < 400) $err = 'Neturi 400 Gold Stone.';
-	   elseif($apie['snake'] == 11 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='20' && tipas='3' ")) < 200) $err = 'Neturi 200 Majin Scroll.';
+       elseif($apie['snake'] == 4 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' ")->rowCount() < 200) $err = 'Neturi 200 Microshem.';
+       elseif($apie['snake'] == 5 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' ")->rowCount() < 330) $err = 'Neturi 330 Sayian Tail.';      
+       elseif($apie['snake'] == 6 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' ")->rowCount() < 300) $err = 'Neturi 300 Fusion Tail.';      
+       elseif($apie['snake'] == 7 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='3' && tipas='3' ")->rowCount() < 5) $err = 'Neturi 5 Žemės Drakono rutulių.';
+	   elseif($apie['snake'] == 8 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='23' && tipas='3' ")->rowCount() < 300) $err = 'Neturi 300 Power Stone.';
+	   elseif($apie['snake'] == 9 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='22' && tipas='3' ")->rowCount() < 400) $err = 'Neturi 400 Magic Ball.';
+	   elseif($apie['snake'] == 10 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='21' && tipas='3' ")->rowCount() < 400) $err = 'Neturi 400 Gold Stone.';
+	   elseif($apie['snake'] == 11 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='20' && tipas='3' ")->rowCount() < 200) $err = 'Neturi 200 Majin Scroll.';
 	   elseif($apie['snake'] == 12 && $sms_litai < 5) $err = 'Neturi 5 Litų.';
-	   elseif($apie['snake'] == 13 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='1' && tipas='1' ")) < 5) $err = 'Neturi 5 Tocher Sword.';
-	   elseif($apie['snake'] == 14 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='2' && tipas='2' ")) < 10) $err = 'Neturi 10 Tocher Armor.';
-	   elseif($apie['snake'] == 15 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='9' && tipas='1' ")) < 10) $err = 'Neturi 10 Gold Sword.';
-	   elseif($apie['snake'] == 16 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='10' && tipas='2' ")) < 20) $err = 'Neturi 20 Gold Armor.';
-	   elseif($apie['snake'] == 17 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='11' && tipas='1' ")) < 20) $err = 'Neturi 20 Energy Sword.';
-	   elseif($apie['snake'] == 18 && mysql_num_rows(mysql_query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='12' && tipas='2' ")) < 30) $err = 'Neturi 30 Energy Armor.';
+	   elseif($apie['snake'] == 13 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='1' && tipas='1' ")->rowCount() < 5) $err = 'Neturi 5 Tocher Sword.';
+	   elseif($apie['snake'] == 14 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='2' && tipas='2' ")->rowCount() < 10) $err = 'Neturi 10 Tocher Armor.';
+	   elseif($apie['snake'] == 15 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='9' && tipas='1' ")->rowCount() < 10) $err = 'Neturi 10 Gold Sword.';
+	   elseif($apie['snake'] == 16 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='10' && tipas='2' ")->rowCount() < 20) $err = 'Neturi 20 Gold Armor.';
+	   elseif($apie['snake'] == 17 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='11' && tipas='1' ")->rowCount() < 20) $err = 'Neturi 20 Energy Sword.';
+	   elseif($apie['snake'] == 18 && $pdo->query("SELECT * FROM inventorius WHERE nick='$nick' && daiktas='12' && tipas='2' ")->rowCount() < 30) $err = 'Neturi 30 Energy Armor.';
 
        if(!empty($err)){
            echo '<div class="main_c">'.$err.'</div>';
        } else {
           if($apie['snake'] == 1){
                $ko = "40 Lygio taškų.";
-               mysql_query("UPDATE zaidejai SET taskai=taskai+'40' WHERE nick='$nick'");
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' LIMIT 90");
+               $pdo->exec("UPDATE zaidejai SET taskai=taskai+'40' WHERE nick='$nick'");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' LIMIT 90");
           }
           elseif($apie['snake'] == 2){
                $ko = "".sk(200000)." pinigu.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' LIMIT 100");
-               mysql_query("UPDATE zaidejai SET litai=litai+'200000' WHERE nick='$nick'");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' LIMIT 100");
+               $pdo->exec("UPDATE zaidejai SET litai=litai+'200000' WHERE nick='$nick'");
           }
          
           
           elseif($apie['snake'] == 3){
                $ko = "".sk(1000)." Jėgos.";
-               mysql_query("UPDATE zaidejai SET jega=jega+'1000', kred=kred-'25' WHERE nick='$nick'");
+               $pdo->exec("UPDATE zaidejai SET jega=jega+'1000', kred=kred-'25' WHERE nick='$nick'");
           }
           elseif($apie['snake'] == 4){
                $ko = "".sk(2000)." Gynybos.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 100");
-               mysql_query("UPDATE zaidejai SET gynyba=gynyba+'2000' WHERE nick='$nick'");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 100");
+               $pdo->exec("UPDATE zaidejai SET gynyba=gynyba+'2000' WHERE nick='$nick'");
           }
           elseif($apie['snake'] == 5){
                $ko = "".sk(3000)." Gyvybių lygio.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 110");
-               mysql_query("UPDATE zaidejai SET max_gyvybes=max_gyvybes+'3000' WHERE nick='$nick'");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 110");
+               $pdo->exec("UPDATE zaidejai SET max_gyvybes=max_gyvybes+'3000' WHERE nick='$nick'");
           }
           
           elseif($apie['snake'] == 6){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 7){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 8){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 9){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 10){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 11){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 12){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 13){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 14){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 15){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 16){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
           }
           
           elseif($apie['snake'] == 17){
                $ko = "1 Žemės Drakono rutulį.";
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               mysql_query("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");			   
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
+               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");			   
           }
          
           elseif($apie['snake'] == 18){
                $ko = "5% savo jėgos ir gynybos.";
                $jg = $jega * 10/100;
                $gn = $gynyba * 10/100;
-               mysql_query("DELETE FROM inventorius WHERE nick='$nick' && daiktas='12' && tipas='2' LIMIT 30");
-               mysql_query("UPDATE zaidejai SET jega=jega+'$jg, gynyba=gynyba+'$gn' WHERE nick='$nick' ");
+               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='12' && tipas='2' LIMIT 30");
+               $pdo->exec("UPDATE zaidejai SET jega=jega+'$jg, gynyba=gynyba+'$gn' WHERE nick='$nick' ");
           }
           echo '<div class="main_c">Užduotis įvygdyta! Gavai '.$ko.'</div>';
-          mysql_query("UPDATE zaidejai SET snake=snake+'1' WHERE nick='$nick' ");
-		   mysql_query("UPDATE zaidejai SET kai='+' WHERE nick='$nick' ");
+          $pdo->exec("UPDATE zaidejai SET snake=snake+'1' WHERE nick='$nick' ");
+		   $pdo->exec("UPDATE zaidejai SET kai='+' WHERE nick='$nick' ");
        }
 
     
