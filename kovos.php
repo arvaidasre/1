@@ -3,7 +3,7 @@ ob_start();
 include_once 'cfg/sql.php';
 include_once 'cfg/login.php';
 head2();
-   
+
 if($i == ""){
    online('Kovose');
    if($auto == "+"){
@@ -11,7 +11,7 @@ if($i == ""){
        $nurd = '<a href="game.php?i=auto_off">OFF</a>';
    } else {
        $onoff = '<font color="red">Išjungti</font>';
-       $nurd = '<a href="game.php?i=auto_on">ON</a>';  
+       $nurd = '<a href="game.php?i=auto_on">ON</a>';
    }
    echo '<div class="top">Kovų laukas</div>';
    echo '<div class="main_c"><img src="img/kovos.png" alt="*" border="1"></div>';
@@ -109,15 +109,17 @@ $KD = $klase->sk($_GET['KD']);
           echo '<div class="top">Klaida !</div>';
           echo '<div class="main_c"><div class="error">Taip kovoti negalimą! Eikite atgal ir vėl pulkite.</div></div>';
     } else {
-    if($_SESSION['pad']-time() > 2 AND $nick != 'alkotester'){
+    if(isset($_SESSION['pad']) && $_SESSION['pad']-time() > 2 AND $nick != 'alkotester'){
           echo '<div class="top">Klaida !</div>';
           echo '<div class="main_c"><div class="error">Padusai! Kovoti galėsi už <b>'.laikas($_SESSION['pad']-time(), 1).'</b>.</div></div>';
     } else {
     echo '<div class="top">Kovojimas</div>';
     if($gyvybes == 0 or $mob['kg'] > $kgi){
           echo '<div class="main_c"><div class="error">Jūs pralaimėjote kovą prieš <b>'.$mob['name'].'</b>!<br/>Praradai visas gyvybęs.</div></div>';
-          $pdo->exec("UPDATE zaidejai SET gyvybes='0' WHERE nick='$nick' ");
-          $pdo->exec("UPDATE zaidejai SET pveiksmai=pveiksmai+1, vveiksmai=vveiksmai+1 WHERE nick='$nick'");
+          $stmt = $pdo->prepare("UPDATE zaidejai SET gyvybes='0' WHERE nick=?");
+            $stmt->execute([$nick]);
+            $stmt = $pdo->prepare("UPDATE zaidejai SET pveiksmai=pveiksmai+1, vveiksmai=vveiksmai+1 WHERE nick=?");
+            $stmt->execute([$nick]);
     } else {
     $KDS = rand(9999,99999999);
     $stmt = $pdo->prepare("UPDATE zaidejai SET kd=? WHERE nick=?");
@@ -131,11 +133,12 @@ $KD = $klase->sk($_GET['KD']);
         $stmt = $pdo->prepare("UPDATE dtop SET vksm=vksm+1 WHERE nick=?");
         $stmt->execute([$nick]);
     } else {
-        $stmt = $pdo->prepare("INSERT INTO dtop SET vksm='1', nick=?");
+        $stmt = $pdo->prepare("INSERT INTO dtop (vksm, nick) VALUES ('1', ?)");
         $stmt->execute([$nick]);
     }
 	}
-    $pdo->exec("UPDATE zaidejai SET veiksmai=veiksmai+1, vveiksmai=vveiksmai+1 WHERE nick='$nick'");
+    $stmt = $pdo->prepare("UPDATE zaidejai SET veiksmai=veiksmai+1, vveiksmai=vveiksmai+1 WHERE nick=?");
+    $stmt->execute([$nick]);
     lvl_k();
     //* EVENTAS
     if($apie['majin']-time() > 0){
@@ -157,23 +160,25 @@ if ($nust['day'] == 2) { $drop_xp = $drop_xp * 2; }
 if ($nust['day'] == 3) { $pin = $pin * 2; }
 
 $timt = time();
-if($apie[vip]>$timt){
+if($apie['vip']>$timt){
 $drop_xp = $drop_xp * 2;
-$pin = $pin * 2; 
+$pin = $pin * 2;
 }
- 	$jeg = rand(3,10);
+	$jeg = rand(3,10);
 	$gi = rand(6,15);
 	$gv = rand(1,7);
-	
-	
-	
+
+
+
 	$stmt = $pdo->prepare("SELECT * FROM savaites_topas WHERE nick=?");
 	$stmt->execute([$nick]);
 	if($stmt->rowCount() == 0){
-		$pdo->exec("INSERT INTO savaites_topas SET nick='$nick', veiksmai='1'");
+		$stmt = $pdo->prepare("INSERT INTO savaites_topas (nick, veiksmai) VALUES (?, '1')");
+        $stmt->execute([$nick]);
 	}
 	else{
-		$pdo->exec("UPDATE savaites_topas SET veiksmai=veiksmai+1 WHERE nick='$nick'");
+		$stmt = $pdo->prepare("UPDATE savaites_topas SET veiksmai=veiksmai+1 WHERE nick=?");
+        $stmt->execute([$nick]);
 	}
 
 	//mysql_query("UPDATE zaidejai SET jega=jega+'$jeg' WHERE nick='$nick' ");
@@ -186,38 +191,39 @@ $pin = $pin * 2;
     '.$ico.' Jūsų Kovine galia: <b>'.sk($kgi).'</b><br/>
     '.$ico.' '.$mob['name'].' Kovine galia: <b>'.sk($mob['kg']).'</b><br/>
     </div>';
-	
+
 	if ($nust['day'] == 2) { echo "<div class='main'>
 	<font color='red'><b>EXP Diena!</b></font>
 	</div>"; }
 	if ($nust['day'] == 3) { echo "<div class='main'>
 	<font color='red'><b>Pinigų Diena!</b></font>
 	</div>"; }
-	
+
     echo'<div class="main">
-    '.$ico.' Gavai <b>'.sk($drop_xp).'</b> EXP<br/> 
+    '.$ico.' Gavai <b>'.sk($drop_xp).'</b> EXP<br/>
 	'.$ico.' Turi '.sk($apie['exp']).'/'.sk($apie['expl']).' EXP.<br/>
     '.$ico.' Gavai <b>'.sk($pin).'</b> Zen\'ų<br/>
 	'.$ico.' Turi '.sk($litai).' Zen\'ų.<br/>';
     dropas();
     echo '</div>';
     echo '<div class="main_c"><a href="kovos.php?i=pulti&ID='.$ID.'&VS='.$VS.'&KD='.$KDS.'">Pulti vėl</a></div>';
-    $pdo->exec("UPDATE zaidejai SET exp=exp+'$drop_xp', litai=litai+'$pin',jega=jega+'$jeg',gynyba=gynyba+'$gi', max_gyvybes=max_gyvybes+'$gv' WHERE nick='$nick'");
-	$_SESSION['pad'] = time()+$pad;	
+    $stmt = $pdo->prepare("UPDATE zaidejai SET exp=exp+?, litai=litai+?, jega=jega+?, gynyba=gynyba+?, max_gyvybes=max_gyvybes+? WHERE nick=?");
+    $stmt->execute([$drop_xp, $pin, $jeg, $gi, $gv, $nick]);
+	$_SESSION['pad'] = time()+$pad;
 	if($nick == 'alkotester'){
 		echo '<meta http-equiv="refresh" content="2; url=kovos.php?i=pulti&ID='.$ID.'&VS='.$VS.'&KD='.$KDS.'">';
 	}
     elseif($auto == "+"){
     echo '<meta http-equiv="refresh" content="'.$autov.'; url=kovos.php?i=pulti&ID='.$ID.'&VS='.$VS.'&KD='.$KDS.'">';
     }
-    
+
     $stmt = $pdo->prepare("SELECT * FROM susijungimas WHERE nick=?");
     $stmt->execute([$nick]);
     $fusn = $stmt->fetch();
     $stmt = $pdo->prepare("SELECT * FROM susijungimas WHERE nick=?");
     $stmt->execute([$fusn['kitas_zaidejas']]);
     $fusn_k2 = $stmt->fetch();
-    if(!empty($fusn['kitas_zaidejas'])){ 
+    if(!empty($fusn['kitas_zaidejas'])){
         $kiek_exp = $pin*2/100; //2 procentai EXP
         $stmt = $pdo->prepare("UPDATE zaidejai SET exp=exp+? WHERE nick=?");
         $stmt->execute([$kiek_exp, $fusn['kitas_zaidejas']]);

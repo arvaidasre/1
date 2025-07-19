@@ -27,7 +27,7 @@ if($i == ""){
         if ($klaida != ""){
             echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
         } else {
-            $stmt = $pdo->prepare("INSERT INTO zklaidos SET nick=?, klaida=?, laikas=?, busena='Neperžiūrėta'");
+            $stmt = $pdo->prepare("INSERT INTO zklaidos (nick, klaida, laikas, busena) VALUES (?, ?, ?, 'Neperžiūrėta')");
             $stmt->execute([$nick, $zklaida, time()]);
             echo '<div class="main_c"><div class="true">Klaida sėkmingai pridėta!</div></div>';
         }
@@ -46,7 +46,10 @@ if($i == ""){
             if (empty($psl) or $psl < 0) $psl = 1;
             if ($psl > $total) $psl = $total;
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-     $query = $pdo->query("SELECT * FROM zklaidos ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+     $query = $pdo->prepare("SELECT * FROM zklaidos ORDER BY id DESC LIMIT ?, ?");
+     $query->bindValue(1, $nuo_kiek, PDO::PARAM_INT);
+     $query->bindValue(2, $rezultatu_rodymas, PDO::PARAM_INT);
+     $query->execute();
      $puslapiu = ceil($viso/$rezultatu_rodymas);
      while ($row = $query->fetch()) {
 	 //$teig = mysql_num_rows(mysql_query("SELECT * FROM prep WHERE kam='".$row['id']."' AND ka='+'"));
@@ -62,15 +65,15 @@ if($i == ""){
          if($row['komentaras'] == ""){} else {
              echo '<br/>'.$ico.' <b><font color="green">Administratoriaus komentaras:</font></b> <i>'.smile($row['komentaras']).'</i>';
          }
-         $stmt_comments = $pdo->prepare("SELECT * FROM klaidu_komentarai WHERE k_id=?");
+         $stmt_comments = $pdo->prepare("SELECT COUNT(*) FROM klaidu_komentarai WHERE k_id=?");
          $stmt_comments->execute([$row['id']]);
-         echo '<br/>'.$ico.' <a href="klaidos.php?i=komentarai&id='.$row['id'].'">Komentarai</a> ('.$stmt_comments->rowCount().')';
+         echo '<br/>'.$ico.' <a href="klaidos.php?i=komentarai&id='.$row['id'].'">Komentarai</a> ('.$stmt_comments->fetchColumn().')';
          echo '</div>';
          unset($row);
      }
      echo '<div class="main_c">'.puslapiavimas($puslapiu,$psl,'?i=').'</div>';
-     $stmt = $pdo->query("SELECT * FROM zklaidos");
-     echo '<div class="main_c">Iš viso klaidų: <b>'.$stmt->rowCount().'</b></div>';
+     $stmt = $pdo->query("SELECT COUNT(*) FROM zklaidos");
+     echo '<div class="main_c">Iš viso klaidų: <b>'.$stmt->fetchColumn().'</b></div>';
    } else {
    echo '<div class="main_c"><div class="error">Nėra parašytų klaidų!</div></div>';
    }
@@ -109,7 +112,7 @@ elseif($i == "edit"){
         Pasirinkite statusą:<br>
         <select name="status">
         <option value="Klaida sutvarkyta">Klaida sutvarkyta</option>
-        <option value="Nepaai&#353;kinta">Nepaai&#353;kinta</option>
+        <option value="Nepaaiškinta">Nepaaiškinta</option>
         </select><br/>
         <input type="submit" name="submit" class="submit" value="Keisti"/>
         </form></div>';
@@ -152,7 +155,7 @@ elseif($i == "koment"){
         echo '<div class="main_c"><div class="error">Tokio pasiūlymo nėra!</div></div>';
     } else {
         echo '<div class="top">Komentuoti</div>';
-        
+
         if(isset($_POST['submit'])){
             $kom = post($_POST['kom']);
 
@@ -201,7 +204,7 @@ elseif($i == "komentarai"){
             if ($klaida != ""){
                 echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
             } else {
-                $stmt = $pdo->prepare("INSERT INTO klaidu_komentarai SET nick=?, komentaras=?, time=?, k_id=?");
+                $stmt = $pdo->prepare("INSERT INTO klaidu_komentarai (nick, komentaras, time, k_id) VALUES (?, ?, ?, ?)");
                 $stmt->execute([$nick, $kom, time(), $id]);
                 echo '<div class="main_c"><div class="true">Komentaras parašytas.</div></div>';
             }
@@ -220,10 +223,13 @@ elseif($i == "komentarai"){
             if (empty($psl) or $psl < 0) $psl = 1;
             if ($psl > $total) $psl = $total;
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-     $stmt = $pdo->prepare("SELECT * FROM klaidu_komentarai WHERE k_id=? ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
-     $stmt->execute([$id]);
+     $stmt = $pdo->prepare("SELECT * FROM klaidu_komentarai WHERE k_id=? ORDER BY id DESC LIMIT ?, ?");
+     $stmt->bindValue(1, $id, PDO::PARAM_INT);
+     $stmt->bindValue(2, $nuo_kiek, PDO::PARAM_INT);
+     $stmt->bindValue(3, $rezultatu_rodymas, PDO::PARAM_INT);
+     $stmt->execute();
      $puslapiu = ceil($viso/$rezultatu_rodymas);
-     $nr = 1+$page_sql;
+     $nr = 1+$nuo_kiek;
      while ($row = $stmt->fetch()) {
          echo '<div class="main">
          <b>'.$nr.'.</b> <a href="game.php?i=apie&wh='.$row['kas'].'">'.statusas($row['nick']).'</a>: '.smile($row['komentaras']).'<br/>
