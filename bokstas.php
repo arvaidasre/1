@@ -50,11 +50,15 @@ elseif($i == "popo2"){
    $stmt3 = $pdo->prepare("SELECT * FROM inventorius WHERE nick=? AND daiktas='7' AND tipas='3'");
    $stmt3->execute([$nick]);
    if($stmt1->rowCount() > 149 && $stmt2->rowCount() > 69 && $stmt3->rowCount() > 89){
-      echo '<div class="main_c"><div class="true">Užduotis įvygdytą! Gavai '.sk(5).' kreditus ir '.sk(5000000).' zen\'ų.</div></div>';
-      $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' LIMIT 150");
-      $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' LIMIT 70");
-      $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 90");
-      $pdo->exec("UPDATE zaidejai SET kred=kred+'5', litai=litai+'5000000' WHERE nick='$nick' ");
+      echo '<div class="main_c"><div class="true">Užduotis įvygdyta! Gavai '.sk(5).' kreditus ir '.sk(5000000).' zen\'ų.</div></div>';
+      $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='13' AND tipas='3' LIMIT 150");
+      $stmt->execute([$nick]);
+      $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='8' AND tipas='3' LIMIT 70");
+      $stmt->execute([$nick]);
+      $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='7' AND tipas='3' LIMIT 90");
+      $stmt->execute([$nick]);
+      $stmt = $pdo->prepare("UPDATE zaidejai SET kred=kred+'5', litai=litai+'5000000' WHERE nick=?");
+      $stmt->execute([$nick]);
    } else {
       echo '<div class="main_c"><div class="error">Klaida! Tu neturi 150 Soul, 70 Stone ir 90 Sayian Tail.</div></div>';
    }
@@ -124,14 +128,15 @@ elseif($i == "time2"){
         if($times > '22:00:00' and $times < '23:00:00'){
             echo '<div class="main_c"><div class="true">Sėkmingai įėjai į Laiko ir Sielos kambarį! Ten būsi 1 valandą. Jūsų jėga ir gynyba padidės 2%.</div></div>';
             $time = time()+60*60;
-	
+
             $jegu = $jega*2/100;
             $jegos = $jega+$jegu;
-	
-            $gynyb = $gynyba*2/100;
-            $gynybos = $gynyba+$gynyb;	
 
-            $pdo->prepare("UPDATE zaidejai SET jega=?, gynyba=?, kambarys=? WHERE nick=?")->execute([$jegos, $gynybos, $time, $nick]);
+            $gynyb = $gynyba*2/100;
+            $gynybos = $gynyba+$gynyb;
+
+            $stmt = $pdo->prepare("UPDATE zaidejai SET jega=?, gynyba=?, kambarys=? WHERE nick=?");
+            $stmt->execute([$jegos, $gynybos, $time, $nick]);
         } else {
             echo '<div class="main_c"><div class="error">Laiko ir Sielos kambarys uždarytas.</div></div>';
         }
@@ -251,58 +256,75 @@ elseif($i == "karinn"){
        } else {
           if($apie['kmis'] == 1){
                $ko = "40 Lygio taškų.";
-               $pdo->exec("UPDATE zaidejai SET taskai=taskai+'40' WHERE nick='$nick'");
-               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='13' && tipas='3' LIMIT 70");
+               $stmt = $pdo->prepare("UPDATE zaidejai SET taskai=taskai+'40' WHERE nick=?");
+               $stmt->execute([$nick]);
+               $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='13' AND tipas='3' LIMIT 70");
+               $stmt->execute([$nick]);
           }
           elseif($apie['kmis'] == 2){
-               $ko = "".sk(200000)." zen'ų.";
-               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='8' && tipas='3' LIMIT 100");
-               $pdo->exec("UPDATE zaidejai SET litai=litai+'200000' WHERE nick='$nick'");
+               $ko = "".sk(200000)." pinigu.";
+               $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='8' AND tipas='3' LIMIT 100");
+               $stmt->execute([$nick]);
+               $stmt = $pdo->prepare("UPDATE zaidejai SET litai=litai+'200000' WHERE nick=?");
+               $stmt->execute([$nick]);
           }
           elseif($apie['kmis'] == 3){
                $ko = "5 kreditus.";
                global $pdo;
-               $pdo->exec("UPDATE zaidejai SET taskai=taskai-'80', kred=kred+'5' WHERE nick='$nick'");
+               $stmt = $pdo->prepare("UPDATE zaidejai SET taskai=taskai-'80', kred=kred+'5' WHERE nick=?");
+               $stmt->execute([$nick]);
           }
           elseif($apie['kmis'] == 4){
                $ko = "".sk(1000)." Jėgos.";
                global $pdo;
-               $pdo->exec("UPDATE zaidejai SET jega=jega+'1000', kred=kred-'25' WHERE nick='$nick'");
+               $stmt = $pdo->prepare("UPDATE zaidejai SET jega=jega+'1000', kred=kred-'25' WHERE nick=?");
+               $stmt->execute([$nick]);
           }
           elseif($apie['kmis'] == 5){
                $ko = "".sk(2000)." Gynybos.";
-               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='5' && tipas='3' LIMIT 100");
-               $pdo->exec("UPDATE zaidejai SET gynyba=gynyba+'2000' WHERE nick='$nick'");
+               $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='5' AND tipas='3' LIMIT 100");
+               $stmt->execute([$nick]);
+               $stmt = $pdo->prepare("UPDATE zaidejai SET gynyba=gynyba+'2000' WHERE nick=?");
+               $stmt->execute([$nick]);
           }
           elseif($apie['kmis'] == 6){
                $ko = "".sk(3000)." Gyvybių lygio.";
-               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='7' && tipas='3' LIMIT 110");
-               $pdo->exec("UPDATE zaidejai SET max_gyvybes=max_gyvybes+'3000' WHERE nick='$nick'");
+               $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='7' AND tipas='3' LIMIT 110");
+               $stmt->execute([$nick]);
+               $stmt = $pdo->prepare("UPDATE zaidejai SET max_gyvybes=max_gyvybes+'3000' WHERE nick=?");
+               $stmt->execute([$nick]);
           }
           elseif($apie['kmis'] == 7){
                $ko = "".sk(10)." kreditų.";
                global $pdo;
-               $pdo->exec("UPDATE zaidejai SET kred=kred+'10', litai=litai-'5000000' WHERE nick='$nick'");
+               $stmt = $pdo->prepare("UPDATE zaidejai SET kred=kred+'10', litai=litai-'5000000' WHERE nick=?");
+               $stmt->execute([$nick]);
           }
           elseif($apie['kmis'] == 8){
                $ko = "1 Žemės Drakono rutulį.";
-               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='6' && tipas='3' LIMIT 100");
-               $pdo->exec("INSERT inventorius SET nick='$nick', daiktas='3', tipas='3' ");
+               $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='6' AND tipas='3' LIMIT 100");
+               $stmt->execute([$nick]);
+               $stmt = $pdo->prepare("INSERT INTO inventorius (nick, daiktas, tipas) VALUES (?, '3', '3')");
+               $stmt->execute([$nick]);
           }
           elseif($apie['kmis'] == 9){
                $ko = "5 kreditus ir ".sk(1000000)." zen'ų.";
                global $pdo;
-               $pdo->exec("UPDATE zaidejai SET litai=litai+'1000000', kred=kred+'5' WHERE nick='$nick'");
+               $stmt = $pdo->prepare("UPDATE zaidejai SET litai=litai+'1000000', kred=kred+'5' WHERE nick=?");
+               $stmt->execute([$nick]);
           }
           elseif($apie['kmis'] == 10){
                $ko = "5% savo jėgos ir gynybos.";
                $jg = $jega*5/100;
                $gn = $gynyba*5/100;
-               $pdo->exec("DELETE FROM inventorius WHERE nick='$nick' && daiktas='3' && tipas='3' LIMIT 5");
-               $pdo->exec("UPDATE zaidejai SET jega=jega+'$jg', gynyba=gynyba+'$gn' WHERE nick='$nick' ");
+               $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas='3' AND tipas='3' LIMIT 5");
+               $stmt->execute([$nick]);
+               $stmt = $pdo->prepare("UPDATE zaidejai SET jega=jega+?, gynyba=gynyba+? WHERE nick=?");
+               $stmt->execute([$jg, $gn, $nick]);
           }
           echo '<div class="main_c"><div class="true">Užduotis įvygdyta! Gavai '.$ko.'</div></div>';
-          $pdo->exec("UPDATE zaidejai SET kmis=kmis+'1' WHERE nick='$nick' ");
+          $stmt = $pdo->prepare("UPDATE zaidejai SET kmis=kmis+'1' WHERE nick=?");
+          $stmt->execute([$nick]);
        }
 
     }
@@ -317,9 +339,11 @@ elseif($i == "pupos"){
         echo '<div class="top"><b>Karino bokštas</b></div>';
         echo '<div class="main_c"><div class="true">Atlikta. Pasiėmiai 5 Stebuklingas pupas ir tave išmetė iš bokšto! Tau liko <b>1</b> gyvybė.<br>
 		<b>Taip pat krentant <b>Karinas</b> pasistengė, kad tu prarastum <b>staigaus persikėlimo techniką</b>!</div></div>';
-        $pdo->exec("UPDATE zaidejai SET gyvybes='1', sptechnika='0', sptechnika_time='0', kbokstas='0' WHERE nick='$nick' ");
+        $stmt = $pdo->prepare("UPDATE zaidejai SET gyvybes='1', sptechnika='0', sptechnika_time='0', kbokstas='0' WHERE nick=?");
+        $stmt->execute([$nick]);
         for($i = 0; $i<5; $i++){
-            $pdo->exec("INSERT INTO inventorius SET nick='$nick', daiktas='4', tipas='3'");
+            $stmt = $pdo->prepare("INSERT INTO inventorius (nick, daiktas, tipas) VALUES (?, '4', '3')");
+            $stmt->execute([$nick]);
         }
     }
     atgal('Atgal-?i=&Į Pradžią-game.php?i=');
@@ -331,7 +355,8 @@ elseif($i == "persikelti"){
         echo '<div class="main_c"><div class="error"><b>Klaida!</b> Jūs nesate išmokęs <b>Staigaus persikėlimo technikos</b>!</div></div>';
     } else {
 		echo '<script>document.location="?i="</script>';
-		$pdo->exec("UPDATE zaidejai SET kbokstas=kbokstas+'1' WHERE nick='$nick' ");	
+		$stmt = $pdo->prepare("UPDATE zaidejai SET kbokstas=kbokstas+'1' WHERE nick=?");
+        $stmt->execute([$nick]);
 	}
     atgal('Atgal-?i=&Į Pradžią-game.php?i=');
 }

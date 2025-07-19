@@ -19,7 +19,7 @@ if($i == ""){
 	echo '<div class="top">Aukcijonas</div>';
 	echo '<div class="main_c"><a href="aukcijonas.php?i=ideti">Įdėti prekę</a></div>';
 	if ($statusas == "Admin") {
-		echo '<div class="main_c"><a href="aukcijonas.php?i=puzsakymai">Prekių užsakymai</a></div>';	
+		echo '<div class="main_c"><a href="aukcijonas.php?i=puzsakymai">Prekių užsakymai</a></div>';
 	}
    $stmt = $pdo->query("SELECT COUNT(*) FROM aukcijonas");
    $viso = $stmt->fetchColumn();
@@ -29,10 +29,13 @@ if($i == ""){
        if (empty($psl) or $psl < 0) $psl = 1;
        if ($psl > $total) $psl = $total;
        $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-            
-       $query = $pdo->query("SELECT * FROM aukcijonas ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+
+       $query = $pdo->prepare("SELECT * FROM aukcijonas ORDER BY id DESC LIMIT ?, ?");
+       $query->bindValue(1, $nuo_kiek, PDO::PARAM_INT);
+       $query->bindValue(2, $rezultatu_rodymas, PDO::PARAM_INT);
+       $query->execute();
        $puslapiu=ceil($viso/$rezultatu_rodymas);
-            
+
        echo '<div class="main">';
        while($row = $query->fetch()){
        if($row['valiuta'] == 1) $valiuta = 'zen\'ų';
@@ -43,15 +46,15 @@ if($i == ""){
        echo ''.$ico.' <b>'.sk($row['kiek']).' '.$daigto_inf['name'].'</b> (1 vnt. - '.sk($row['kaina']).' '.$valiuta.')';
        echo ' [<a href="aukcijonas.php?i=info&ID='.$row['id'].'">INFO</a>]';
        if($row['kas'] == $nick){
-          echo ' [<a href="aukcijonas.php?i=trinti&ID='.$row['id'].'">X</a>]';		
+          echo ' [<a href="aukcijonas.php?i=trinti&ID='.$row['id'].'">X</a>]';
        }
        echo '<br/>';
-       unset($row);        
+       unset($row);
        }
    echo '</div>';
    echo '<div class="main_c">'.puslapiavimas($puslapiu,$psl,'?i=').'</div>';
    } else {
-   echo '<div class="main_c"><div class="error">Kolkas prekių aukcijone nėra!</div>';
+   echo '<div class="main_c"><div class="error">Kolkas prekių aukcijone nėra!</div></div>';
    }
    atgal('Atgal-miestas.php?i=&Į Pradžią-game.php?i=');
 
@@ -64,7 +67,7 @@ elseif($i == "ideti"){
       $kieks = isset($_POST['kieks']) ? preg_replace("/[^0-9]/","",$_POST['kieks'])  : null;
       $kains = isset($_POST['kains']) ? preg_replace("/[^0-9]/","",$_POST['kains'])  : null;
       $valut = $klase->sk($_POST['valut']);
-	  
+
 	  if(empty($kains) or empty($kieks)){
          $klaida = 'Palikote tuščią laukelį!';
       }
@@ -86,24 +89,24 @@ elseif($i == "ideti"){
 		  $stmt = $pdo->prepare("SELECT COUNT(*) FROM zaidejai WHERE nick = ?");
 		  $stmt->execute([$pskirta]);
 		  if($stmt->fetchColumn() == 0) {
-			$klaida = 'Tokio žaidėjo nėra! Prašome patikslinti įvestą slapyvardį.';  
+			$klaida = 'Tokio žaidėjo nėra! Prašome patikslinti įvestą slapyvardį.';
 		  }
 	  }
 	  $stmt = $pdo->prepare("SELECT COUNT(*) FROM zaidejai WHERE nick = ?");
 	  $stmt->execute([$pskirta]);
 	  if ($stmt->fetchColumn() == 1) {
-		  $stmt = $pdo->prepare("INSERT INTO pm SET what='Sistema', txt='Aukcione jums idėjo prekę: <b>$nick.</b> Turite 5 valandas tą prekę įsigyti, kitaip ji sugrįš jos savininkui!', time=?, gavejas=?, nauj='NEW'");
-		  $stmt->execute([time(), $pskirta]);
+		  $stmt = $pdo->prepare("INSERT INTO pm (what, txt, time, gavejas, nauj) VALUES ('Sistema', ?, ?, ?, 'NEW')");
+		  $stmt->execute(['Aukcione jums idėjo prekę: <b>'.$nick.'.</b> Turite 5 valandas tą prekę įsigyti, kitaip ji sugrįš jos savininkui!', time(), $pskirta]);
 	  }
-      if($klaida != ""){
+      if(isset($klaida)){
          echo '<div class="main_c"><div class="error">'.$klaida.'</div></div>';
 	  } else {
          $kd = time()+60*60*5;
-		 $stmt = $pdo->prepare("INSERT INTO aukcijonas SET kas=?, preke=?, kiek=?, kaina=?, valiuta=?, laikas=?, pskirta=?");
+		 $stmt = $pdo->prepare("INSERT INTO aukcijonas (kas, preke, kiek, kaina, valiuta, laikas, pskirta) VALUES (?, ?, ?, ?, ?, ?, ?)");
 		 $stmt->execute([$nick, $preke, $kieks, $kains, $valut, $kd, $pskirta]);
          echo '<div class="main_c"><div class="true">Prekė įdėta, jeigu nieks jos nenupirks per 5val., ji bus grąžinta jums atgal.</div></div>';
          $stmt = $pdo->prepare("DELETE FROM inventorius WHERE nick=? AND daiktas=? LIMIT ?");
-         $stmt->execute([$nick, $preke, $kieks]);
+         $stmt->execute([$nick, $preke, (int)$kieks]);
       }
    }
    echo '<div class="main">';
@@ -113,7 +116,7 @@ elseif($i == "ideti"){
    $all = $pdo->query("SELECT * FROM items");
    while($daigtas = $all->fetch()){
       $stmt = $pdo->prepare("SELECT * FROM items WHERE id=?");
-      $stmt->execute([$daigtas['daiktas']]);
+      $stmt->execute([$daigtas['id']]);
       $name = $stmt->fetch();
       $stmt = $pdo->prepare("SELECT COUNT(*) FROM inventorius WHERE nick=? AND daiktas=?");
       $stmt->execute([$nick, $daigtas['id']]);
@@ -135,7 +138,7 @@ elseif($i == "ideti"){
    <input type="submit" name="submit" class="submit" value="Įdėti">
    </form></div>';
 
-   
+
    atgal('Atgal-aukcijonas.php?i=&Į Pradžią-game.php?i=');
 }
 elseif($i == "info"){
@@ -159,7 +162,7 @@ elseif($i == "info"){
       $daigtas = $stmt->fetch();
 
       $all_kaina = $inf['kaina'] * $inf['kiek'];
-      $daugiausia_gali_pirkti = $apie[$vl]/$inf['kaina'];
+      $daugiausia_gali_pirkti = floor($apie[$vl]/$inf['kaina']);
       if($daugiausia_gali_pirkti > $inf['kiek']){ $max = $inf['kiek'];} else {$max = $daugiausia_gali_pirkti;}
 
       if($inf['pskirta'] == '') {
@@ -226,20 +229,23 @@ elseif($i == "buy"){
    } else {
       echo '<div class="top">Prekės pirkimas</div>';
       echo '<div class="main_c"><div class="true">Atlikta! Nusipirkote '.sk($kieks).' '.$daigtas['name'].'.</div></div>';
-      $pdo->exec("UPDATE zaidejai SET $vla=$vla-'$kaina' WHERE nick='$nick'");
+      $stmt = $pdo->prepare("UPDATE zaidejai SET $vla=$vla-? WHERE nick=?");
+      $stmt->execute([$kaina, $nick]);
 	  $txt = "Aukcione, <b>".$nick."</b>, iš jusų nupirko <b>".sk($kieks)."</b> ".$daigtas['name']." už <b>".sk($kaina)."</b> ".$valiuta."!";
-      $stmt = $pdo->prepare("INSERT INTO pm SET what='Sistema', txt=?, nauj='NEW', gavejas=?, time=?");
+      $stmt = $pdo->prepare("INSERT INTO pm (what, txt, nauj, gavejas, time) VALUES ('Sistema', ?, 'NEW', ?, ?)");
       $stmt->execute([$txt, $inf['kas'], time()]);
       $stmt = $pdo->prepare("UPDATE zaidejai SET $vl=$vl+? WHERE nick=?");
       $stmt->execute([$kaina, $inf['kas']]);
       for($i = 0; $i<$kieks; $i++){
-         $stmt = $pdo->prepare("INSERT INTO inventorius SET nick=?, daiktas=?, tipas=?");
+         $stmt = $pdo->prepare("INSERT INTO inventorius (nick, daiktas, tipas) VALUES (?, ?, ?)");
          $stmt->execute([$nick, $inf['preke'], $daigtas['tipas']]);
       }
       if($inf['kiek']-$kieks < 1){
-         $pdo->exec("DELETE FROM aukcijonas WHERE id='$inf[id]'");
+         $stmt = $pdo->prepare("DELETE FROM aukcijonas WHERE id=?");
+         $stmt->execute([$inf['id']]);
       } else {
-         $pdo->exec("UPDATE aukcijonas SET kiek=kiek-'$kieks' WHERE id='$inf[id]'");
+         $stmt = $pdo->prepare("UPDATE aukcijonas SET kiek=kiek-? WHERE id=?");
+         $stmt->execute([$kieks, $inf['id']]);
       }
    }
    }
@@ -252,8 +258,12 @@ elseif($i == "buy"){
 elseif($i == "trinti"){
    online('Išema prekę iš aukcijono');
    $ID = $klase->sk($_GET['ID']);
-   $prekes_inf = $pdo->query("SELECT * FROM aukcijonas WHERE id='$ID'")->fetch();
-   $daigtas = $pdo->query("SELECT * FROM items WHERE id='$prekes_inf[preke]' ")->fetch();
+   $stmt = $pdo->prepare("SELECT * FROM aukcijonas WHERE id=?");
+   $stmt->execute([$ID]);
+   $prekes_inf = $stmt->fetch();
+   $stmt = $pdo->prepare("SELECT * FROM items WHERE id=? ");
+   $stmt->execute([$prekes_inf['preke']]);
+   $daigtas = $stmt->fetch();
 
    $stmt = $pdo->prepare("SELECT COUNT(*) FROM aukcijonas WHERE id = ?");
    $stmt->execute([$ID]);
@@ -265,10 +275,12 @@ elseif($i == "trinti"){
       echo '<div class="top">Klaida !</div>';
       echo '<div class="main_c"><div class="error">Tai ne jusų prekė!</div></div>';
    } else {
-   for($i = 0; $i<$prekes_inf[kiek]; $i++){
-      $pdo->exec("INSERT INTO inventorius SET nick='$nick',daiktas='".$prekes_inf['preke']."',tipas='$daigtas[tipas]'");
+   for($i = 0; $i<$prekes_inf['kiek']; $i++){
+      $stmt = $pdo->prepare("INSERT INTO inventorius (nick, daiktas, tipas) VALUES (?, ?, ?)");
+      $stmt->execute([$nick, $prekes_inf['preke'], $daigtas['tipas']]);
    }
-   $pdo->exec("DELETE FROM aukcijonas WHERE id='$prekes_inf[id]'");
+   $stmt = $pdo->prepare("DELETE FROM aukcijonas WHERE id=?");
+   $stmt->execute([$prekes_inf['id']]);
    echo '<div class="top">Prekės išemimas<</div>';
    echo '<div class="main_c"><div class="true">Prekė sėkmingai išimta.</div></div>';
    }
@@ -280,7 +292,7 @@ elseif ($i == "puzsakymai") {
 	top('Užsakytos prekės');
 	echo '<div class="main_c">Kiekvienas žaidėjas, gali užsisakyti reikiamą prekę, o kurie užsakytų prekių turi per daug - parduokite!</div>';
 	echo '<div class="main"><a href="aukcijonas.php?i=uzsakymas">'.$ico.' Užsisakyti prekę!</a></div>';
-	
+
 	$stmt = $pdo->query("SELECT COUNT(*) FROM puzsakymai");
 	$uzsakymai = $stmt->fetchColumn();
 	if($uzsakymai > 0){
@@ -289,10 +301,13 @@ elseif ($i == "puzsakymai") {
 		if (empty($psl) or $psl < 0) $psl = 1;
 		if ($psl > $total) $psl = $total;
 		$nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-		
-		$query = $pdo->query("SELECT * FROM puzsakymai ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+
+		$query = $pdo->prepare("SELECT * FROM puzsakymai ORDER BY id DESC LIMIT ?, ?");
+        $query->bindValue(1, $nuo_kiek, PDO::PARAM_INT);
+        $query->bindValue(2, $rezultatu_rodymas, PDO::PARAM_INT);
+        $query->execute();
 		$puslapiu=ceil($viso/$rezultatu_rodymas);
-		
+
 		echo '<div class="main">';
 		while($row = $query->fetch()) {
 			if($row['valiuta'] == 1) $valiuta = 'zen\'ų';
@@ -313,7 +328,7 @@ elseif ($i == "puzsakymai") {
 	} else {
 		echo '<div class="main_c"><div class="error">Šiuo metu užsakytų prekių nėra!</div></div>';
 	}
-	
+
 	atgal('Atgal-aukcijonas.php?i=&Į Pradžią-game.php?i=');
 } elseif ($i == "uzsakymas") {
 	online('Užsakinėja prekes');
@@ -324,12 +339,12 @@ elseif ($i == "puzsakymai") {
 		$kaina = isset($_POST['kaina']) ? preg_replace("/[^0-9]/","",$_POST['kaina'])  : null;
 		$kiekis = isset($_POST['kiekis']) ? preg_replace("/[^0-9]/","",$_POST['kiekis'])  : null;
 		$valiuta = $klase->sk($_POST['valiuta']);
-		
+
 		if ($valiuta == 1) { $ivaliuta = 'zenų'; $vlt = 'litai'; $pvaliuta = 'zenai'; }
 		if ($valiuta == 2) { $ivaliuta = 'kreditų'; $vlt = 'kred'; $pvaliuta = 'kreditai'; }
-		
+
 		$suma = $kaina*$kiekis;
-		
+
 		if(empty($kiekis)) {
 			$error = 'Klaida! Neįrašėte norimo kiekio!';
 		}
@@ -348,14 +363,16 @@ elseif ($i == "puzsakymai") {
 		if ($stmt->fetchColumn() >= 10) {
 			$error = 'Viršijote limitą! Daugiausiai galima užsisakyti <b>10</b> prekių!';
 		}
-		if ($error != "") {
-			echo '<div class="main_c"><div class="error">'.$error.'</div></div>';	
+		if (isset($error)) {
+			echo '<div class="main_c"><div class="error">'.$error.'</div></div>';
 		} else {
 			echo '<div class="main_c"><div class="true">Sėkmingai užsisakėte prekę!<br>
 			Jeigu jos niekas neparduos jums per <b>2 dienas</b>, '.$pvaliuta.' sugrįš jums į jūsų sąskaitą!</div></div>';
 			$upg = time()+60*60*24*2;  //Užsakyta prekė galios 2 dienas.
-			$pdo->exec("INSERT INTO puzsakymai SET nick='$nick', preke='$preke', kiekis='$kiekis', kaina='$kaina', valiuta='$valiuta', laikas='$upg', suma='$suma'");
-			$pdo->exec("UPDATE zaidejai SET $vlt=$apie[$vlt]-$suma WHERE nick='$nick'");
+			$stmt = $pdo->prepare("INSERT INTO puzsakymai (nick, preke, kiekis, kaina, valiuta, laikas, suma) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$nick, $preke, $kiekis, $kaina, $valiuta, $upg, $suma]);
+			$stmt = $pdo->prepare("UPDATE zaidejai SET $vlt=$vlt-? WHERE nick=?");
+            $stmt->execute([$suma, $nick]);
 		}
 	}
 	echo '<div class="main">
@@ -364,7 +381,7 @@ elseif ($i == "puzsakymai") {
 	$all = $pdo->query("SELECT * FROM items WHERE id IN (3,5,6,7,8,13,18,19,20,21,22,23,29,30)");
 	while($daiktas = $all->fetch()){
 		$stmt = $pdo->prepare("SELECT * FROM items WHERE id=?");
-		$stmt->execute([$daiktas['daiktas']]);
+		$stmt->execute([$daiktas['id']]);
 		$name = $stmt->fetch();
 		echo '<option value="'.$daiktas['id'].'">'.$daiktas['name'].'</option>';
 		unset($daiktas);
@@ -391,13 +408,17 @@ elseif ($i == "puzsakymai") {
 		echo '<div class="main_c"><div class="error">Tokios užsakytos prekės nėra!</div></div>';
 	} else {
 		top('Užsakytos prekės informacija');
-		$info = $pdo->query("SELECT * FROM puzsakymai WHERE id='$ID'")->fetch();
+		$stmt = $pdo->prepare("SELECT * FROM puzsakymai WHERE id=?");
+        $stmt->execute([$ID]);
+        $info = $stmt->fetch();
 		if($info['valiuta'] == 1){$valiuta = 'zen\'ų'; $vl = 'litai';}
 		if($info['valiuta'] == 2){$valiuta = 'kreditų'; $vl = 'kred';}
-		$daiktas = $pdo->query("SELECT * FROM items WHERE id='$info[preke]'")->fetch();
-		
+		$stmt = $pdo->prepare("SELECT * FROM items WHERE id=?");
+        $stmt->execute([$info['preke']]);
+        $daiktas = $stmt->fetch();
+
 		$all_kaina = $info['kaina'] * $info['kiekis'];
-		
+
 		echo '<div class="main">
 		'.$ico.' Užsakyta prekė: <b>'.sk($info['kiekis']).' '.$daiktas['name'].'</b><br>
 		'.$ico.' Prekę užsakė: <b>'.statusas($info['nick']).'</b><br>
@@ -430,8 +451,10 @@ elseif ($i == "puzsakymai") {
 		echo '<div class="top">Klaida!</div>';
 		echo '<div class="main_c"><div class="error">Tai ne jusų užsakyta prekė!</div></div>';
 	} else {
-		$pdo->exec("UPDATE zaidejai SET $vlt=$apie[$vlt]+$upinfo[suma] WHERE nick='$nick'");
-		$pdo->exec("DELETE FROM puzsakymai WHERE id='$upinfo[id]'");
+		$stmt = $pdo->prepare("UPDATE zaidejai SET $vlt=$vlt+? WHERE nick=?");
+        $stmt->execute([$upinfo['suma'], $nick]);
+		$stmt = $pdo->prepare("DELETE FROM puzsakymai WHERE id=?");
+        $stmt->execute([$upinfo['id']]);
 		echo '<div class="top">Užsakytos prekės trinimas</div>';
 		echo '<div class="main_c"><div class="true">Užsakyta prekė sėkmingai pašalinta iš sąrašo, o <i>'.sk($upinfo['suma']).'</i> <b>'.$valiuta.'</b> grąžinti į sąskaitą!</div></div>';
 	}
