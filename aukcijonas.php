@@ -290,11 +290,11 @@ elseif ($i == "puzsakymai") {
 		if ($psl > $total) $psl = $total;
 		$nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
 		
-		$query = mysql_query("SELECT * FROM puzsakymai ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+		$query = $pdo->query("SELECT * FROM puzsakymai ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
 		$puslapiu=ceil($viso/$rezultatu_rodymas);
 		
 		echo '<div class="main">';
-		while($row = mysql_fetch_assoc($query)) {
+		while($row = $query->fetch()) {
 			if($row['valiuta'] == 1) $valiuta = 'zen\'ų';
 			if($row['valiuta'] == 2) $valiuta = 'kreditų';
 			$daikto_inf = mysql_fetch_assoc(mysql_query("SELECT * FROM items WHERE id='$row[preke]' "));
@@ -359,8 +359,8 @@ elseif ($i == "puzsakymai") {
 	echo '<div class="main">
 	<form action="aukcijonas.php?i=uzsakymas" method="POST">
 	&raquo; Užsakoma prekė:<br/><select name="daiktas">';
-	$all = mysql_query("SELECT * FROM items WHERE id IN (3,5,6,7,8,13,18,19,20,21,22,23,29,30)");
-	while($daiktas = mysql_fetch_assoc($all)){
+	$all = $pdo->query("SELECT * FROM items WHERE id IN (3,5,6,7,8,13,18,19,20,21,22,23,29,30)");
+	while($daiktas = $all->fetch()){
 		$name = mysql_fetch_assoc(mysql_query("SELECT * FROM items WHERE id='$daiktas[daiktas]'"));
 		echo '<option value="'.$daiktas['id'].'">'.$daiktas['name'].'</option>';
 		unset($daiktas);

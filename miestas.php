@@ -314,8 +314,8 @@ elseif($i == "buy"){
    echo '<div class="top">'.$tipas.'</div>';
    echo '<div class="main">'.$ico.' Daiktas (Kaina):</div>
    <div class="main">';
-   $query = mysql_query("SELECT * FROM shop WHERE tipas='$TP' ");
-   while($row = mysql_fetch_assoc($query)){
+   $query = $pdo->query("SELECT * FROM shop WHERE tipas='$TP' ");
+   while($row = $query->fetch()){
    if($row['pirkimo_kaina'] > 0){
       echo '[&raquo;] <a href="miestas.php?i=buy2&TP='.$TP.'&ID='.$row['id'].'">'.$row['name'].'</a> ('.sk($row['pirkimo_kaina']).' Zen\'ų.)<br/>';
    }
@@ -345,8 +345,8 @@ elseif($i == "sell"){
    echo '<div class="top">'.$tipas.'</div>';
    echo '<div class="main">'.$ico.' Daiktas (Kaina):</div>
    <div class="main">';
-   $query = mysql_query("SELECT * FROM shop WHERE tipas='$TP' ");
-   while($row = mysql_fetch_assoc($query)){
+   $query = $pdo->query("SELECT * FROM shop WHERE tipas='$TP' ");
+   while($row = $query->fetch()){
    if($row['pardavimo_kaina'] > 0){
       echo '[&raquo;] <a href="miestas.php?i=sell2&TP='.$TP.'&ID='.$row['id'].'">'.$row['name'].'</a> ('.sk($row['pardavimo_kaina']).' Zen\'ų.)<br/>';
    }
@@ -550,7 +550,7 @@ elseif($i == "valdzia"){
         echo '[&raquo;] Administratorių nėra.<br/>';
     } else {
     $query = $pdo->query("SELECT * FROM zaidejai WHERE statusas='Admin' ");
-    while($row = mysql_fetch_assoc($query)){
+    while($row = $query->fetch()){
         $nr++;
         echo '<b>'.$nr.'.</b> <a href="game.php?i=apie&wh='.$row['nick'].'">'.statusas($row['nick']).'</a><br/>';
     }
@@ -563,7 +563,7 @@ elseif($i == "valdzia"){
         echo '[&raquo;] Ž.Prižiurėtojų nėra.<br/>';
     } else {
     $query = $pdo->query("SELECT * FROM zaidejai WHERE statusas='Priz'");
-    while($row = mysql_fetch_assoc($query)){
+    while($row = $query->fetch()){
         $mr++;
         echo '<b>'.$mr.'.</b> <a href="game.php?i=apie&wh='.$row['nick'].'">'.statusas($row['nick']).'</a><br/>';
     }
@@ -576,7 +576,7 @@ elseif($i == "valdzia"){
         echo '[&raquo;] 1 lygio moderatorių nėra...<br/>';
     } else {
     $query = $pdo->query("SELECT * FROM zaidejai WHERE statusas='Mod' ");
-    while($row = mysql_fetch_assoc($query)){
+    while($row = $query->fetch()){
         $nr++;
         echo '<b>'.$nr.'.</b> <a href="game.php?i=apie&wh='.$row['nick'].'">'.statusas($row['nick']).'</a><br/>';
     }

@@ -131,24 +131,26 @@ if($i == ""){
                    
 				   $pav="$nick";
 				   
-				  	mysql_query("DELETE FROM zaidejai WHERE nick='$pav'");
-					mysql_query("DELETE FROM vaskinimas WHERE nick='$pav'");
-					mysql_query("DELETE FROM zaidejai WHERE nick='$pav'");
-					mysql_query("DELETE FROM rep WHERE kam='$pav'");
-					mysql_query("DELETE FROM pokalbiai WHERE nick='$pav'");
-					mysql_query("DELETE FROM pm WHERE what='$pav'");
-					mysql_query("DELETE FROM pas_kom WHERE kas='$pav'");
-					mysql_query("DELETE FROM pasrep WHERE nick='$pav'");
-					mysql_query("DELETE FROM pasiekimai WHERE nick='$pav'");
-					mysql_query("DELETE FROM online WHERE nick='$pav'");
-					mysql_query("DELETE FROM medaliai WHERE kam='$pav'");
-					mysql_query("DELETE FROM komentarai WHERE kas='$pav'");
-					mysql_query("DELETE FROM komentarai WHERE kas2='$pav'");
-					mysql_query("DELETE FROM komandos WHERE vadas='$pav'");
-					mysql_query("DELETE FROM inventorius WHERE nick='$pav'");
-					mysql_query("DELETE FROM forum_zin WHERE nick='$pav'");
-					mysql_query("DELETE FROM forum_tem WHERE kas='$pav'");
-					mysql_query("DELETE FROM dtop WHERE nick='$pav'");
+				  	global $pdo;
+$pdo->exec("DELETE FROM zaidejai WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM vaskinimas WHERE nick='$pav'");
+					global $pdo;
+$pdo->exec("DELETE FROM zaidejai WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM rep WHERE kam='$pav'");
+					$pdo->exec("DELETE FROM pokalbiai WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM pm WHERE what='$pav'");
+					$pdo->exec("DELETE FROM pas_kom WHERE kas='$pav'");
+					$pdo->exec("DELETE FROM pasrep WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM pasiekimai WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM online WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM medaliai WHERE kam='$pav'");
+					$pdo->exec("DELETE FROM komentarai WHERE kas='$pav'");
+					$pdo->exec("DELETE FROM komentarai WHERE kas2='$pav'");
+					$pdo->exec("DELETE FROM komandos WHERE vadas='$pav'");
+					$pdo->exec("DELETE FROM inventorius WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM forum_zin WHERE nick='$pav'");
+					$pdo->exec("DELETE FROM forum_tem WHERE kas='$pav'");
+					$pdo->exec("DELETE FROM dtop WHERE nick='$pav'");
 					mysql_query("DELETE FROM block WHERE nick='$pav'");
 					mysql_query("DELETE FROM block1 WHERE nick='$pav'");
 					mysql_query("DELETE FROM auros WHERE nick='$pav'");
@@ -357,7 +359,7 @@ elseif($i == "admin")
                 if (empty($psl) or $psl < 0) $psl = 1;
                 if ($psl > $total) $psl = $total;
                 $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-                 $q = mysql_query("SELECT * FROM block ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
+                 $q = $pdo->query("SELECT * FROM block ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
                  $puslapiu = ceil($viso/$rezultatu_rodymas);
                  while($row = $q->fetch()){
                      echo '<div class="main">';
@@ -398,7 +400,7 @@ $sms_litai = post($_POST['sms_litai']);
 $zenai = post($_POST['zenai']);
 $kred = post($_POST['kred']);
 $zinute = 'Sveikas, '.$nick.' administratorius padar&#279; visiems dalybas, t&#371; gavai - +'.$jega.' J&#279;gos, +'.$gynyba.' Gynybos, +'.$sms_litai.' Lit&#371;, +'.$zenai.' Zen&#371;, +'.$kred.' Kredit&#371;. Gero &#382;aidimo jums linki administracija! :)';
-$nst = mysql_query("SELECT * FROM online ORDER BY id");
+$nst = $pdo->query("SELECT * FROM online ORDER BY id");
 while($ns = $nst->fetch()){
 mysql_query("INSERT INTO pm SET what='Sistema', txt='$zinute', time='".time()."', gavejas='$ns[nick]', nauj='NEW'");
 mysql_query("UPDATE zaidejai SET sms_litai=sms_litai+'$sms_litai', jega=jega+'$jega', gynyba=gynyba+'$gynyba', litai=litai+'$zenai', kred=kred+'$kred' WHERE nick='$ns[nick]'");
@@ -450,7 +452,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
                 if (empty($psl) or $psl < 0) $psl = 1;
                 if ($psl > $total) $psl = $total;
                 $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-                 $q = mysql_query("SELECT * FROM pm ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
+                 $q = $pdo->query("SELECT * FROM pm ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
                  $puslapiu = ceil($viso/$rezultatu_rodymas);
                  while($row = $q->fetch()){
                      echo '<div class="main">';
@@ -476,7 +478,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
                 if (empty($psl) or $psl < 0) $psl = 1;
                 if ($psl > $total) $psl = $total;
                 $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-                 $q = mysql_query("SELECT * FROM perved_log ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
+                 $q = $pdo->query("SELECT * FROM perved_log ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
                  $puslapiu = ceil($viso/$rezultatu_rodymas);
                  while($row = $q->fetch()){
                      echo '<div class="main">';
@@ -616,7 +618,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
             }
             echo '<div class="main">
             <form action="?i=admin&ka=new_shop" method="post"/>';
-            $qur = mysql_query("SELECT * FROM items");
+            $qur = $pdo->query("SELECT * FROM items");
             echo '+ Daiktas:<br/>
             <select name="daiktas">';
             while($row = $qur->fetch()){
@@ -716,7 +718,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
             Monstro K.G:<br /><input type="text" name="kg"/><br />
             Meta EXP:<br /><input type="text" name="exp"/><br />
             Meta Zen\'ų:<br /><input type="text" name="zen"/><br />';
-            $query = mysql_query("SELECT * FROM lokacijos");
+            $query = $pdo->query("SELECT * FROM lokacijos");
             echo 'Lokacija:<br/>
             <select name="lok">';
             while($row = $query->fetch()){
@@ -777,7 +779,7 @@ echo '<div class="main_c"><div class="true">Atlikta! Dalybos &#302;vyko :)</div>
         <th>ID:&nbsp;&nbsp;</th>
         <th>Pavadinimas:&nbsp;&nbsp;</th>
         <th>Tipas:&nbsp;&nbsp;</th></tr>';
-        $query = mysql_query("SELECT * FROM items");
+        $query = $pdo->query("SELECT * FROM items");
         while($row = $query->fetch()){
             if($row['tipas'] == 1) $tipasx = 'Ginklas';
             elseif($row['tipas'] == 2) $tipasx = 'Šarvas';
@@ -961,7 +963,7 @@ elseif($i == "priz"){
                 if (empty($psl) or $psl < 0) $psl = 1;
                 if ($psl > $total) $psl = $total;
                 $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-                 $q = mysql_query("SELECT * FROM block ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
+                 $q = $pdo->query("SELECT * FROM block ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
                  $puslapiu = ceil($viso/$rezultatu_rodymas);
                  while($row = $q->fetch()){
                      echo '<div class="main">';
@@ -984,7 +986,7 @@ elseif($i == "priz"){
                 if (empty($psl) or $psl < 0) $psl = 1;
                 if ($psl > $total) $psl = $total;
                 $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-                 $q = mysql_query("SELECT * FROM pm ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
+                 $q = $pdo->query("SELECT * FROM pm ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
                  $puslapiu = ceil($viso/$rezultatu_rodymas);
                  while($row = $q->fetch()){
                      echo '<div class="main">';
@@ -1116,7 +1118,7 @@ elseif($i == "mod"){
                 if (empty($psl) or $psl < 0) $psl = 1;
                 if ($psl > $total) $psl = $total;
                 $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-                 $q = mysql_query("SELECT * FROM block1 ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
+                 $q = $pdo->query("SELECT * FROM block1 ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
                  $puslapiu = ceil($viso/$rezultatu_rodymas);
                  while($row = $q->fetch()){
                      echo '<div class="main">';
@@ -1139,7 +1141,7 @@ elseif($i == "mod"){
                 if (empty($psl) or $psl < 0) $psl = 1;
                 if ($psl > $total) $psl = $total;
                 $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-                 $q = mysql_query("SELECT * FROM perved_log ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
+                 $q = $pdo->query("SELECT * FROM perved_log ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
                  $puslapiu = ceil($viso/$rezultatu_rodymas);
                  while($row = $q->fetch()){
                      echo '<div class="main">';

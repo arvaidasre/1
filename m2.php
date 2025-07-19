@@ -266,7 +266,7 @@ echo '<div class="main_c">';
     $visi = $stmt->fetchColumn();
     if($visi > 0){
        
-		$q = mysql_query("SELECT * FROM pokalbiai ORDER BY id DESC LIMIT 10");
+		$q = $pdo->query("SELECT * FROM pokalbiai ORDER BY id DESC LIMIT 10");
         echo '<div class="main">';
         while($rr = $q->fetch()){
 			$nr++;

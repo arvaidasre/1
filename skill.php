@@ -542,7 +542,7 @@ elseif($i == "auros"){
       echo '<div class="main_c">Auros - čia jūs galite mokytis auras, išmoke vis naują aurą jūs įgausite tam tikra kieki Jėgos ir Gynybos. </div>';
       echo '<div class="title">'.$ico.' <b>Auros</b>:</div>';
       echo '<div class="main">';
-      $query = mysql_query("SELECT * FROM auru_inf");
+      $query = $pdo->query("SELECT * FROM auru_inf");
       while($row = $query->fetch()){
           echo '<b>[&raquo;]</b> <a href="skill.php?i=auros&ka=inf&id='.$row['id'].'">'.$row['name'].'</a><br/>';
           unset($row);

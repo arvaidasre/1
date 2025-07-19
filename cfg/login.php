@@ -931,7 +931,7 @@ $stmt = $pdo->prepare("SELECT * FROM items WHERE id = ?");
 $stmt->execute([$prekess_inf['preke']]);
 $daigtoo_inf = $stmt->fetch();
 
-$selects = mysql_query("SELECT * FROM aukcijonas ");
+$selects = $pdo->query("SELECT * FROM aukcijonas ");
 while($deletess = $selects->fetch()){
    if($deletess['laikas']-time() < 1){
       $txt = 'Aukcijonę per 5val. niekas nenupirko jūsų prekės, todėl ji grąžinta jums atgal.';
@@ -944,7 +944,7 @@ while($deletess = $selects->fetch()){
 }
 
 //** GRĄŽINAMA VALIUTA (ZEN'AI, KREDITAI) PASIBAIGUS LAIKUI, KURIUOS NUIMĖ, KAI UŽSAKĖ PREKĘ!
-$upinfo = mysql_query("SELECT * FROM puzsakymai");
+$upinfo = $pdo->query("SELECT * FROM puzsakymai");
 while($info = $upinfo->fetch()) {
 	if($info['valiuta'] == 1){ $valiuta = 'zenai'; $vlt = 'litai'; }
 	if($info['valiuta'] == 2){ $valiuta = 'kreditai'; $vlt = 'kred'; }
@@ -1065,7 +1065,7 @@ $prizas = $nust['dtop_priz'];
 $prizas2 = round($nust['dtop_priz']/2);
 $prizas3 = round($nust['dtop_priz']/3);
 
-$query = mysql_query("SELECT * FROM dtop ORDER BY vksm DESC LIMIT 3");
+$query = $pdo->query("SELECT * FROM dtop ORDER BY vksm DESC LIMIT 3");
 while($row = $query->fetch()){
     $io++;
     if($io == 1){
@@ -1094,7 +1094,7 @@ mysql_query("TRUNCATE TABLE dtop");
 /* Savaitės veiksmų konkursas */
 
 if($nust['savaites_kovu_topas']-time() < 0){
-	$imam=mysql_query("SELECT * FROM savaites_topas ORDER BY (0+ veiksmai) DESC LIMIT 3");
+	$imam = $pdo->query("SELECT * FROM savaites_topas ORDER BY (0+ veiksmai) DESC LIMIT 3");
 	
 	while($prizai = $imam->fetch()){
 		$vt++;
@@ -1128,7 +1128,7 @@ $drdata = date("Y-m-d");
 if($drdata != $nust['drtop_date']) {
 $drlitai = $nust['drtop_litai'];
 
-$drutuliai = mysql_query("SELECT * FROM drtop ORDER BY rutuliai DESC LIMIT 1");
+$drutuliai = $pdo->query("SELECT * FROM drtop ORDER BY rutuliai DESC LIMIT 1");
 while($dr = $drutuliai->fetch()){
     $iv++;
     if($iv == 1) {
@@ -1150,7 +1150,7 @@ if($smsdata != $nust['sms_date']){
 $smslitai = $nust['sms_priz'];
 
 
-$sms_top = mysql_query("SELECT * FROM sms_top ORDER BY sms DESC LIMIT 1");
+$sms_top = $pdo->query("SELECT * FROM sms_top ORDER BY sms DESC LIMIT 1");
 while($sms = $sms_top->fetch()){
     $i++;
     if($i == 1){

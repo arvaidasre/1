@@ -852,7 +852,7 @@ elseif($i == "DTop"){
 	echo '<div class="main_c"><div class="error">Žaidėjau, <b>'.statusas($nust['dtop_nick']).'</b>, vakar laimėjote dienos topo prizą, todėl šiandiena jūsų šio topo veiksmai <b>nesiskaičiuos</b> ir <b>nesivaržysite</b> dėl dienos prizo!</div></div>';
 	}
     echo '<div class="title">'.$ico.' Šiandienos TOP 5:</div>';
-    $query = mysql_query("SELECT * FROM dtop ORDER BY vksm DESC LIMIT 0,5");
+    $query = $pdo->query("SELECT * FROM dtop ORDER BY vksm DESC LIMIT 0,5");
     echo '<div class="main">';
     while($row = $query->fetch()){
         $vt++;
@@ -905,7 +905,7 @@ elseif ($i == "drtop") {
 	<font color="red">[&raquo;] [PASTABA!] RASTŲ DRAKONO RUTULIŲ NEPRARASITE!</font><br>
 	<font color="red">[&raquo;] Paskutinis laimėjo surinktų drakono rutulių topo prizą:</font> <a href="?i=apie&wh='.$nust['drtop_nick'].'"><b>'.statusas($nust['drtop_nick']).'</b></a></div>';
 	echo '<div class="title">'.$ico.' Pirmaujantys žaidėjai <i>(10)</i>:</div>';
-	$dr_top = mysql_query("SELECT * FROM drtop ORDER BY rutuliai DESC LIMIT 0,10");
+	$dr_top = $pdo->query("SELECT * FROM drtop ORDER BY rutuliai DESC LIMIT 0,10");
     echo '<div class="main">';
     while($dr = $dr_top->fetch()){
         $vt++;
@@ -926,7 +926,7 @@ elseif ($i == "drtop") {
 	[&raquo;] SMS TOP\'as baigiasi <b>00:00</b> , tada visi jūsų sms anuliuojasi ir vėl galėsite varžytis dėl prizo.<br>
 	<font color="red">[&raquo;] Paskutinis laimėjo sms topo prizą:</font> <a href="?i=apie&wh='.$nust['sms_nick'].'"><b>'.statusas($nust['sms_nick']).'</b></a></div>';
     echo '<div class="title"> <b>TOP 3 :</b> </div>';
-     $query = mysql_query("SELECT * FROM sms_top ORDER BY sms DESC LIMIT 0,3");
+     $query = $pdo->query("SELECT * FROM sms_top ORDER BY sms DESC LIMIT 0,3");
     echo '<div class="main">';
     while($row = $query->fetch()){
         $vt++;
@@ -983,7 +983,7 @@ elseif($i == "pokalbiai"){
             if (empty($psl) or $psl < 0) $psl = 1;
             if ($psl > $total) $psl = $total;
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-        $query = mysql_query("SELECT * FROM pokalbiai ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+        $query = $pdo->query("SELECT * FROM pokalbiai ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
         $puslapiu=ceil($viso/$rezultatu_rodymas);
         while($row = $query->fetch()){
             echo '<div class="main">'.$ico.' <a href="?i=apie&wh='.$row['nick'].'"><b>'.statusas($row['nick']).'</b></a>: '.smile($row['sms']).'<br /><span style="text-align: right;"><small size="10">&raquo; '.laikas($row['data']).'</small>';
@@ -1122,7 +1122,7 @@ elseif($i == "apie"){
 			echo '<div class="title">'.$ico.' Sutapumai:</div>';
 			echo "
 			<div class='main'>";
-				$q = mysql_query("SELECT * FROM zaidejai WHERE ip='$inf[ip]' ORDER BY id");
+				$q = $pdo->query("SELECT * FROM zaidejai WHERE ip='$inf[ip]' ORDER BY id");
 				while ($row = $q->fetch()) {
 				echo "<a href='?i=apie&wh=$row[nick]'>$row[nick]</a>, ";
 				}}
@@ -1304,7 +1304,7 @@ elseif($i == "online"){
                 if (empty($psl) or $psl < 0) $psl = 1;
                 if ($psl > $total) $psl = $total;
                 $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-            $query = mysql_query("SELECT * FROM online ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
+            $query = $pdo->query("SELECT * FROM online ORDER BY id DESC LIMIT $nuo_kiek,$rezultatu_rodymas");
             $puslapiu=ceil($viso/$rezultatu_rodymas);
             while($row = $query->fetch()){
                 $asdf = mysql_fetch_assoc(mysql_query("SELECT * FROM zaidejai WHERE nick='$row[nick]' "));
@@ -1324,7 +1324,7 @@ elseif($i == "online"){
     {
         $i=0;
         $on = $pdo->query("SELECT * FROM `online`")->rowCount();
-        $q1 = mysql_query("SELECT * FROM `online` ORDER BY `id` DESC LIMIT 0,9999999");
+        $q1 = $pdo->query("SELECT * FROM `online` ORDER BY `id` DESC LIMIT 0,9999999");
         echo'Prisijungę nariai (<b>'.$pdo->query("SELECT COUNT(*) FROM online")->fetchColumn().'</b>): ';
         while($r1 = $q1->fetch()){
             $i++;
@@ -1380,7 +1380,7 @@ elseif($i == "news"){
             if (empty($psl) or $psl < 0) $psl = 1;
             if ($psl > $total) $psl = $total;
             $nuo_kiek=$psl*$rezultatu_rodymas-$rezultatu_rodymas;
-          $q = mysql_query("SELECT * FROM news ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
+          $q = $pdo->query("SELECT * FROM news ORDER BY id DESC LIMIT $nuo_kiek, $rezultatu_rodymas");
           $puslapiu = ceil($viso/$rezultatu_rodymas);
           while($row = $q->fetch()){
             if(date('Y-m-d') == date('Y-m-d', $row['data'])){
@@ -1413,7 +1413,7 @@ elseif($i == "info"){
         top('Šypsenėlės');
         echo '<div class="main"><b>Veidukai</b> - juos gali naudoti pokalbiuose forume ir ant topic&rsquo;o.</div>';
         echo '<div class="main">';
-        $query = mysql_query("SELECT * FROM smile ORDER BY id ");
+        $query = $pdo->query("SELECT * FROM smile ORDER BY id ");
         while($row = $query->fetch()){
             echo ''.$row['img'].' - <b>'.$row['kodas'].'</b><br/>';
             unset($row);

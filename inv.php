@@ -50,7 +50,7 @@ elseif($i == "inv"){
         echo '<div class="main">';
         $query = $pdo->prepare("SELECT DISTINCT daiktas FROM inventorius WHERE nick=? AND tipas=?");
         $query->execute([$nick, $id]);
-        while($invo = mysql_fetch_assoc($query)){
+        while($invo = $query->fetch()){
              $daigto_inf = mysql_fetch_assoc(mysql_query("SELECT * FROM items WHERE id='$invo[daiktas]' "));
              $stmt_count = $pdo->prepare("SELECT COUNT(*) FROM inventorius WHERE nick=? AND daiktas=? AND tipas=?");
              $stmt_count->execute([$nick, $invo['daiktas'], $id]);

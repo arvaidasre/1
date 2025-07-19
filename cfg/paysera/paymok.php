@@ -53,7 +53,9 @@ if($rakt == "wapdbeu1"){
 $stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
 $stmt->execute([$nick]);
 $tope = $stmt->rowCount();
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 if($tope>0){  $pdo->prepare("UPDATE sms_top SET sms=sms+1 WHERE nick=?");}else{
   $pdo->prepare("INSERT INTO sms_top SET sms=1, nick=?");}
@@ -68,7 +70,9 @@ if($rakt == "wapdbeu3") {
 $stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
 $stmt->execute([$nick]);
 $tope = $stmt->rowCount();
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'3'  WHERE nick='$nick'");}else{
   mysql_query("INSERT INTO sms_top SET sms ='3',nick='$nick' ");}
@@ -83,7 +87,9 @@ if($rakt == "wapdbeu5") {
 $stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
 $stmt->execute([$nick]);
 $tope = $stmt->rowCount();
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'5'  WHERE nick='$nick'");}else{
   mysql_query("INSERT INTO sms_top SET sms ='5',nick='$nick' ");}
@@ -98,7 +104,9 @@ if($rakt == "wapdbeu10") {
 $stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
 $stmt->execute([$nick]);
 $tope = $stmt->rowCount();
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'10'  WHERE nick='$nick'");}else{
   mysql_query("INSERT INTO sms_top SET sms ='10',nick='$nick' ");}
@@ -113,7 +121,9 @@ if($rakt == "wapdbeu14") {
 $stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
 $stmt->execute([$nick]);
 $tope = $stmt->rowCount();
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'14'  WHERE nick='$nick'");}else{
   mysql_query("INSERT INTO sms_top SET sms ='14',nick='$nick' ");}
@@ -128,7 +138,9 @@ if($ka == "dbza55") {
 $stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
 $stmt->execute([$nick]);
 $tope = $stmt->rowCount();
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'5'  WHERE nick='$nick'");}else{
   mysql_query("INSERT INTO sms_top SET sms ='5',nick='$nick' ");}
@@ -143,7 +155,9 @@ if($ka == "dbza100") {
 $stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
 $stmt->execute([$nick]);
 $tope = $stmt->rowCount();
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'10'  WHERE nick='$nick'");}else{
   mysql_query("INSERT INTO sms_top SET sms ='10',nick='$nick' ");}
@@ -158,7 +172,9 @@ if($ka == "dbza140") {
 $stmt = $pdo->prepare("SELECT * FROM sms_top WHERE nick=?");
 $stmt->execute([$nick]);
 $tope = $stmt->rowCount();
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 if($tope>0){  mysql_query("UPDATE sms_top SET sms=sms+'14'  WHERE nick='$nick'");}else{
   mysql_query("INSERT INTO sms_top SET sms ='14',nick='$nick' ");}
@@ -170,7 +186,9 @@ exit();
 
 }
 if($rakt == "dbvip") {
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 mysql_query("UPDATE zaidejai SET vip='$vip' WHERE nick='$nick'");
 echo "OK Aciu, kad siunciate. $nick tau ijungtas VIP 2 savaitem. Aciu, kad zaidziate www.wapdb.eu";
@@ -178,7 +196,9 @@ exit();
 
 }
 if($rakt == "s_vip") {
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 mysql_query("UPDATE zaidejai SET vip='$vip', kred=kred+10, sms_litai=sms_litai+20, sagos=sagos+5, nelec='$nelec' WHERE nick='$pava'");
 echo "OK Aciu, kad siunciate. Gavote 4 LTL. dbza.us.lt";
@@ -186,7 +206,9 @@ exit();
 
 }
 if($rakt == "g_vip") {
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 mysql_query("UPDATE zaidejai SET vip='$vip', kred=kred+10, sms_litai=sms_litai+20, sagos=sagos+5, nelec='$nelec' WHERE nick='$pava'");
 echo "Aciu, kad siunciate. Gavote 4 LTL. dbza.us.lt";
@@ -194,7 +216,9 @@ exit();
 
 }
 if($rakt == "dbzaban") {
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 mysql_query("DELETE FROM block WHERE nick='$nick'");
 echo "Aciu, kad siunciate. Sekmingai nuimtas ban. dbza.us.lt";
@@ -202,7 +226,9 @@ exit();
 
 }
 if($rakt == "dbzaunmute") {
-$apie = mysql_query("SELECT * FROM zaidejai WHERE nick='$nick'");
+$stmt = $pdo->prepare("SELECT * FROM zaidejai WHERE nick=?");
+$stmt->execute([$nick]);
+$apie = $stmt->fetch();
 $nick = $apie['nick'];
 mysql_query("DELETE FROM block1 WHERE nick='$nick'");
 echo "Aciu, kad siunciate. Sekmingai nuimtas užtildymas. dbza.us.lt";
